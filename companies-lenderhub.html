@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LenderHub — Companies</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary:          #1F2733;
+      --secondary:        #910057;
+      --secondary-active: #840058;
+      --bg:               #F8FAFC;
+      --surface:          #FFFFFF;
+      --border:           #E2E8F0;
+      --border-strong:    #CBD5E1;
+      --text:             #334155;
+      --text-secondary:   #64748B;
+      --text-muted:       #94A3B8;
+      --green:   #16A34A; --green-bg:  #F0FDF4;
+      --yellow:  #D97706; --yellow-bg: #FFFBEB;
+      --blue:    #0284C7; --blue-bg:   #F0F9FF;
+      --red:     #DC2626; --red-bg:    #FEF2F2;
+      --radius:    8px;
+      --radius-sm: 6px;
+      --radius-lg: 12px;
+      --shadow:    0 1px 3px rgba(0,0,0,.10), 0 1px 2px rgba(0,0,0,.06);
+      --shadow-md: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
+      --font-primary: 'Noto Sans', -apple-system, sans-serif;
+      --font-ui:      'Noto Sans', -apple-system, sans-serif;
+      --font-mono:    'Space Mono', monospace;
+      --topbar-height: 52px;
+      --sidebar-width: 220px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); font-family: var(--font-ui); font-size: 1rem; color: var(--text); min-height: 100vh; }
+
+    /* ─── Topbar ─────────────────────────────────────────────────── */
+    .topbar {
+      background: var(--bg); border-bottom: 1px solid var(--border);
+      position: fixed; top: 0; left: 0; right: 0; height: var(--topbar-height);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; z-index: 1100;
+    }
+    .topbar-logo { height: 24px; width: auto; }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .notif-btn {
+      position: relative; width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent; border: none; cursor: pointer;
+      border-radius: var(--radius-sm); color: var(--text-secondary); transition: background 0.15s;
+    }
+    .notif-btn:hover { background: var(--border); }
+    .notif-btn i { font-size: 18px; }
+    .notif-badge {
+      position: absolute; top: 2px; right: 2px;
+      background: var(--secondary); color: #fff;
+      font-size: 0.625rem; font-weight: 700; line-height: 1;
+      padding: 2px 4px; border-radius: 10px; min-width: 16px; text-align: center;
+    }
+    .user-pill {
+      display: flex; align-items: center; gap: 8px;
+      padding: 4px 10px 4px 4px; border-radius: 20px;
+      cursor: pointer; transition: background 0.15s; border: none; background: transparent;
+    }
+    .user-pill:hover { background: var(--border); }
+    .user-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--secondary); display: flex; align-items: center; justify-content: center; }
+    .user-avatar i { font-size: 16px; color: #fff; }
+    .user-info { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.2; }
+    .user-org  { font-size: 0.75rem; font-weight: 700; color: var(--text); }
+    .user-name { font-size: 0.75rem; color: var(--text-secondary); }
+    .user-pill .caret { font-size: 14px; color: var(--text-muted); }
+
+    /* ─── Sidebar ─────────────────────────────────────────────────── */
+    .sidebar {
+      background: var(--bg); border-right: 1px solid var(--border);
+      position: fixed; top: var(--topbar-height); left: 0;
+      width: var(--sidebar-width); height: calc(100vh - var(--topbar-height));
+      overflow-y: auto; overflow-x: hidden; z-index: 1000; padding: 8px 0;
+    }
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+    .nav-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 14px; height: 40px; cursor: pointer;
+      text-decoration: none; color: var(--text); transition: background 0.12s;
+    }
+    .nav-item:hover  { background: var(--border-strong); }
+    .nav-item.active { background: var(--border); }
+    .nav-item.active .nav-icon  { color: var(--secondary-active); }
+    .nav-item.active .nav-label { font-weight: 700; }
+    .nav-left { display: flex; align-items: center; gap: 10px; }
+    .nav-icon  { font-size: 18px; color: var(--text); flex-shrink: 0; width: 20px; display: flex; align-items: center; justify-content: center; }
+    .nav-label { font-size: 0.9rem; font-weight: 500; white-space: nowrap; }
+    .nav-caret { font-size: 14px; color: var(--text-muted); flex-shrink: 0; }
+
+    /* ─── Main ───────────────────────────────────────────────────── */
+    .main { margin-left: var(--sidebar-width); margin-top: var(--topbar-height); padding: 24px; min-height: calc(100vh - var(--topbar-height)); }
+    .main-card { background: var(--surface); border-radius: var(--radius); padding: 24px; min-height: calc(100vh - var(--topbar-height) - 48px); display: flex; flex-direction: column; gap: 20px; }
+
+    /* ─── Page Header ────────────────────────────────────────────── */
+    .page-header { display: flex; align-items: flex-start; justify-content: space-between; }
+    .page-title { font-family: var(--font-primary); font-size: 2.0rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .page-subtitle { font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px; }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 0 16px; height: 36px;
+      background: var(--primary); color: #FFFFFF;
+      font-family: var(--font-ui); font-size: 0.9rem; font-weight: 500;
+      border: none; border-radius: var(--radius-sm);
+      cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: opacity 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-primary i { font-size: 16px; }
+
+    /* ─── Toolbar ─────────────────────────────────────────────────── */
+    .toolbar { display: flex; align-items: center; gap: 12px; }
+    .toolbar-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+    .search-wrap { position: relative; flex: 1; }
+    .search-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; color: var(--text-muted); pointer-events: none; }
+    .search-input {
+      width: 100%; height: 40px; padding: 8px 12px 8px 38px;
+      border-radius: var(--radius-sm); border: 1px solid var(--border-strong);
+      background: var(--surface); font-family: var(--font-ui); font-size: 1rem; color: var(--text);
+      outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-input:focus { border-color: #27272A; box-shadow: 0 0 0 3px var(--border); }
+
+    .filter-wrap { position: relative; flex-shrink: 0; }
+    .btn-filters {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 0 14px; height: 40px;
+      background: transparent; color: var(--text);
+      font-family: var(--font-ui); font-size: 0.9rem; font-weight: 500;
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      cursor: pointer; white-space: nowrap; transition: background 0.15s;
+    }
+    .btn-filters:hover { background: var(--bg); }
+    .btn-filters.active { border-color: var(--secondary); color: var(--secondary); background: rgba(145,0,87,0.04); }
+    .btn-filters i { font-size: 16px; }
+    .filter-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--secondary); display: none; }
+    .btn-filters.active .filter-dot { display: inline-block; }
+
+    .filter-dropdown {
+      position: absolute; top: calc(100% + 4px); right: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: var(--shadow-md);
+      padding: 12px; width: 220px; z-index: 200;
+      display: none;
+    }
+    .filter-dropdown.open { display: block; }
+    .filter-section-title { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .filter-option { display: flex; align-items: center; gap: 8px; padding: 5px 0; cursor: pointer; font-size: 0.875rem; color: var(--text); }
+    .filter-option input { accent-color: var(--secondary); width: 15px; height: 15px; cursor: pointer; }
+    .filter-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+    .btn-filter-clear { background: none; border: none; cursor: pointer; font-size: 0.8rem; color: var(--text-secondary); padding: 4px 8px; border-radius: var(--radius-sm); }
+    .btn-filter-clear:hover { background: var(--bg); }
+    .btn-filter-apply { background: var(--primary); color: #fff; border: none; cursor: pointer; font-size: 0.8rem; font-weight: 500; padding: 4px 12px; border-radius: var(--radius-sm); }
+    .btn-filter-apply:hover { opacity: 0.88; }
+
+    .results-info { font-size: 0.82rem; color: var(--text-secondary); white-space: nowrap; padding: 2px 0; }
+
+    /* ─── Table ──────────────────────────────────────────────────── */
+    .table-wrap { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; flex: 1; }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--surface); border-bottom: 1px solid var(--border); }
+    th { padding: 10px 16px; font-size: 0.9rem; font-weight: 700; color: var(--text); text-align: left; white-space: nowrap; }
+    th .sort-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; font-size: inherit; font-weight: inherit; color: inherit; padding: 0;
+    }
+    th .sort-btn:hover { color: var(--secondary); }
+    th .sort-btn i { font-size: 14px; color: var(--text-muted); transition: color 0.12s; }
+    th .sort-btn.asc i, th .sort-btn.desc i { color: var(--secondary); }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--bg); }
+    td { padding: 12px 16px; font-size: 0.9rem; color: var(--text); vertical-align: middle; }
+
+    .company-name { color: var(--secondary); font-weight: 500; cursor: pointer; text-decoration: none; }
+    .company-name:hover { text-decoration: underline; }
+
+    .status { display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; font-weight: 500; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .status-dot.active   { background: var(--green); }
+    .status-dot.inactive { background: var(--text-muted); }
+
+    .fac-badge { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: var(--blue-bg); color: var(--blue); font-size: 0.75rem; font-weight: 700; border-radius: 50%; }
+
+    .tags { display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; }
+    .tag { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; background: var(--bg); border: 1px solid var(--border); font-size: 0.75rem; font-weight: 500; color: var(--text); white-space: nowrap; }
+    .tag-more { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; background: var(--secondary); color: #fff; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+
+    .edit-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 16px; display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: var(--radius-sm); transition: color 0.15s, background 0.15s; }
+    .edit-btn:hover { color: var(--text); background: var(--bg); }
+
+    .empty-rows td { text-align: center; padding: 48px 16px; color: var(--text-secondary); font-size: 0.95rem; }
+
+    /* ─── Pagination ─────────────────────────────────────────────── */
+    .pagination-area { display: flex; align-items: center; justify-content: space-between; padding: 10px 0 2px; gap: 12px; }
+    .pagination-bar { display: flex; align-items: center; gap: 4px; }
+    .pg-btn {
+      display: flex; align-items: center; justify-content: center;
+      min-width: 32px; height: 32px;
+      background: transparent; border: none; cursor: pointer;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-ui); font-size: 0.9rem; font-weight: 500; color: var(--text-secondary);
+      padding: 0 6px; transition: background 0.12s, color 0.12s;
+    }
+    .pg-btn:hover:not(:disabled) { background: var(--bg); color: var(--text); }
+    .pg-btn:disabled { opacity: 0.35; cursor: default; }
+    .pg-btn.active { background: var(--border-strong); color: var(--text); font-weight: 700; border-radius: 50%; width: 32px; padding: 0; }
+    .pg-btn i { font-size: 14px; }
+    .pg-size {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 0 10px; height: 32px;
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--surface); font-size: 0.9rem; font-weight: 500; color: var(--text);
+      cursor: pointer; appearance: none;
+    }
+
+    /* ─── Toast ──────────────────────────────────────────────────── */
+    #toastContainer { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 8px; z-index: 9999; pointer-events: none; }
+    .toast {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 16px; border-radius: var(--radius);
+      background: var(--primary); color: #fff;
+      font-size: 0.875rem; font-weight: 500;
+      box-shadow: var(--shadow-md);
+      opacity: 0; transform: translateY(8px);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+      pointer-events: all;
+    }
+    .toast.visible { opacity: 1; transform: translateY(0); }
+    .toast i { font-size: 16px; flex-shrink: 0; }
+    .toast-success { background: var(--green); }
+    .toast-warn    { background: var(--yellow); }
+    .toast-info    { background: var(--primary); }
+  </style>
+</head>
+<body>
+
+  <!-- ── Topbar ──────────────────────────────────────────────────── -->
+  <header class="topbar">
+    <img class="topbar-logo" src="https://stg.suite.cxc.com.mx/logos/cxc_fullcolor.svg" alt="CXC"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+    <div style="display:none;align-items:center;gap:6px;">
+      <div style="width:28px;height:28px;background:var(--secondary);border-radius:6px;display:flex;align-items:center;justify-content:center;">
+        <span style="color:#fff;font-weight:700;font-size:0.75rem;">C</span>
+      </div>
+      <span style="font-weight:700;font-size:1rem;color:var(--primary);">CXC</span>
+    </div>
+    <div class="topbar-right">
+      <button class="notif-btn" aria-label="Notificaciones">
+        <i class="ph ph-bell"></i><span class="notif-badge">9+</span>
+      </button>
+      <button class="user-pill" aria-label="Menú de usuario">
+        <div class="user-avatar"><i class="ph ph-user"></i></div>
+        <div class="user-info">
+          <span class="user-org">CXC</span>
+          <span class="user-name">Nilda Aviles Lopez</span>
+        </div>
+        <i class="ph ph-caret-down caret"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Sidebar ─────────────────────────────────────────────────── -->
+  <nav class="sidebar" aria-label="Navegación principal">
+    <a class="nav-item" href="home-lenderhub.html">
+      <div class="nav-left"><span class="nav-icon"><i class="ph ph-chart-line-up"></i></span><span class="nav-label">Portfolio Monitoring</span></div>
+      <i class="ph ph-caret-left nav-caret"></i>
+    </a>
+    <a class="nav-item" href="#">
+      <div class="nav-left"><span class="nav-icon"><i class="ph ph-currency-dollar-simple"></i></span><span class="nav-label">Financials</span></div>
+      <i class="ph ph-caret-left nav-caret"></i>
+    </a>
+    <a class="nav-item active" href="companies-lenderhub.html" aria-current="page">
+      <div class="nav-left"><span class="nav-icon"><i class="ph ph-buildings"></i></span><span class="nav-label">Companies</span></div>
+    </a>
+    <a class="nav-item" href="data-studio-lenderhub.html">
+      <div class="nav-left"><span class="nav-icon"><i class="ph ph-database"></i></span><span class="nav-label">Data Studio</span></div>
+      <i class="ph ph-caret-left nav-caret"></i>
+    </a>
+    <a class="nav-item" href="#">
+      <div class="nav-left"><span class="nav-icon"><i class="ph ph-magnifying-glass"></i></span><span class="nav-label">RUG Smart Search</span></div>
+      <i class="ph ph-caret-left nav-caret"></i>
+    </a>
+    <a class="nav-item" href="#">
+      <div class="nav-left"><span class="nav-icon"><i class="ph ph-robot"></i></span><span class="nav-label">AI Verification Agent</span></div>
+      <i class="ph ph-caret-left nav-caret"></i>
+    </a>
+    <a class="nav-item" href="#">
+      <div class="nav-left"><span class="nav-icon"><i class="ph ph-gear"></i></span><span class="nav-label">Admin</span></div>
+    </a>
+  </nav>
+
+  <!-- ── Main ───────────────────────────────────────────────────── -->
+  <main class="main">
+    <div class="main-card">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Companies</h1>
+          <p class="page-subtitle">Manage the companies database.</p>
+        </div>
+        <button class="btn-primary" onclick="showToast('Próximamente: flujo de alta de company','info')">
+          <i class="ph ph-plus"></i>Add Company
+        </button>
+      </div>
+
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="search-wrap">
+            <i class="ph ph-magnifying-glass"></i>
+            <input class="search-input" id="searchInput" type="text"
+              placeholder="Search by company name"
+              aria-label="Search by company name"
+              oninput="onSearch()" />
+          </div>
+          <div class="filter-wrap">
+            <button class="btn-filters" id="btnFilters" aria-haspopup="true" aria-expanded="false" onclick="toggleFilters()">
+              <i class="ph ph-funnel"></i>Filters<span class="filter-dot"></span>
+            </button>
+            <div class="filter-dropdown" id="filterDropdown" role="dialog" aria-label="Filtros">
+              <p class="filter-section-title">Status</p>
+              <label class="filter-option"><input type="checkbox" id="fActive" checked onchange="applyFilters()"> Active</label>
+              <label class="filter-option"><input type="checkbox" id="fInactive" checked onchange="applyFilters()"> Inactive</label>
+              <p class="filter-section-title" style="margin-top:10px;">Country</p>
+              <label class="filter-option"><input type="checkbox" id="fMexico" checked onchange="applyFilters()"> Mexico</label>
+              <label class="filter-option"><input type="checkbox" id="fBrazil" checked onchange="applyFilters()"> Brazil</label>
+              <label class="filter-option"><input type="checkbox" id="fColombia" checked onchange="applyFilters()"> Colombia</label>
+              <label class="filter-option"><input type="checkbox" id="fOther" checked onchange="applyFilters()"> Other</label>
+              <div class="filter-actions">
+                <button class="btn-filter-clear" onclick="clearFilters()">Clear</button>
+                <button class="btn-filter-apply" onclick="toggleFilters()">Done</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span class="results-info" id="resultsInfo"></span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>
+                <button class="sort-btn" id="sortBtn" onclick="toggleSort()" aria-label="Ordenar por nombre">
+                  Name <i class="ph ph-arrows-down-up"></i>
+                </button>
+              </th>
+              <th>Status</th>
+              <th>Facilities</th>
+              <th>Industry</th>
+              <th>Country</th>
+              <th>Tags</th>
+              <th>Entity type</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="pagination-area">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:0.82rem;color:var(--text-secondary);">Rows per page:</span>
+          <select class="pg-size" id="pgSize" onchange="onPageSizeChange()" aria-label="Filas por página">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+        </div>
+        <div class="pagination-bar" id="paginationBar" role="navigation" aria-label="Paginación"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="toastContainer" role="status" aria-live="polite"></div>
+
+  <script>
+  /* ─── Data ──────────────────────────────────────────────────────── */
+  const ALL_COMPANIES = [
+    { name:'Aplazo',        status:'active',   fac:0, industry:'Financial Services · BNPL', country:'Mexico',   tags:['B2C','E-commerce','Fintech'],                entity:'S.A.P.I. de C.V.', href:'company-detail-lenderhub.html' },
+    { name:'Covalto',       status:'active',   fac:1, industry:'Technology',         country:'Mexico',   tags:['AI/ML','B2B','Fintech'],                    entity:'Corporation',       href:'company-detail-lenderhub.html' },
+    { name:'Konfío',        status:'active',   fac:1, industry:'Financial Services', country:'Mexico',   tags:['AI/ML','B2C','Fintech','SME','Lending'],    entity:'S.A. de C.V.',     href:'company-detail-lenderhub.html' },
+    { name:'Kueski',        status:'active',   fac:1, industry:'Financial Services', country:'Mexico',   tags:['B2B','B2C','Fintech','BNPL','Payroll'],     entity:'S.A.P.I. de C.V.', href:'company-detail-lenderhub.html' },
+    { name:'Clip',          status:'active',   fac:1, industry:'Financial Services', country:'Mexico',   tags:['B2C','Fintech','POS','Payments'],           entity:'S.A.P.I. de C.V.', href:'company-detail-lenderhub.html' },
+    { name:'Credijusto',    status:'active',   fac:0, industry:'Financial Services', country:'Mexico',   tags:['Fintech'],                                  entity:'S.A. de C.V.',     href:'company-detail-lenderhub.html' },
+    { name:'Factor Exprés', status:'active',   fac:1, industry:'Financial Services', country:'Mexico',   tags:['B2B','Factoring','SME','CorePortfolio'],    entity:'S.A. de C.V.',     href:'company-detail-lenderhub.html' },
+    { name:'GBM+',          status:'active',   fac:3, industry:'Technology',         country:'Mexico',   tags:[],                                           entity:'Corporation',       href:'company-detail-lenderhub.html' },
+    { name:'Creditas',      status:'active',   fac:1, industry:'Financial Services', country:'Brazil',   tags:['KYCComplete','Subscription'],               entity:'S.A. de C.V.',     href:'company-detail-lenderhub.html' },
+    { name:'Creze',         status:'active',   fac:2, industry:'Financial Services', country:'Mexico',   tags:['B2B','SME','Fintech','Lending'],            entity:'S.A.P.I. de C.V.', href:'company-detail-lenderhub.html' },
+    { name:'FINAE',         status:'active',   fac:1, industry:'Education',          country:'Mexico',   tags:['Fintech','Education','B2C'],                entity:'S.A. de C.V.',     href:'company-detail-lenderhub.html' },
+    { name:'Graviti',       status:'inactive', fac:0, industry:'Financial Services', country:'Mexico',   tags:['Fintech','B2C','BNPL'],                    entity:'S.A.P.I. de C.V.', href:'company-detail-lenderhub.html' },
+    { name:'Addi',          status:'active',   fac:2, industry:'Financial Services', country:'Colombia', tags:['B2C','BNPL','Fintech'],                    entity:'SAS',               href:'company-detail-lenderhub.html' },
+    { name:'Sempli',        status:'active',   fac:1, industry:'Financial Services', country:'Colombia', tags:['SME','Fintech','B2B'],                     entity:'SAS',               href:'company-detail-lenderhub.html' },
+    { name:'R2',            status:'active',   fac:0, industry:'Financial Services', country:'Mexico',   tags:['B2B','SME','Embedded Finance'],            entity:'S.A.P.I. de C.V.', href:'company-detail-lenderhub.html' },
+    { name:'Pagos Reales',  status:'inactive', fac:0, industry:'Technology',         country:'Mexico',   tags:['Payments','B2B'],                          entity:'S.A. de C.V.',     href:'company-detail-lenderhub.html' },
+    { name:'Mimoni',        status:'active',   fac:1, industry:'Financial Services', country:'Mexico',   tags:['B2C','Consumer Credit','Fintech'],          entity:'S.A.P.I. de C.V.', href:'company-detail-lenderhub.html' },
+    { name:'LeaseMD',       status:'active',   fac:2, industry:'Healthcare',         country:'Mexico',   tags:['Leasing','Healthcare','B2B'],               entity:'S.A. de C.V.',     href:'company-detail-lenderhub.html' },
+    { name:'Yotepresto',    status:'active',   fac:1, industry:'Financial Services', country:'Mexico',   tags:['P2P','Fintech','Consumer'],                entity:'S.A.P.I. de C.V.', href:'company-detail-lenderhub.html' },
+    { name:'Prometeo',      status:'active',   fac:0, industry:'Technology',         country:'Uruguay',  tags:['Open Banking','API','B2B'],                entity:'S.A.',             href:'company-detail-lenderhub.html' },
+    { name:'Flink',         status:'inactive', fac:0, industry:'Financial Services', country:'Mexico',   tags:['B2C','Investment','Fintech'],              entity:'S.A.P.I. de C.V.', href:'company-detail-lenderhub.html' },
+    { name:'Cobre',         status:'active',   fac:1, industry:'Financial Services', country:'Colombia', tags:['B2B','Payments','SME'],                    entity:'SAS',               href:'company-detail-lenderhub.html' },
+    { name:'Klar',          status:'active',   fac:2, industry:'Financial Services', country:'Mexico',   tags:['B2C','Neobank','Fintech'],                 entity:'S.A.P.I. de C.V.', href:'company-detail-lenderhub.html' },
+    { name:'Nuvocargo',     status:'active',   fac:1, industry:'Logistics',          country:'Mexico',   tags:['B2B','Logistics','Embedded Finance'],      entity:'S.A. de C.V.',     href:'company-detail-lenderhub.html' },
+    { name:'Clara',         status:'active',   fac:0, industry:'Financial Services', country:'Mexico',   tags:['B2B','Corporate Cards','Fintech'],          entity:'S.A.P.I. de C.V.', href:'company-detail-lenderhub.html' },
+  ];
+
+  /* ─── State ─────────────────────────────────────────────────────── */
+  let state = { page: 1, pageSize: 10, search: '', sortDir: 'none', filterActive: true, filterInactive: true, filterMexico: true, filterBrazil: true, filterColombia: true, filterOther: true };
+
+  /* ─── Derived data ───────────────────────────────────────────────── */
+  function getFiltered() {
+    let data = ALL_COMPANIES.slice();
+    const q = state.search.toLowerCase().trim();
+    if (q) data = data.filter(c => c.name.toLowerCase().includes(q));
+    data = data.filter(c => {
+      if (c.status === 'active'   && !state.filterActive)   return false;
+      if (c.status === 'inactive' && !state.filterInactive) return false;
+      if (c.country === 'Mexico'   && !state.filterMexico)   return false;
+      if (c.country === 'Brazil'   && !state.filterBrazil)   return false;
+      if (c.country === 'Colombia' && !state.filterColombia) return false;
+      if (!['Mexico','Brazil','Colombia'].includes(c.country) && !state.filterOther) return false;
+      return true;
+    });
+    if (state.sortDir === 'asc')  data.sort((a,b) => a.name.localeCompare(b.name));
+    if (state.sortDir === 'desc') data.sort((a,b) => b.name.localeCompare(a.name));
+    return data;
+  }
+
+  /* ─── Render table ───────────────────────────────────────────────── */
+  function renderTable() {
+    const all = getFiltered();
+    const total = all.length;
+    const ps = state.pageSize;
+    const maxPage = Math.max(1, Math.ceil(total / ps));
+    if (state.page > maxPage) state.page = maxPage;
+    const start = (state.page - 1) * ps;
+    const pageData = all.slice(start, start + ps);
+
+    const tbody = document.getElementById('tableBody');
+    if (pageData.length === 0) {
+      tbody.innerHTML = `<tr class="empty-rows"><td colspan="8"><i class="ph ph-buildings" style="font-size:28px;display:block;margin:0 auto 8px;color:var(--text-muted)"></i>No companies match your search.</td></tr>`;
+    } else {
+      tbody.innerHTML = pageData.map(c => {
+        const tags = c.tags.slice(0,2).map(t => `<span class="tag">${t}</span>`).join('');
+        const more = c.tags.length > 2 ? `<span class="tag-more">+${c.tags.length - 2}</span>` : '';
+        const href = c.href || '#';
+        const nameEl = href !== '#'
+          ? `<a class="company-name" href="${href}">${c.name}</a>`
+          : `<a class="company-name" href="#" onclick="showToast('Abre el perfil de ${c.name}','info');return false;">${c.name}</a>`;
+        return `<tr>
+          <td>${nameEl}</td>
+          <td><span class="status"><span class="status-dot ${c.status}"></span>${c.status === 'active' ? 'ACTIVE' : 'INACTIVE'}</span></td>
+          <td><span class="fac-badge">${c.fac}</span></td>
+          <td>${c.industry}</td>
+          <td>${c.country}</td>
+          <td><div class="tags">${tags}${more}</div></td>
+          <td>${c.entity}</td>
+          <td><button class="edit-btn" aria-label="Editar ${c.name}" onclick="showToast('Editar ${c.name} — próximamente','info')"><i class="ph ph-pencil-simple"></i></button></td>
+        </tr>`;
+      }).join('');
+    }
+
+    // Results info
+    document.getElementById('resultsInfo').textContent =
+      total === ALL_COMPANIES.length
+        ? `${total} companies`
+        : `${total} of ${ALL_COMPANIES.length} companies`;
+
+    renderPagination(total, maxPage);
+  }
+
+  /* ─── Render pagination ──────────────────────────────────────────── */
+  function renderPagination(total, maxPage) {
+    const bar = document.getElementById('paginationBar');
+    const p = state.page;
+    let html = '';
+    html += `<button class="pg-btn" aria-label="Primera página" ${p===1?'disabled':''} onclick="goPage(1)"><i class="ph ph-caret-double-left"></i></button>`;
+    html += `<button class="pg-btn" aria-label="Página anterior" ${p===1?'disabled':''} onclick="goPage(${p-1})"><i class="ph ph-caret-left"></i></button>`;
+
+    // Page numbers: always show first, last, and ±1 around current
+    const pages = new Set([1, maxPage, p-1, p, p+1].filter(x => x >= 1 && x <= maxPage));
+    let prev = 0;
+    Array.from(pages).sort((a,b)=>a-b).forEach(n => {
+      if (prev && n - prev > 1) html += `<span style="color:var(--text-muted);padding:0 2px;">…</span>`;
+      html += `<button class="pg-btn${n===p?' active':''}" aria-label="Página ${n}" ${n===p?'aria-current="page"':''} onclick="goPage(${n})">${n}</button>`;
+      prev = n;
+    });
+
+    html += `<button class="pg-btn" aria-label="Página siguiente" ${p===maxPage?'disabled':''} onclick="goPage(${p+1})"><i class="ph ph-caret-right"></i></button>`;
+    html += `<button class="pg-btn" aria-label="Última página" ${p===maxPage?'disabled':''} onclick="goPage(${maxPage})"><i class="ph ph-caret-double-right"></i></button>`;
+    bar.innerHTML = html;
+  }
+
+  /* ─── Actions ────────────────────────────────────────────────────── */
+  function goPage(n) { state.page = n; renderTable(); }
+  function onPageSizeChange() { state.pageSize = +document.getElementById('pgSize').value; state.page = 1; renderTable(); }
+  function onSearch() { state.search = document.getElementById('searchInput').value; state.page = 1; renderTable(); }
+
+  let sortCycle = ['none','asc','desc'];
+  function toggleSort() {
+    const idx = sortCycle.indexOf(state.sortDir);
+    state.sortDir = sortCycle[(idx + 1) % 3];
+    state.page = 1;
+    const btn = document.getElementById('sortBtn');
+    btn.className = 'sort-btn' + (state.sortDir !== 'none' ? ' ' + state.sortDir : '');
+    const iconMap = { none: 'ph-arrows-down-up', asc: 'ph-sort-ascending', desc: 'ph-sort-descending' };
+    btn.querySelector('i').className = 'ph ' + iconMap[state.sortDir];
+    renderTable();
+  }
+
+  /* ─── Filters ────────────────────────────────────────────────────── */
+  function toggleFilters() {
+    const dd = document.getElementById('filterDropdown');
+    const btn = document.getElementById('btnFilters');
+    const isOpen = dd.classList.toggle('open');
+    btn.setAttribute('aria-expanded', isOpen);
+  }
+  function applyFilters() {
+    state.filterActive   = document.getElementById('fActive').checked;
+    state.filterInactive = document.getElementById('fInactive').checked;
+    state.filterMexico   = document.getElementById('fMexico').checked;
+    state.filterBrazil   = document.getElementById('fBrazil').checked;
+    state.filterColombia = document.getElementById('fColombia').checked;
+    state.filterOther    = document.getElementById('fOther').checked;
+    state.page = 1;
+    const allChecked = state.filterActive && state.filterInactive && state.filterMexico && state.filterBrazil && state.filterColombia && state.filterOther;
+    document.getElementById('btnFilters').classList.toggle('active', !allChecked);
+    renderTable();
+  }
+  function clearFilters() {
+    ['fActive','fInactive','fMexico','fBrazil','fColombia','fOther'].forEach(id => document.getElementById(id).checked = true);
+    applyFilters();
+  }
+
+  /* ─── Toast ──────────────────────────────────────────────────────── */
+  function showToast(msg, type='info') {
+    const t = document.createElement('div');
+    t.className = `toast toast-${type}`;
+    const icons = { success: 'ph-check-circle', warn: 'ph-warning-circle', info: 'ph-info' };
+    t.innerHTML = `<i class="ph ${icons[type]||'ph-info'}"></i> ${msg}`;
+    document.getElementById('toastContainer').appendChild(t);
+    requestAnimationFrame(() => t.classList.add('visible'));
+    setTimeout(() => { t.classList.remove('visible'); setTimeout(() => t.remove(), 300); }, 2800);
+  }
+
+  /* ─── Close filter dropdown on outside click ──────────────────────── */
+  document.addEventListener('click', e => {
+    const wrap = document.querySelector('.filter-wrap');
+    if (wrap && !wrap.contains(e.target)) {
+      document.getElementById('filterDropdown').classList.remove('open');
+      document.getElementById('btnFilters').setAttribute('aria-expanded','false');
+    }
+  });
+
+  /* ─── Init ───────────────────────────────────────────────────────── */
+  renderTable();
+  </script>
+
+</body>
+</html>

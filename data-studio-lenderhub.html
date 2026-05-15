@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LenderHub — Data Studio · Financial Statements</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary:          #1F2733;
+      --secondary:        #910057;
+      --secondary-active: #840058;
+      --bg:               #F8FAFC;
+      --surface:          #FFFFFF;
+      --border:           #E2E8F0;
+      --border-strong:    #CBD5E1;
+      --text:             #334155;
+      --text-secondary:   #64748B;
+      --text-muted:       #94A3B8;
+      --green:   #16A34A; --green-bg:  #F0FDF4;
+      --red:     #DC2626; --red-bg:    #FEF2F2;
+      --blue:    #0284C7; --blue-bg:   #F0F9FF;
+      --radius:    8px; --radius-sm: 6px;
+      --font-ui:   'Noto Sans', -apple-system, sans-serif;
+      --font-mono: 'Space Mono', monospace;
+      --topbar-height: 52px;
+      --sidebar-width: 220px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); font-family: var(--font-ui); font-size: 14px; color: var(--text); min-height: 100vh; }
+
+    /* ── Topbar ─────────────────────────────────────────────── */
+    .topbar {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      position: fixed; top: 0; left: 0; right: 0; height: var(--topbar-height);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; z-index: 1100;
+    }
+    .topbar-logo { height: 24px; }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .notif-btn { position: relative; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; border-radius: var(--radius-sm); color: var(--text-secondary); }
+    .notif-btn:hover { background: var(--border); }
+    .notif-badge { position: absolute; top: 2px; right: 2px; background: var(--secondary); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 4px; border-radius: 10px; min-width: 16px; text-align: center; line-height: 1.4; }
+    .user-pill { display: flex; align-items: center; gap: 8px; padding: 4px 10px 4px 4px; border-radius: 20px; cursor: pointer; border: none; background: transparent; }
+    .user-pill:hover { background: var(--border); }
+    .user-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--secondary); display: flex; align-items: center; justify-content: center; }
+    .user-avatar i { font-size: 16px; color: #fff; }
+    .user-info { display: flex; flex-direction: column; line-height: 1.2; }
+    .user-org  { font-size: 12px; font-weight: 700; color: var(--text); }
+    .user-name { font-size: 12px; color: var(--text-secondary); }
+
+    /* ── Sidebar ────────────────────────────────────────────── */
+    .sidebar {
+      background: var(--surface); border-right: 1px solid var(--border);
+      position: fixed; top: var(--topbar-height); left: 0;
+      width: var(--sidebar-width); height: calc(100vh - var(--topbar-height));
+      overflow-y: auto; z-index: 1000; padding: 8px 0;
+    }
+    .nav-item { display: flex; align-items: center; justify-content: space-between; padding: 0 14px; height: 40px; cursor: pointer; text-decoration: none; color: var(--text); transition: background .12s; }
+    .nav-item:hover { background: #F1F5F9; }
+    .nav-item.active { background: var(--border); }
+    .nav-item.active .nav-icon { color: var(--secondary); }
+    .nav-item.active .nav-label { font-weight: 600; }
+    .nav-left { display: flex; align-items: center; gap: 10px; }
+    .nav-icon { font-size: 18px; color: var(--text-secondary); width: 20px; text-align: center; }
+    .nav-label { font-size: 14px; font-weight: 500; color: var(--text); white-space: nowrap; }
+    .nav-caret { font-size: 13px; color: var(--text-muted); }
+
+    /* ── Main ───────────────────────────────────────────────── */
+    .main { margin-left: var(--sidebar-width); margin-top: var(--topbar-height); padding: 28px 32px; }
+
+    /* ── Page Header ────────────────────────────────────────── */
+    .page-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+    .page-title { font-size: 22px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+    .assigned-line {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; color: var(--text-secondary);
+      padding-left: 10px;
+      border-left: 3px solid var(--secondary);
+      margin-bottom: 5px;
+    }
+    .assigned-line strong { color: var(--text); font-weight: 600; }
+    .meta-line { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; }
+    .used-by-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--secondary); color: #fff;
+      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; cursor: pointer;
+    }
+    .page-actions { display: flex; align-items: center; gap: 8px; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); transition: background .14s; white-space: nowrap; }
+    .btn:hover { background: var(--bg); }
+    .btn i { font-size: 15px; }
+    .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .btn-primary:hover { background: #2d3d52; }
+
+    /* ── Filter Pills ───────────────────────────────────────── */
+    .filter-pills { display: flex; gap: 6px; margin-bottom: 14px; }
+    .pill { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text-secondary); transition: all .14s; }
+    .pill:hover { background: var(--bg); color: var(--text); }
+    .pill.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 600; }
+
+    /* ── Search ─────────────────────────────────────────────── */
+    .search-wrap { position: relative; margin-bottom: 16px; }
+    .search-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 16px; pointer-events: none; }
+    .search-input { width: 100%; padding: 8px 12px 8px 36px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-family: var(--font-ui); color: var(--text); background: var(--surface); }
+    .search-input:focus { outline: 2px solid var(--secondary); outline-offset: 1px; border-color: transparent; }
+    .search-input::placeholder { color: var(--text-muted); }
+
+    /* ── Table ──────────────────────────────────────────────── */
+    .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { border-bottom: 1px solid var(--border); }
+    thead th {
+      padding: 10px 14px; text-align: left;
+      font-size: 12px; font-weight: 600; color: var(--text-secondary);
+      white-space: nowrap; background: var(--surface);
+    }
+    thead th.col-drag { width: 32px; padding: 10px 8px; }
+    thead th.col-data { min-width: 160px; }
+    thead th.col-desc { }
+    thead th.col-entity { width: 130px; }
+    thead th.col-fs { width: 160px; }
+    thead th.col-active { width: 70px; text-align: center; }
+    thead th.col-actions { width: 80px; }
+
+    /* Section header row */
+    .section-row td {
+      padding: 8px 14px; background: #FFF8FC;
+      font-size: 12px; font-weight: 700; letter-spacing: .03em;
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    }
+    .section-label { color: var(--secondary); }
+    .section-count { color: var(--text-muted); font-weight: 500; margin-left: 6px; }
+
+    /* Data rows */
+    tbody tr.data-row { border-bottom: 1px solid var(--border); transition: background .1s; }
+    tbody tr.data-row:last-child { border-bottom: none; }
+    tbody tr.data-row:hover { background: #FAFBFC; }
+    tbody tr.data-row td { padding: 10px 14px; vertical-align: top; }
+
+    .drag-handle { color: var(--text-muted); cursor: grab; font-size: 16px; padding: 0 4px; user-select: none; }
+    .drag-handle:active { cursor: grabbing; }
+
+    .data-name { font-weight: 600; font-size: 13px; color: var(--primary); line-height: 1.4; }
+    .data-desc {
+      font-size: 12px; color: var(--text-secondary); line-height: 1.5;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+      max-width: 520px;
+    }
+    .data-desc.expanded { -webkit-line-clamp: unset; overflow: visible; }
+
+    .entity-badge {
+      display: inline-flex; align-items: center;
+      font-size: 11px; font-weight: 600;
+      padding: 3px 8px; border-radius: 4px;
+      background: #F1F5F9; color: var(--text-secondary);
+      white-space: nowrap;
+    }
+    .fs-text { font-size: 12px; color: var(--text-secondary); }
+
+    .active-check {
+      width: 18px; height: 18px; border-radius: 4px;
+      background: var(--primary); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; margin: 0 auto;
+    }
+    .active-check.inactive { background: var(--surface); border: 1.5px solid var(--border-strong); }
+    .active-check i { font-size: 12px; color: #fff; }
+
+    .row-actions { display: flex; align-items: center; gap: 4px; }
+    .icon-btn { width: 28px; height: 28px; border: none; background: transparent; cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 15px; }
+    .icon-btn:hover { background: var(--border); color: var(--text); }
+    .icon-btn.danger:hover { background: var(--red-bg); color: var(--red); }
+
+    /* Hidden rows when filter active */
+    tr.hide { display: none; }
+
+    /* ── Modal ──────────────────────────────────────────────── */
+    .overlay { position: fixed; inset: 0; background: rgba(31,39,51,.45); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .18s; }
+    .overlay.open { opacity: 1; pointer-events: all; }
+    .modal { background: var(--surface); border-radius: 12px; width: 540px; max-width: 94vw; box-shadow: 0 20px 60px rgba(0,0,0,.18); overflow: hidden; transform: translateY(8px); transition: transform .18s; }
+    .overlay.open .modal { transform: translateY(0); }
+    .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .modal-title { font-size: 15px; font-weight: 700; color: var(--primary); }
+    .modal-close { width: 28px; height: 28px; border: none; background: transparent; cursor: pointer; border-radius: 4px; color: var(--text-secondary); font-size: 18px; display: flex; align-items: center; justify-content: center; }
+    .modal-close:hover { background: var(--bg); }
+    .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+    .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+    .field-group { display: flex; flex-direction: column; gap: 5px; }
+    .field-label { font-size: 12px; font-weight: 600; color: var(--text); }
+    .field-label .req { color: var(--secondary); margin-left: 2px; }
+    .field-input, .field-select, .field-textarea { font-family: var(--font-ui); font-size: 13px; color: var(--text); background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 7px 10px; width: 100%; }
+    .field-textarea { resize: vertical; min-height: 80px; }
+    .field-input:focus, .field-select:focus, .field-textarea:focus { outline: 2px solid var(--secondary); outline-offset: 1px; border-color: transparent; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* ── Toast ──────────────────────────────────────────────── */
+    #toastContainer { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+    .toast { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: var(--radius); box-shadow: 0 4px 12px rgba(0,0,0,.12); font-size: 13px; font-weight: 500; opacity: 0; transform: translateY(6px); transition: opacity .22s, transform .22s; }
+    .toast.visible { opacity: 1; transform: translateY(0); }
+    .toast-success { background: var(--green-bg); color: var(--green); border: 1px solid #BBF7D0; }
+    .toast-error   { background: var(--red-bg);   color: var(--red);   border: 1px solid #FECACA; }
+    .toast-info    { background: var(--blue-bg);  color: var(--blue);  border: 1px solid #BAE6FD; }
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<header class="topbar">
+  <img class="topbar-logo" src="https://stg.suite.cxc.com.mx/logos/cxc_fullcolor.svg" alt="CXC"
+    onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+  <div style="display:none;align-items:center;gap:6px;">
+    <div style="width:28px;height:28px;background:var(--secondary);border-radius:6px;display:flex;align-items:center;justify-content:center;">
+      <span style="color:#fff;font-weight:700;font-size:12px;">C</span>
+    </div>
+    <span style="font-weight:700;font-size:15px;color:var(--primary);">CXC</span>
+  </div>
+  <div class="topbar-right">
+    <button class="notif-btn" aria-label="Notificaciones"><i class="ph ph-bell"></i><span class="notif-badge">9+</span></button>
+    <button class="user-pill" aria-label="Menú de usuario">
+      <div class="user-avatar"><i class="ph ph-user"></i></div>
+      <div class="user-info">
+        <span class="user-org">CXC</span>
+        <span class="user-name">Nilda Aviles Lopez</span>
+      </div>
+      <i class="ph ph-caret-down" style="font-size:13px;color:var(--text-muted);margin-left:2px;"></i>
+    </button>
+  </div>
+</header>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <a class="nav-item" href="home-lenderhub.html">
+    <div class="nav-left"><span class="nav-icon"><i class="ph ph-chart-line-up"></i></span><span class="nav-label">Portfolio Monitoring</span></div>
+    <i class="ph ph-caret-left nav-caret"></i>
+  </a>
+  <a class="nav-item" href="#">
+    <div class="nav-left"><span class="nav-icon"><i class="ph ph-currency-dollar-simple"></i></span><span class="nav-label">Financials</span></div>
+    <i class="ph ph-caret-left nav-caret"></i>
+  </a>
+  <a class="nav-item" href="companies-lenderhub.html">
+    <div class="nav-left"><span class="nav-icon"><i class="ph ph-buildings"></i></span><span class="nav-label">Companies</span></div>
+  </a>
+  <a class="nav-item active" href="data-studio-lenderhub.html">
+    <div class="nav-left"><span class="nav-icon"><i class="ph ph-database"></i></span><span class="nav-label">Data Studio</span></div>
+    <i class="ph ph-caret-left nav-caret"></i>
+  </a>
+  <a class="nav-item" href="#">
+    <div class="nav-left"><span class="nav-icon"><i class="ph ph-magnifying-glass"></i></span><span class="nav-label">RUG Smart Search</span></div>
+    <i class="ph ph-caret-left nav-caret"></i>
+  </a>
+  <a class="nav-item" href="#">
+    <div class="nav-left"><span class="nav-icon"><i class="ph ph-robot"></i></span><span class="nav-label">AI Verification Agent</span></div>
+    <i class="ph ph-caret-left nav-caret"></i>
+  </a>
+  <a class="nav-item" href="#">
+    <div class="nav-left"><span class="nav-icon"><i class="ph ph-gear"></i></span><span class="nav-label">Admin</span></div>
+  </a>
+</nav>
+
+<!-- Main -->
+<main class="main">
+
+  <div class="page-top">
+    <div>
+      <h1 class="page-title">Financial Statements</h1>
+      <div class="assigned-line">Assigned to: <strong>LenderHub Demo</strong></div>
+      <div class="meta-line">
+        Used by: <span class="used-by-badge">Key Financial</span>
+        <span style="color:var(--border-strong);">|</span>
+        Last Updated: 8/4/2026
+      </div>
+    </div>
+    <div class="page-actions">
+      <button class="btn" onclick="downloadCSV()"><i class="ph ph-download-simple"></i> Download</button>
+      <button class="btn btn-primary" onclick="openModal('add')"><i class="ph ph-plus"></i> Add new account</button>
+    </div>
+  </div>
+
+  <!-- Filter pills -->
+  <div class="filter-pills">
+    <button class="pill active" id="pill-all" onclick="setFilter('all')">All Data</button>
+    <button class="pill" id="pill-bg" onclick="setFilter('bg')">Balance General</button>
+    <button class="pill" id="pill-er" onclick="setFilter('er')">Estado de Resultados</button>
+  </div>
+
+  <!-- Search -->
+  <div class="search-wrap">
+    <i class="ph ph-magnifying-glass"></i>
+    <input class="search-input" id="searchInput" placeholder="Search by data name" oninput="onSearch()" />
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-drag"></th>
+          <th class="col-data">Data</th>
+          <th class="col-desc">Description <i class="ph ph-info" style="font-size:13px;vertical-align:-2px;color:var(--text-muted);cursor:pointer;" title="AI extraction rules used to locate this field in financial documents"></i></th>
+          <th class="col-entity">Entity Type</th>
+          <th class="col-fs">Financial Statement</th>
+          <th class="col-active">Active</th>
+          <th class="col-actions"></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+</main>
+
+<!-- Add / Edit Modal -->
+<div class="overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">Add new data point</span>
+      <button class="modal-close" onclick="closeModal()"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <label class="field-label">Data name <span class="req">*</span></label>
+        <input class="field-input" id="fieldName" placeholder="e.g. Efectivo y Equivalentes de Efectivo" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Description / AI extraction rule</label>
+        <textarea class="field-textarea" id="fieldDesc" placeholder="ANCHOR: Look for '...' STRICT RULE: Extract..."></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Entity Type <span class="req">*</span></label>
+          <select class="field-select" id="fieldEntity">
+            <option value="Key Financial">Key Financial</option>
+            <option value="Operational">Operational</option>
+            <option value="Custom">Custom</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Financial Statement <span class="req">*</span></label>
+          <select class="field-select" id="fieldFS">
+            <option value="Balance General">Balance General</option>
+            <option value="Estado de Resultados">Estado de Resultados</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group" style="flex-direction:row;align-items:center;gap:10px;">
+        <input type="checkbox" id="fieldActive" checked style="width:16px;height:16px;accent-color:var(--primary);cursor:pointer;" />
+        <label for="fieldActive" class="field-label" style="margin:0;cursor:pointer;">Active</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="modalSaveBtn" onclick="saveDataPoint()">Add data point</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script>
+/* ── Data ───────────────────────────────────────────────────── */
+const DATA_POINTS = [
+  /* ── Balance General ──────────────────────────────────────── */
+  { id:1,  name:'Efectivo y Equivalentes de Efectivo', fs:'Balance General',
+    desc:"Unrestricted cash in bank accounts. ANCHOR: Look for 'Bancos' or account group '102 Banco'. STRICT RULE: Extract account 102.01 — Bancos Nacionales subtotal only. Do NOT include investment sub-accounts (102.03, 102.5) or trust balances. If the document shows a single 'Bancos' line without sub-account detail, extract that value.",
+    entity:'Key Financial', active:true },
+  { id:2,  name:'Inversiones en Valores', fs:'Balance General',
+    desc:"Financial investments and trust fund balances. ANCHOR: Look for 'Inversiones' within account group '102 Banco'. STRICT RULE: Sum account 102.03 (Inversiones) + account 102.5 (Inversiones en fideicomisos). Include any additional sub-accounts within group 102 that explicitly reference 'inversiones'. Do NOT include regular bank balances (102.01).",
+    entity:'Key Financial', active:true },
+  { id:3,  name:'Cuentas por Cobrar Clientes', fs:'Balance General',
+    desc:"Gross trade receivables from lease clients. ANCHOR: Look for 'Clientes Nacionales' or account group '105 Clientes'. STRICT RULE: Extract the total balance of account group 105. This is a gross value before deducting any allowance for bad debts.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:4,  name:'Reserva de Cuentas Incobrables', fs:'Balance General',
+    desc:"Allowance for uncollectible accounts. ANCHOR: Look for 'Reserva de Cuentas Incobrables' or 'Estimación para cuentas de cobro dudoso'. STRICT RULE: Extract as a negative number if shown as a credit balance in the document. If not found, return empty string.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:5,  name:'Deudores Diversos', fs:'Balance General',
+    desc:"Miscellaneous sundry receivables. ANCHOR: Look for 'Deudores Diversos' or account group '107 Deudores diversos'. STRICT RULE: Extract the total balance of account group 107. If not found, return empty string.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:6,  name:'Anticipo a Proveedores', fs:'Balance General',
+    desc:"Advance payments made to suppliers. ANCHOR: Look for 'Anticipo a Proveedores' or 'Anticipos a proveedores' in the current assets section. STRICT RULE: Extract the total balance. If not found, return empty string.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:7,  name:'Partes Relacionadas', fs:'Balance General',
+    desc:"Receivables or asset balances with related parties, classified as current asset. ANCHOR: Look for 'Partes Relacionadas' in the current assets (activo circulante) section. STRICT RULE: If not found under label 'Partes relacionadas', return empty string.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:8,  name:'Impuestos por Recuperar', fs:'Balance General',
+    desc:"Recoverable and creditable taxes including deferred tax assets in current section. ANCHOR: Look for accounts 113, 119, and 173. STRICT RULE: Sum all recoverable tax accounts in the current asset section. Include IVA acreditable, ISR anticipos, and PTU anticipos.",
+    entity:'Key Financial', active:true },
+  { id:9,  name:'Otros Activos Circulantes', fs:'Balance General',
+    desc:"Other current assets not classified elsewhere. ANCHOR: Look for 'Otros activos circulantes' or residual current asset line. STRICT RULE: Extract the catch-all current assets line. If the document provides a subtotal for current assets, do NOT sum individual items.",
+    entity:'Key Financial', active:true },
+  { id:10, name:'Activo Circulante', fs:'Balance General',
+    desc:"Total current assets subtotal. ANCHOR: Look for 'Total Activo Circulante' or 'Activo Circulante' as a subtotal line. STRICT RULE: Extract directly from the document. Do not recalculate.",
+    entity:'Key Financial', active:true },
+  { id:11, name:'Propiedad, Planta y Equipo', fs:'Balance General',
+    desc:"Gross value of fixed assets before accumulated depreciation. ANCHOR: Look for 'Propiedad, Planta y Equipo' or 'Activos fijos' in the non-current section. STRICT RULE: Extract the gross cost of all fixed asset sub-accounts EXCLUDING the accumulated depreciation line. This is the historical cost, not the net book value.",
+    entity:'Key Financial', active:true },
+  { id:12, name:'Depreciación Acumulada', fs:'Balance General',
+    desc:"Accumulated depreciation on fixed assets. ANCHOR: Look for 'Depreciación Acumulada' or account '171 Depreciación acumulada de activos fijos'. STRICT RULE: Extract account 171 balance. This value is typically negative (credit balance) — return as negative number if shown as such.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:13, name:'Total Activo Fijo', fs:'Balance General',
+    desc:"Net book value of fixed assets. ANCHOR: Look for 'Total Activo Fijo' or the net fixed assets subtotal in the non-current section. STRICT RULE: Extract the document's own net fixed assets subtotal (gross minus accumulated depreciation). Do NOT recalculate.",
+    entity:'Key Financial', active:true },
+  { id:14, name:'Otros Activos No Circulantes', fs:'Balance General',
+    desc:"Other non-current or deferred assets not classified as fixed assets. ANCHOR: Look for 'Otros Activos (Diferido)', 'Activo Diferido', or 'Total Activo Diferido'. STRICT RULE: Extract the total of other non-current assets including deferred charges. STRICT EXCLUSION: Do not include PPE or accumulated depreciation. If not found, return empty string.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:15, name:'Activo No Circulante', fs:'Balance General',
+    desc:"Total non-current assets. ANCHOR: Look for 'Total Activo No Circulante' or equivalent subtotal. STRICT RULE: If the document provides a non-current assets subtotal, extract it directly. If not shown, calculate as: Total Activo Fijo + Otros Activos No Circulantes.",
+    entity:'Key Financial', active:true },
+  { id:16, name:'Total Activo', fs:'Balance General',
+    desc:"Grand total of all assets. ANCHOR: Look for 'Total Activo' or 'Total de Activos'. STRICT RULE: Extract the document's balance sheet grand total for assets. Must equal Total Pasivo + Capital Contable.",
+    entity:'Key Financial', active:true },
+  { id:17, name:'Impuestos por Pagar', fs:'Balance General',
+    desc:"Total current tax liabilities. ANCHOR: Look for 'Impuestos por Pagar' or accounts 209–217 within current liabilities. STRICT RULE: Sum accounts 209 (Impuestos trasladados no cobrados) + 210–211 (Provisiones seguridad social) + 212 (Impuesto estatal nómina) + 213 (Impuestos y derechos por pagar) + 215 (PTU por pagar) + 216 (Impuestos retenidos no pagados) + 217 (Impuestos retenidos pagados).",
+    entity:'Key Financial', active:true },
+  { id:18, name:'Proveedores', fs:'Balance General',
+    desc:"Trade payables to suppliers. ANCHOR: Look for 'Proveedores' or account group '201 Proveedores'. STRICT RULE: Extract account 201 total. Include all domestic and foreign supplier payables.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:19, name:'Anticipo a Clientes', fs:'Balance General',
+    desc:"Advance payments received from lease clients. ANCHOR: Look for 'Anticipo de Clientes' or account '205'. STRICT RULE: Extract account 205. If not found, return empty string.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:20, name:'Acreedores Diversos', fs:'Balance General',
+    desc:"Miscellaneous sundry payables and accruals. ANCHOR: Look for 'Acreedores Diversos' or account group '206'. STRICT RULE: Extract the total of account 206. If not found, return empty string.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:21, name:'Pasivos con Partes Relacionadas (CP)', fs:'Balance General',
+    desc:"Current portion of related party liabilities. ANCHOR: Look for 'Partes Relacionadas' in the current liabilities (pasivo circulante) section. STRICT RULE: Only include balances classified as short-term (CP). Exclude long-term related party liabilities.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:22, name:'Pasivo Bancario', fs:'Balance General',
+    desc:"Short-term bank debt and credit lines. ANCHOR: Look for 'Pasivo Bancario' or 'Instituciones de Crédito (CP)' in current liabilities. STRICT RULE: Extract all bank borrowings due within one year, including credit lines and current portion of long-term debt.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:23, name:'Pasivo Circulante', fs:'Balance General',
+    desc:"Total current liabilities subtotal. ANCHOR: Look for 'Total Pasivo Circulante' or 'Pasivo a Corto Plazo' subtotal. STRICT RULE: Extract the document's own subtotal. Do not recalculate from individual line items.",
+    entity:'Key Financial', active:true },
+  { id:24, name:'Pasivos con Partes Relacionadas (LP)', fs:'Balance General',
+    desc:"Long-term related party liabilities. ANCHOR: Look for 'Partes Relacionadas' in the non-current liabilities section. STRICT RULE: Only include long-term related party balances. If not found separately, return empty string.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:25, name:'Deuda Bancaria y Otros Organismos (LP)', fs:'Balance General',
+    desc:"Long-term bank debt and development bank financing. ANCHOR: Look for 'Instituciones de Crédito (LP)' or 'Deuda Bancaria a Largo Plazo'. STRICT RULE: Extract all bank borrowings due beyond one year, including FIRA, NAFIN, and other development bank lines.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:26, name:'Otros Pasivos No Circulantes', fs:'Balance General',
+    desc:"Other long-term liabilities not classified elsewhere. ANCHOR: Look for 'Otros Pasivos No Circulantes' or deferred revenue and other long-term provisions. STRICT RULE: Exclude bank debt and related party items already captured. If not found, return empty string.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:27, name:'Pasivo No Circulante', fs:'Balance General',
+    desc:"Total non-current liabilities subtotal. ANCHOR: Look for 'Total Pasivo No Circulante' or 'Pasivo a Largo Plazo'. STRICT RULE: Extract the document's own long-term liabilities subtotal.",
+    entity:'Key Financial', active:true },
+  { id:28, name:'Total Pasivo', fs:'Balance General',
+    desc:"Grand total of all liabilities. ANCHOR: Look for 'Total Pasivo' or 'Total de Pasivos'. STRICT RULE: Extract the grand total for liabilities. Must equal Total Activo minus Capital Contable.",
+    entity:'Key Financial', active:true },
+  { id:29, name:'Capital Social', fs:'Balance General',
+    desc:"Paid-in share capital. ANCHOR: Look for 'Capital Social' in the equity section. STRICT RULE: Extract the subscribed and paid capital. Do not include prima en suscripción or additional paid-in amounts unless explicitly stated as part of Capital Social.",
+    entity:'Key Financial', active:true },
+  { id:30, name:'Prima de Suscripción', fs:'Balance General',
+    desc:"Share premium — excess paid above par value. ANCHOR: Look for 'Prima en Suscripción de Acciones' or 'Prima de emisión'. STRICT RULE: Extract if present. If not found, return empty string.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:31, name:'Aportaciones para Futuros Aumentos de Capital', fs:'Balance General',
+    desc:"Shareholder contributions earmarked for future capital increases. ANCHOR: Look for 'Aportaciones para Futuros Aumentos de Capital' or 'AFAC'. STRICT RULE: Extract if present. If not found, return empty string.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:32, name:'Resultados Acumulados', fs:'Balance General',
+    desc:"Retained earnings from prior periods. ANCHOR: Look for 'Resultados Acumulados' or 'Utilidades Retenidas'. STRICT RULE: Extract the cumulative retained earnings balance. Exclude current year net income.",
+    entity:'Key Financial', active:true },
+  { id:33, name:'Resultado del Ejercicio', fs:'Balance General',
+    desc:"Current period net income reported in equity. ANCHOR: Look for 'Resultado del Ejercicio' or 'Utilidad del Ejercicio' in the equity section. STRICT RULE: This must match the net income reported in the income statement.",
+    entity:'Key Financial', active:true },
+  { id:34, name:'Capital Contable', fs:'Balance General',
+    desc:"Total stockholders' equity. ANCHOR: Look for 'Total Capital Contable' or 'Capital Contable'. STRICT RULE: Extract the total equity subtotal. Must equal Total Activo minus Total Pasivo.",
+    entity:'Key Financial', active:true },
+  { id:35, name:'Total Pasivo + Capital', fs:'Balance General',
+    desc:"Balance sheet check total. ANCHOR: Look for 'Total Pasivo + Capital' or 'Total Pasivo y Capital'. STRICT RULE: Extract the grand total. Must equal Total Activo. If not explicitly shown, do not calculate.",
+    entity:'Key Financial', active:true },
+
+  /* ── Estado de Resultados ─────────────────────────────────── */
+  { id:36, name:'Ingresos por Arrendamiento', fs:'Estado de Resultados',
+    desc:"Revenue from financial and operating lease contracts. ANCHOR: Look for 'Ingresos por Arrendamiento' or account group '401'. STRICT RULE: Extract the gross lease revenue before any cost of sales deduction.",
+    entity:'Key Financial', active:true },
+  { id:37, name:'Ingresos por Seguros', fs:'Estado de Resultados',
+    desc:"Insurance premium revenue passed through or earned from lease contracts. ANCHOR: Look for 'Ingresos por Seguros' or insurance-related revenue line in the income statement. STRICT RULE: Extract insurance revenue separately. If bundled, return empty string.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:38, name:'Ingreso por Valor Residual', fs:'Estado de Resultados',
+    desc:"Revenue recognized on residual value of leased assets at contract end. ANCHOR: Look for 'Ingreso por Valor Residual' or 'Valor Residual'. STRICT RULE: Extract if reported as a separate income line. If not found, return empty string.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:39, name:'Otros Ingresos', fs:'Estado de Resultados',
+    desc:"Miscellaneous and non-operating income. ANCHOR: Look for 'Otros Ingresos' or 'Ingresos Varios'. STRICT RULE: Extract the catch-all other income line. Exclude extraordinary items if shown separately.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:40, name:'Total Ingresos', fs:'Estado de Resultados',
+    desc:"Total revenue / top-line income. ANCHOR: Look for 'Total Ingresos' or 'Ingresos Totales' as a subtotal. STRICT RULE: Extract the document's own revenue subtotal. Do not recalculate.",
+    entity:'Key Financial', active:true },
+  { id:41, name:'Costo de Ventas', fs:'Estado de Resultados',
+    desc:"Cost of goods sold / cost of lease services. ANCHOR: Look for 'Costo de Ventas' or 'Costo de Arrendamiento'. STRICT RULE: Extract total cost of revenue. This value is typically shown as a positive number in the document but represents a deduction from revenue.",
+    entity:'Key Financial', active:true },
+  { id:42, name:'Utilidad Bruta', fs:'Estado de Resultados',
+    desc:"Gross profit. ANCHOR: Look for 'Utilidad Bruta' or 'Margen Bruto'. STRICT RULE: Extract the gross profit subtotal. Must equal Total Ingresos minus Costo de Ventas.",
+    entity:'Key Financial', active:true },
+  { id:43, name:'Gastos de Administración', fs:'Estado de Resultados',
+    desc:"General and administrative expenses. ANCHOR: Look for 'Gastos de Administración' or 'Gastos Generales'. STRICT RULE: Extract total G&A. Include salaries, rent, professional fees, and overhead. Exclude financial costs.",
+    entity:'Key Financial', active:true },
+  { id:44, name:'Resultado de Operación', fs:'Estado de Resultados',
+    desc:"Operating income (EBIT). ANCHOR: Look for 'Resultado de Operación' or 'Utilidad de Operación'. STRICT RULE: Extract the operating income subtotal. Must equal Utilidad Bruta minus Gastos de Administración.",
+    entity:'Key Financial', active:true },
+  { id:45, name:'Gastos Financieros', fs:'Estado de Resultados',
+    desc:"Interest expense and financial costs. ANCHOR: Look for 'Gastos Financieros' or 'Intereses a cargo'. STRICT RULE: Extract total financial costs including interest on bank debt and related party loans. Typically shown as a positive number representing a deduction.",
+    entity:'Key Financial', active:true },
+  { id:46, name:'Otros Gastos', fs:'Estado de Resultados',
+    desc:"Other non-operating expenses and losses. ANCHOR: Look for 'Otros Gastos' or 'Gastos Varios'. STRICT RULE: Extract the catch-all other expenses line. If not found, return empty string.",
+    entity:'Key Financial', active:true, canDelete:true },
+  { id:47, name:'Resultado Antes de Impuestos', fs:'Estado de Resultados',
+    desc:"Pre-tax income (EBT). ANCHOR: Look for 'Resultado Antes de Impuestos' or 'Utilidad Antes de ISR'. STRICT RULE: Extract pre-tax income subtotal.",
+    entity:'Key Financial', active:true },
+  { id:48, name:'Impuestos a la Utilidad', fs:'Estado de Resultados',
+    desc:"Income tax expense (ISR + PTU). ANCHOR: Look for 'Impuestos a la Utilidad' or 'ISR Causado + ISR Diferido'. STRICT RULE: Sum current and deferred income tax. Extract as positive number.",
+    entity:'Key Financial', active:true },
+  { id:49, name:'Resultado Neto del Ejercicio', fs:'Estado de Resultados',
+    desc:"Net income for the period. ANCHOR: Look for 'Resultado Neto del Ejercicio' or 'Utilidad Neta'. STRICT RULE: Extract the bottom-line net income. Must match Resultado del Ejercicio in the equity section of the balance sheet.",
+    entity:'Key Financial', active:true },
+];
+
+/* ── State ────────────────────────────────────────────────── */
+let filter = 'all';
+let searchQ = '';
+let editingId = null;
+
+/* ── Render ───────────────────────────────────────────────── */
+function render() {
+  const q = searchQ.toLowerCase();
+  const tbody = document.getElementById('tableBody');
+
+  const filtered = DATA_POINTS.filter(dp => {
+    if (filter === 'bg' && dp.fs !== 'Balance General') return false;
+    if (filter === 'er' && dp.fs !== 'Estado de Resultados') return false;
+    if (q && !dp.name.toLowerCase().includes(q) && !dp.desc.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  const bgItems = filtered.filter(d => d.fs === 'Balance General');
+  const erItems = filtered.filter(d => d.fs === 'Estado de Resultados');
+
+  let html = '';
+
+  if (bgItems.length) {
+    html += `<tr class="section-row"><td colspan="7">
+      <span class="section-label">Balance General</span>
+      <span class="section-count">${bgItems.length} items</span>
+    </td></tr>`;
+    bgItems.forEach(dp => { html += rowHtml(dp); });
+  }
+  if (erItems.length) {
+    html += `<tr class="section-row"><td colspan="7">
+      <span class="section-label">Estado de Resultados</span>
+      <span class="section-count">${erItems.length} items</span>
+    </td></tr>`;
+    erItems.forEach(dp => { html += rowHtml(dp); });
+  }
+
+  if (!bgItems.length && !erItems.length) {
+    html = `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-muted);font-size:13px;">
+      No data points match your search.
+    </td></tr>`;
+  }
+
+  tbody.innerHTML = html;
+}
+
+function rowHtml(dp) {
+  const activeBtn = dp.active
+    ? `<button class="active-check" onclick="toggleActive(${dp.id})" title="Click to deactivate"><i class="ph ph-check"></i></button>`
+    : `<button class="active-check inactive" onclick="toggleActive(${dp.id})" title="Click to activate"></button>`;
+  const deleteBtn = dp.canDelete
+    ? `<button class="icon-btn danger" onclick="deletePoint(${dp.id})" title="Delete"><i class="ph ph-trash"></i></button>`
+    : '';
+  return `<tr class="data-row" draggable="true" ondragstart="dragStart(event,${dp.id})" ondragover="event.preventDefault()" ondrop="dragDrop(event,${dp.id})">
+    <td><span class="drag-handle" title="Drag to reorder">⠿</span></td>
+    <td><div class="data-name">${dp.name}</div></td>
+    <td><div class="data-desc" id="desc-${dp.id}">${dp.desc}</div></td>
+    <td><span class="entity-badge">${dp.entity}</span></td>
+    <td><span class="fs-text">${dp.fs}</span></td>
+    <td style="text-align:center;">${activeBtn}</td>
+    <td><div class="row-actions">
+      <button class="icon-btn" onclick="openModal('edit',${dp.id})" title="Edit"><i class="ph ph-pencil-simple"></i></button>
+      ${deleteBtn}
+    </div></td>
+  </tr>`;
+}
+
+/* ── Interactions ─────────────────────────────────────────── */
+function setFilter(f) {
+  filter = f;
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  document.getElementById('pill-' + f).classList.add('active');
+  render();
+}
+
+function onSearch() {
+  searchQ = document.getElementById('searchInput').value;
+  render();
+}
+
+function toggleActive(id) {
+  const dp = DATA_POINTS.find(d => d.id === id);
+  if (dp) { dp.active = !dp.active; render(); }
+}
+
+function deletePoint(id) {
+  if (editingId === id) { editingId = null; closeModal(); }
+  const idx = DATA_POINTS.findIndex(d => d.id === id);
+  if (idx > -1) {
+    const name = DATA_POINTS[idx].name;
+    DATA_POINTS.splice(idx, 1);
+    render();
+    showToast(`"${name}" removed`, 'info');
+  }
+}
+
+/* ── Modal ────────────────────────────────────────────────── */
+function openModal(mode, id) {
+  editingId = id || null;
+  const modal = document.getElementById('modalOverlay');
+  const title = document.getElementById('modalTitle');
+  const saveBtn = document.getElementById('modalSaveBtn');
+
+  if (mode === 'edit' && id) {
+    const dp = DATA_POINTS.find(d => d.id === id);
+    title.textContent = 'Edit data point';
+    saveBtn.textContent = 'Save changes';
+    document.getElementById('fieldName').value = dp.name;
+    document.getElementById('fieldDesc').value = dp.desc;
+    document.getElementById('fieldEntity').value = dp.entity;
+    document.getElementById('fieldFS').value = dp.fs;
+    document.getElementById('fieldActive').checked = dp.active;
+  } else {
+    title.textContent = 'Add new data point';
+    saveBtn.textContent = 'Add data point';
+    document.getElementById('fieldName').value = '';
+    document.getElementById('fieldDesc').value = '';
+    document.getElementById('fieldEntity').value = 'Key Financial';
+    document.getElementById('fieldFS').value = 'Balance General';
+    document.getElementById('fieldActive').checked = true;
+  }
+  modal.classList.add('open');
+  setTimeout(() => document.getElementById('fieldName').focus(), 80);
+}
+
+function closeModal() {
+  editingId = null;
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function saveDataPoint() {
+  const name = document.getElementById('fieldName').value.trim();
+  if (!name) { document.getElementById('fieldName').focus(); return; }
+
+  if (editingId) {
+    const dp = DATA_POINTS.find(d => d.id === editingId);
+    dp.name   = name;
+    dp.desc   = document.getElementById('fieldDesc').value.trim();
+    dp.entity = document.getElementById('fieldEntity').value;
+    dp.fs     = document.getElementById('fieldFS').value;
+    dp.active = document.getElementById('fieldActive').checked;
+    showToast('Data point updated', 'success');
+  } else {
+    DATA_POINTS.push({
+      id: Date.now(),
+      name, desc: document.getElementById('fieldDesc').value.trim(),
+      entity: document.getElementById('fieldEntity').value,
+      fs:     document.getElementById('fieldFS').value,
+      active: document.getElementById('fieldActive').checked,
+      canDelete: true,
+    });
+    showToast('Data point added', 'success');
+  }
+  closeModal();
+  render();
+}
+
+/* ── Download ─────────────────────────────────────────────── */
+function downloadCSV() {
+  const rows = [['Data','Financial Statement','Entity Type','Active','Description']];
+  DATA_POINTS.forEach(dp => {
+    rows.push([`"${dp.name}"`, dp.fs, dp.entity, dp.active ? 'Yes' : 'No', `"${dp.desc.replace(/"/g,'""')}"`]);
+  });
+  const csv = rows.map(r => r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'financial-statements-data-points.csv';
+  a.click();
+  showToast('CSV downloaded', 'success');
+}
+
+/* ── Keyboard ─────────────────────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+/* ── Toast ────────────────────────────────────────────────── */
+function showToast(msg, type='info') {
+  const icons = { success:'ph-check-circle', error:'ph-warning-circle', info:'ph-info' };
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.innerHTML = `<i class="ph ${icons[type]}"></i> ${msg}`;
+  document.getElementById('toastContainer').appendChild(t);
+  requestAnimationFrame(() => t.classList.add('visible'));
+  setTimeout(() => { t.classList.remove('visible'); setTimeout(() => t.remove(), 300); }, 2600);
+}
+
+/* ── Drag and Drop ────────────────────────────────────────── */
+let dragSrcId = null;
+function dragStart(e, id) { dragSrcId = id; e.dataTransfer.effectAllowed='move'; }
+function dragDrop(e, targetId) {
+  e.preventDefault();
+  if (dragSrcId===targetId) return;
+  const srcIdx = DATA_POINTS.findIndex(d=>d.id===dragSrcId);
+  const tgtIdx = DATA_POINTS.findIndex(d=>d.id===targetId);
+  if (srcIdx<0||tgtIdx<0) return;
+  const [moved] = DATA_POINTS.splice(srcIdx,1);
+  DATA_POINTS.splice(tgtIdx,0,moved);
+  dragSrcId=null;
+  render();
+}
+
+/* ── Init ─────────────────────────────────────────────────── */
+render();
+</script>
+</body>
+</html>
