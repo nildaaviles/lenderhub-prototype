@@ -3292,40 +3292,85 @@ function renderOverview() {
           const worstRate = Math.max(...cohorts.map(c => c.finalRate));
           cohorts.forEach(c => c.isWorst = c.finalRate === worstRate && worstRate > 15);
 
-          const maxRate = Math.max(...cohorts.map(c => c.finalRate), 10);
-          const maxMOBChart = Math.max(...cohorts.map(c => c.currentMOB), 24);
-          const W = 460, H = 160, ML = 32, MR = 8, MT = 8, MB = 24;
+          // Y-axis: round up con headroom para que la línea peor no quede pegada al borde
+          const rawMax = Math.max(...cohorts.map(c => c.finalRate), 10);
+          const maxRate = Math.ceil(rawMax * 1.15 / 5) * 5; // ej. 50% → 60%, 25% → 30%
+          // X-axis: extender unos meses para dejar espacio a labels finales
+          const dataMOBMax = Math.max(...cohorts.map(c => c.currentMOB), 24);
+          const maxMOBChart = Math.ceil((dataMOBMax + 4) / 6) * 6; // múltiplo de 6 con buffer
+          // Mayor margen derecho para labels de cohortes
+          const W = 560, H = 200, ML = 44, MR = 76, MT = 12, MB = 30;
           const xs = mob => ML + (mob/maxMOBChart) * (W-ML-MR);
           const ys = rate => MT + (1 - rate/maxRate) * (H-MT-MB);
 
-          // Y-axis gridlines
-          const grid = [0, 25, 50, 75, 100].map(p => {
+          // Y-axis gridlines (con valores enteros)
+          const yTicks = [0, 25, 50, 75, 100].map(p => {
             const y = ys(maxRate*p/100);
-            const val = (maxRate*p/100).toFixed(0);
+            const val = Math.round(maxRate*p/100);
             return `<line x1="${ML}" y1="${y}" x2="${W-MR}" y2="${y}" stroke="${p===0?'#94A3B8':'#E5E7EB'}" stroke-width="1" stroke-dasharray="${p===0?'0':'3,3'}"/>
-                    <text x="${ML-4}" y="${y+3}" text-anchor="end" font-size="9" fill="#94A3B8" font-family="monospace">${val}%</text>`;
+                    <text x="${ML-6}" y="${y+3}" text-anchor="end" font-size="10" fill="#94A3B8" font-family="monospace">${val}%</text>`;
           }).join('');
 
           // X-axis labels (every 6 MOB)
           const xLabels = [];
           for (let m = 0; m <= maxMOBChart; m += 6) {
-            xLabels.push(`<text x="${xs(m)}" y="${H-6}" text-anchor="middle" font-size="9" fill="#94A3B8" font-family="monospace">M${m}</text>`);
+            xLabels.push(`<text x="${xs(m)}" y="${H-8}" text-anchor="middle" font-size="10" fill="#94A3B8" font-family="monospace">M${m}</text>`);
           }
 
-          // Color palette for cohorts (oldest = lightest, newest = brightest)
+          // Color palette (oldest = lightest, newest = brightest, worst = brand magenta)
           const palette = ['#FECACA','#FCA5A5','#F87171','#EF4444','#DC2626','#910057'];
+          // Anti-colisión inteligente: solo separa labels que ESTÁN cerca en ambos ejes
+          const lastPositions = cohorts.map((c, idx) => ({
+            idx,
+            x: xs(c.points[c.points.length-1].mob),
+            y: ys(c.points[c.points.length-1].rate),
+            origY: ys(c.points[c.points.length-1].rate)
+          }));
+          // Detectar colisiones por par y empujar el label más bajo, dentro de bounds
+          const chartTop = MT + 4;
+          const chartBottom = H - MB - 4;
+          const X_PROXIMITY = 50; // si X dif > 50, no colisión por horizontal
+          const MIN_Y_GAP = 13;
+          for (let i = 0; i < lastPositions.length; i++) {
+            for (let j = 0; j < lastPositions.length; j++) {
+              if (i === j) continue;
+              const a = lastPositions[i], b = lastPositions[j];
+              if (Math.abs(a.x - b.x) > X_PROXIMITY) continue; // ya separados horizontal
+              if (Math.abs(a.y - b.y) >= MIN_Y_GAP) continue;
+              // Empujar el de Y mayor hacia abajo
+              if (a.y >= b.y) a.y = b.y + MIN_Y_GAP;
+              else b.y = a.y + MIN_Y_GAP;
+            }
+          }
+          // Clamp dentro del chart
+          lastPositions.forEach(p => {
+            if (p.y < chartTop) p.y = chartTop;
+            if (p.y > chartBottom) p.y = chartBottom;
+          });
+          const labelYByIdx = {};
+          lastPositions.forEach(p => labelYByIdx[p.idx] = p.y);
+
           const lines = cohorts.map((c, idx) => {
             const col = c.isWorst ? '#910057' : palette[idx % palette.length];
             const pts = c.points.map(p => `${xs(p.mob).toFixed(1)},${ys(p.rate).toFixed(1)}`).join(' ');
             const lastPt = c.points[c.points.length-1];
+            const dotX = xs(lastPt.mob);
+            const dotY = ys(lastPt.rate);
+            const labelX = dotX + 8;
+            const labelY = labelYByIdx[idx];
+            // Linea guía si el label se desplazó >3px del punto
+            const guideLine = Math.abs(labelY - dotY) > 3
+              ? `<line x1="${dotX+3}" y1="${dotY}" x2="${labelX-2}" y2="${labelY-2}" stroke="${col}" stroke-width="0.5" stroke-dasharray="2,2" opacity="0.5"/>`
+              : '';
             return `<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="${c.isWorst?2.5:1.5}" stroke-linejoin="round" stroke-linecap="round"/>
-                    <circle cx="${xs(lastPt.mob)}" cy="${ys(lastPt.rate)}" r="3" fill="${col}" stroke="white" stroke-width="1.5"/>
-                    <text x="${xs(lastPt.mob)+6}" y="${ys(lastPt.rate)+3}" font-size="9" fill="${col}" font-weight="${c.isWorst?700:500}" font-family="monospace">${c.q}</text>`;
+                    <circle cx="${dotX}" cy="${dotY}" r="3.5" fill="${col}" stroke="white" stroke-width="1.5"/>
+                    ${guideLine}
+                    <text x="${labelX}" y="${labelY+3}" font-size="10" fill="${col}" font-weight="${c.isWorst?700:500}" font-family="monospace">${c.q}</text>`;
           }).join('');
 
-          return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;">
-            ${grid}${lines}${xLabels.join('')}
-            <text x="${ML+(W-ML-MR)/2}" y="${H+10}" text-anchor="middle" font-size="9" fill="var(--text-muted)">MOB (Months on Book) desde originación</text>
+          return `<svg viewBox="0 0 ${W} ${H+12}" width="100%" style="display:block;" preserveAspectRatio="xMidYMid meet">
+            ${yTicks}${lines}${xLabels.join('')}
+            <text x="${ML+(W-ML-MR)/2}" y="${H+10}" text-anchor="middle" font-size="10" fill="#94A3B8">MOB (Months on Book) desde originación</text>
           </svg>
           <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
             ${cohorts.map(c => `<span style="font-size:.6rem;font-family:var(--font-mono);color:${c.isWorst?'var(--red)':'var(--text-muted)'};background:var(--bg);padding:2px 6px;border-radius:3px;border:1px solid ${c.isWorst?'var(--red)':'var(--border)'};font-weight:${c.isWorst?700:400};">${c.q}: ${c.n} fac · ${c.finalRate.toFixed(1)}% @ M${c.currentMOB}</span>`).join('')}
