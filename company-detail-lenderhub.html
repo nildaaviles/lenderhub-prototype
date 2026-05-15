@@ -692,7 +692,7 @@ let editingFacilityId = null; // id of facility being edited (null = create new)
 let absData = {};             // snapshot of ABS fields captured per step
 
 const ABS_STEPS   = ['Identificación','Estructura','Pool & Roles','Covenants','Review'];
-const QUIRO_STEPS = ['Borrower','Términos & Lender','Covenants','Review'];
+const QUIRO_STEPS = ['Borrower','Términos & Pricing','Cláusulas & Lender','Covenants','Review'];
 
 /* ─── Helpers ───────────────────────────────────────────────────── */
 function sel(items, placeholder='Selecciona', extra='') {
@@ -795,7 +795,8 @@ function openEditModal(id) {
   const steps = selectedType === 'abs' ? ABS_STEPS : QUIRO_STEPS;
   currentStep = steps.length; // último step = Review
   document.getElementById('step-0').style.display = 'none';
-  document.getElementById('stepperWrap').style.display = '';
+  // Edit mode: ocultar stepper visualmente (el usuario no necesita progresión secuencial)
+  document.getElementById('stepperWrap').style.display = 'none';
   renderStep();
   renderFooter();
   scrollModalTop();
@@ -958,7 +959,7 @@ function _autofillQuiro() {
     sst ('q-calificadora',  'HR Ratings México');
   }
 
-  /* ── STEP 2: Términos & Lender ───────────────────────── */
+  /* ── STEP 2: Términos & Pricing ──────────────────────── */
   if (currentStep === 2) {
     // Instrumento & estructura
     sst('q-instrumento',    'Crédito Simple');
@@ -990,17 +991,20 @@ function _autofillQuiro() {
     sv ('q-fecha-venc',   '2027-03-01');
     sst('q-frecuencia',   'Mensual');
     sv ('q-dia-pago',     '1');
-    // Cláusulas & legal
+  }
+
+  /* ── STEP 3: Cláusulas & Lender ──────────────────────── */
+  if (currentStep === 3) {
     sst('q-garantias',       'Sin garantía (quirografario puro)');
-    // Multi-select: marcar eventos de aceleración estándares
-    if (typeof markStandardAccelEvents === 'function') markStandardAccelEvents();
     sst('q-jurisdiccion',    'Ciudad de México, México');
     sst('q-ley-aplicable',   'Legislación mercantil mexicana (LGTOC / LMV)');
+    // Multi-select: marcar eventos de aceleración estándares
+    if (typeof markStandardAccelEvents === 'function') markStandardAccelEvents();
     // Lender bloqueado por SESSION (BBVA) — nada que llenar
   }
 
-  /* ── STEP 3: Covenants ───────────────────────────────── */
-  if (currentStep === 3) {
+  /* ── STEP 4: Covenants ───────────────────────────────── */
+  if (currentStep === 4) {
     ssel('Periodicidad de Covenant', 'Trimestral');
     ssel('Fecha de Corte',           'Último día del trimestre');
     // Llenar nombre de covenant pre-existente en cada tab si está vacío
@@ -1223,43 +1227,59 @@ function captureQuiroStep(step) {
     quiroData.outlook         = gt('q-outlook');
     quiroData.calificadora    = gt('q-calificadora');
   }
+  // Step 2: Términos & Pricing (Instrumento + Tasa + Plazo)
   if (step === 2) {
     // Instrumento & estructura
-    quiroData.instrumento     = gt('q-instrumento');
-    quiroData.contratoISIN    = gv('q-contrato-isin');
-    quiroData.tipoCredito     = gt('q-tipo-credito');
-    quiroData.tipoAmort       = gt('q-tipo-amort');
-    const monto               = gv('q-monto');
-    quiroData.monto           = monto ? '$' + parseFloat(monto).toLocaleString('es-MX') : '—';
-    quiroData.rankingDeuda    = gt('q-ranking-deuda');
+    if (document.getElementById('q-instrumento')) {
+      quiroData.instrumento     = gt('q-instrumento');
+      quiroData.contratoISIN    = gv('q-contrato-isin');
+      quiroData.tipoCredito     = gt('q-tipo-credito');
+      quiroData.tipoAmort       = gt('q-tipo-amort');
+      const monto               = gv('q-monto');
+      quiroData.monto           = monto ? '$' + parseFloat(monto).toLocaleString('es-MX') : '—';
+      quiroData.rankingDeuda    = gt('q-ranking-deuda');
+    }
     // Tasa & pricing
-    quiroData.tipoTasa        = quiroTasaMode;
-    quiroData.tasaFija        = gv('tasaFijaVal');
-    quiroData.benchmark       = gt('q-benchmark');
-    quiroData.spread          = gv('spreadVal');
-    quiroData.tiieFloor       = gv('q-tiie-floor');
-    quiroData.tasaMora        = gv('q-tasa-mora');
-    quiroData.commitmentFee   = gv('q-commitment-fee');
+    if (document.getElementById('quiroTasaSelect')) {
+      quiroData.tipoTasa        = quiroTasaMode;
+      quiroData.tasaFija        = gv('tasaFijaVal');
+      quiroData.benchmark       = gt('q-benchmark');
+      quiroData.spread          = gv('spreadVal');
+      quiroData.tiieFloor       = gv('q-tiie-floor');
+      quiroData.tasaMora        = gv('q-tasa-mora');
+      quiroData.commitmentFee   = gv('q-commitment-fee');
+    }
     // Plazo
-    quiroData.fechaInicio     = gv('q-fecha-inicio');
-    quiroData.fechaVenc       = gv('q-fecha-venc');
-    quiroData.frecuencia      = gt('q-frecuencia');
-    quiroData.diaPago         = gv('q-dia-pago');
-    // Cláusulas & legal
-    quiroData.garantias       = gt('q-garantias');
-    // Multi-select de eventos de aceleración
-    quiroData.eventosAceleracion = [...document.querySelectorAll('.accel-event-cb:checked')].map(cb => cb.value);
-    // Mantener compat con código legacy que usaba el campo singular
-    quiroData.eventoAceleracion = quiroData.eventosAceleracion[0] || '';
-    quiroData.jurisdiccion    = gt('q-jurisdiccion');
-    quiroData.leyAplicable    = gt('q-ley-aplicable');
-    quiroData.repComun        = gt('q-rep-comun');
-    // Lender
-    quiroData.lenderMode      = quiroLenderMode;
-    const lenderSel = document.querySelector('#qlender-individual select');
-    quiroData.lenderName      = lenderSel?.options?.[lenderSel?.selectedIndex]?.text || '—';
+    if (document.getElementById('q-fecha-inicio')) {
+      quiroData.fechaInicio     = gv('q-fecha-inicio');
+      quiroData.fechaVenc       = gv('q-fecha-venc');
+      quiroData.frecuencia      = gt('q-frecuencia');
+      quiroData.diaPago         = gv('q-dia-pago');
+    }
   }
+  // Step 3: Cláusulas & Lender (Garantías + Eventos Aceleración + Legal + Rep Común + Lender)
   if (step === 3) {
+    if (document.getElementById('q-garantias')) {
+      quiroData.garantias       = gt('q-garantias');
+      quiroData.jurisdiccion    = gt('q-jurisdiccion');
+      quiroData.leyAplicable    = gt('q-ley-aplicable');
+      quiroData.repComun        = gt('q-rep-comun');
+    }
+    // Multi-select eventos de aceleración (sólo si el DOM tiene los checkboxes en este step)
+    const accelCbs = document.querySelectorAll('.accel-event-cb');
+    if (accelCbs.length) {
+      quiroData.eventosAceleracion = [...document.querySelectorAll('.accel-event-cb:checked')].map(cb => cb.value);
+      quiroData.eventoAceleracion = quiroData.eventosAceleracion[0] || '';
+    }
+    // Lender
+    if (document.querySelector('#qlender-individual') || document.querySelector('#qlender-sindicado')) {
+      quiroData.lenderMode      = quiroLenderMode;
+      const lenderSel = document.querySelector('#qlender-individual select');
+      quiroData.lenderName      = lenderSel?.options?.[lenderSel?.selectedIndex]?.text || '—';
+    }
+  }
+  // Step 4: Covenants (era step 3 antes)
+  if (step === 4) {
     const calcBtns = document.querySelectorAll('#modalBody .ph-calculator');
     quiroData.covenants = [...calcBtns].map(icon => {
       const btn = icon.closest('button');
@@ -1332,6 +1352,8 @@ function editReviewSection(step) {
   if (selectedType === 'abs') captureAbsStep(currentStep); else captureQuiroStep(currentStep); // save current state first (noop on step 4)
   reviewReturnMode = true;
   currentStep = step;
+  // Mostrar el stepper cuando se entra a una sección específica
+  document.getElementById('stepperWrap').style.display = '';
   renderStep();
   renderFooter();
   scrollModalTop();
@@ -1341,6 +1363,10 @@ function saveAndReturnToReview() {
   if (selectedType === 'abs') captureAbsStep(currentStep); else captureQuiroStep(currentStep);
   reviewReturnMode = false;
   currentStep = selectedType === 'abs' ? ABS_STEPS.length : QUIRO_STEPS.length; // step 4 = Review
+  // En edit mode, ocultar stepper al volver al Review (no es navegación secuencial)
+  if (editingFacilityId !== null) {
+    document.getElementById('stepperWrap').style.display = 'none';
+  }
   renderStep();
   renderFooter();
   scrollModalTop();
@@ -1366,18 +1392,19 @@ function renderStep() {
     switch(currentStep) {
       case 1: div.innerHTML = renderQ1(); break;
       case 2: div.innerHTML = renderQ2(); break;
-      case 3: div.innerHTML = renderQ4('quiro'); break;
-      case 4: div.innerHTML = renderQ5(); break;
+      case 3: div.innerHTML = renderQ3(); break;
+      case 4: div.innerHTML = renderQ4('quiro'); break;
+      case 5: div.innerHTML = renderQ5(); break;
     }
   }
   document.getElementById('modalBody').appendChild(div);
   postRenderHooks();
-  // Trigger plazo calc si entramos a Step 2 con dates pre-populadas
+  // Trigger plazo calc si entramos a Step 2 (Términos & Pricing) con dates pre-populadas
   if (currentStep === 2 && typeof onDateChange === 'function') {
     setTimeout(onDateChange, 0);
   }
-  // Hook checkboxes de Eventos de Aceleración para contador en vivo
-  if (currentStep === 2) {
+  // Hook checkboxes de Eventos de Aceleración para contador en vivo (Step 3 = Cláusulas & Lender)
+  if (currentStep === 3) {
     setTimeout(() => {
       document.querySelectorAll('.accel-event-cb').forEach(cb => {
         cb.addEventListener('change', updateAccelCount);
@@ -2005,19 +2032,16 @@ function renderQ1() {
 let quiroLenderMode = 'individual';
 let quiroTasaMode = 'Fija';
 
+// Step 2: Términos & Pricing — Instrumento + Tasa + Plazo
 function renderQ2() {
   const d = quiroData;
-  // Restore tasa global from saved data when re-entering step
   if (d.tipoTasa) quiroTasaMode = d.tipoTasa;
-  // Parse monto back to raw number for the input (strip $ and commas)
   const montoRaw = d.monto ? d.monto.replace(/[$,]/g,'') : '';
-  // Detect if instrumento is CEBUR to show conditional fields
-  const isCebur = (d.instrumento||'').startsWith('CEBUR');
   return `
   <p class="section-title">Instrumento & Estructura</p>
   <div class="form-grid">
     ${makeField('Instrumento Legal',`<select id="q-instrumento" onchange="toggleCeburFields()">${CATALOGS.instrumentos_quiro.map(o=>`<option${d.instrumento===o?' selected':''}>${o}</option>`).join('')}</select>`,true,'Tipo de instrumento jurídico del crédito')}
-    ${makeField('No. Contrato / ISIN',`<input id="q-contrato-isin" type="text" placeholder="${isCebur?'MX91LH000101':'CQ-BBVA-APLAZO-01'}" value="${d.contratoISIN||''}">`,false,'ISIN si es bursátil, No. de contrato si es bilateral')}
+    ${makeField('No. Contrato / ISIN',`<input id="q-contrato-isin" type="text" placeholder="${(d.instrumento||'').startsWith('CEBUR')?'MX91LH000101':'CQ-BBVA-APLAZO-01'}" value="${d.contratoISIN||''}">`,false,'ISIN si es bursátil, No. de contrato si es bilateral')}
     ${makeField('Tipo de Crédito',qSelOpt('q-tipo-credito',CATALOGS.tipos_credito,d.tipoCredito),true)}
     ${makeField('Tipo de Amortización',qSelOpt('q-tipo-amort',CATALOGS.tipos_amortizacion,d.tipoAmort),true)}
     ${makeField('Monto Total',`<input id="q-monto" type="number" placeholder="0.00" value="${montoRaw}">`,true)}
@@ -2053,20 +2077,24 @@ function renderQ2() {
     ${makeField('Fecha Inicio',`<input id="q-fecha-inicio" type="date" value="${d.fechaInicio||''}" oninput="onDateChange()">`,true)}
     ${makeField('Fecha Vencimiento',`<input id="q-fecha-venc" type="date" value="${d.fechaVenc||''}" oninput="onDateChange()">`,true)}
   </div>
-  <!-- Plazo calculado: validador UX live -->
   <div id="plazo-calc" style="display:none;margin:-4px 0 10px;padding:8px 12px;border-radius:6px;font-size:0.78rem;font-family:var(--font-ui);transition:all .15s;"></div>
   <div class="form-grid">
     ${makeField('Frecuencia de Pago',qSelOpt('q-frecuencia',CATALOGS.periodicidad,d.frecuencia),true)}
     ${makeField('Día de Pago',`<input id="q-dia-pago" type="number" placeholder="Ej. 15" value="${d.diaPago||''}">`,false,'Día del mes para el pago — se autocompletará con el día de Fecha Inicio')}
-  </div>
-  <hr class="section-divider" style="margin:8px 0 12px">
+  </div>`;
+}
+
+// Step 3: Cláusulas & Lender — Garantías, Legal, Eventos Aceleración, Rep Común, Lender
+function renderQ3() {
+  const d = quiroData;
+  const isCebur = (d.instrumento||'').startsWith('CEBUR');
+  return `
   <p class="section-title">Cláusulas & Legal</p>
   <div class="form-grid">
     ${makeField('Garantías',qSelOpt('q-garantias',CATALOGS.garantias_quiro,d.garantias),false,'Aunque es quirografario, puede haber garantía complementaria')}
     ${makeField('Jurisdicción',`<select id="q-jurisdiccion" onchange="onJurisdiccionChange()"><option value="">Selecciona</option>${CATALOGS.jurisdicciones.map(o=>`<option${d.jurisdiccion===o?' selected':''}>${o}</option>`).join('')}</select>`,false)}
     ${makeField('Ley Aplicable',qSelOpt('q-ley-aplicable',CATALOGS.leyes_aplicables,d.leyAplicable),false,'Se autocompleta según Jurisdicción — editable si difiere del caso típico')}
   </div>
-  <!-- Eventos de Aceleración — multi-select per skill §7 (un contrato típico tiene varios) -->
   <div class="form-group full" style="margin-top:8px;">
     <label class="field-label">
       Eventos de Aceleración
@@ -2086,7 +2114,7 @@ function renderQ2() {
     </div>
     <span id="accel-count" style="font-size:.7rem;color:var(--text-muted);margin-top:4px;display:block;"></span>
   </div>
-  <div id="cebur-fields" class="panel ${isCebur?'visible':''}" style="margin-top:4px;">
+  <div id="cebur-fields" class="panel ${isCebur?'visible':''}" style="margin-top:8px;">
     <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;padding:6px 10px;background:var(--blue-bg);border-radius:6px;">
       <i class="ph ph-certificate" style="color:var(--blue);font-size:15px;"></i>
       <span style="font-size:0.78rem;font-weight:600;color:var(--blue);">Campos adicionales para emisión bursátil (CEBUR)</span>
@@ -2095,7 +2123,7 @@ function renderQ2() {
       ${makeField('Representante Común',qSelOpt('q-rep-comun',CATALOGS.representantes_comunes_quiro,d.repComun),false)}
     </div>
   </div>
-  <hr class="section-divider" style="margin:10px 0 12px">
+  <hr class="section-divider" style="margin:14px 0 12px">
   <p class="section-title">Lender(s)</p>
   <div class="lender-cards">
     <div class="struct-card ${quiroLenderMode==='individual'?'active-amber':''}" onclick="setQuiroLender('individual',this)">
@@ -2277,18 +2305,21 @@ function renderQ5() {
     ${pendingCount    ? `<span class="review-summary-chip warn"><i class="ph ph-warning"></i>${pendingCount} sin configurar</span>` : ''}
     ${!covs.length    ? `<span class="review-summary-chip muted"><i class="ph ph-minus"></i>Ninguno</span>` : ''}`;
 
+  const editMode = editingFacilityId !== null;
+  const sectionCls = editMode ? 'review-section edit-mode' : 'review-section';
+
   return `
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
     <div>
-      <p style="font-size:1rem;font-weight:700;color:var(--primary);margin:0 0 2px;">Resumen del Facility</p>
-      <p style="font-size:0.82rem;color:var(--text-secondary);margin:0;">Revisa antes de guardar. Puedes editar cualquier sección.</p>
+      <p style="font-size:1rem;font-weight:700;color:var(--primary);margin:0 0 2px;">${editMode ? 'Editar Facility · ' + (d.facilityName || 'Sin nombre') : 'Resumen del Facility'}</p>
+      <p style="font-size:0.82rem;color:var(--text-secondary);margin:0;">${editMode ? 'Click <strong style="color:var(--secondary);">Editar</strong> en la sección que quieras modificar — no necesitas pasar por todas.' : 'Revisa antes de guardar. Puedes editar cualquier sección.'}</p>
     </div>
     <span style="font-size:0.72rem;font-weight:700;padding:4px 10px;background:var(--blue-bg);color:var(--blue);border-radius:20px;text-transform:uppercase;letter-spacing:.05em;">Quirografario</span>
   </div>
   <div style="display:flex;flex-direction:column;gap:10px;">
 
     <!-- BORROWER & RIESGO -->
-    <div class="review-section">
+    <div class="${sectionCls}">
       <div class="review-section-header">
         <span class="review-section-title"><i class="ph ph-buildings"></i>Borrower & Riesgo</span>
         <button class="btn-review-edit" onclick="editReviewSection(1)"><i class="ph ph-pencil-simple" style="font-size:12px;"></i>Editar</button>
@@ -2350,10 +2381,10 @@ function renderQ5() {
       </div>
     </div>
 
-    <!-- TÉRMINOS & LENDER -->
-    <div class="review-section">
+    <!-- TÉRMINOS & PRICING (Step 2) -->
+    <div class="${sectionCls}">
       <div class="review-section-header">
-        <span class="review-section-title"><i class="ph ph-handshake"></i>Términos &amp; Lender</span>
+        <span class="review-section-title"><i class="ph ph-currency-circle-dollar"></i>Términos &amp; Pricing</span>
         <button class="btn-review-edit" onclick="editReviewSection(2)"><i class="ph ph-pencil-simple" style="font-size:12px;"></i>Editar</button>
       </div>
       <div class="review-body">
@@ -2401,17 +2432,20 @@ function renderQ5() {
             ${rv(frec)}
           </div>
         </div>
-        <div style="border-top:1px dashed var(--border);margin:8px 0;"></div>
+      </div>
+    </div>
+
+    <!-- CLÁUSULAS & LENDER (Step 3) -->
+    <div class="${sectionCls}">
+      <div class="review-section-header">
+        <span class="review-section-title"><i class="ph ph-shield-check"></i>Cláusulas &amp; Lender</span>
+        <button class="btn-review-edit" onclick="editReviewSection(3)"><i class="ph ph-pencil-simple" style="font-size:12px;"></i>Editar</button>
+      </div>
+      <div class="review-body">
         <div class="review-grid">
           <div class="review-item">
             <span class="review-label">Garantías</span>
             ${rv(d.garantias)}
-          </div>
-          <div class="review-item" style="grid-column:1/-1;">
-            <span class="review-label">Eventos de Aceleración ${d.eventosAceleracion?.length ? `(${d.eventosAceleracion.length})` : ''}</span>
-            ${d.eventosAceleracion?.length
-              ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:3px;">${d.eventosAceleracion.map(ev => `<span style="font-size:.7rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:2px 8px;color:var(--text);">${ev}</span>`).join('')}</div>`
-              : rv('')}
           </div>
           <div class="review-item">
             <span class="review-label">Jurisdicción</span>
@@ -2427,17 +2461,23 @@ function renderQ5() {
             ${rv(d.lenderName ? `${d.lenderName} (${d.lenderMode === 'individual' ? 'Individual' : 'Sindicado'})` : '')}
           </div>
         </div>
+        <div class="review-item" style="grid-column:1/-1;margin-top:8px;">
+          <span class="review-label">Eventos de Aceleración ${d.eventosAceleracion?.length ? `(${d.eventosAceleracion.length})` : ''}</span>
+          ${d.eventosAceleracion?.length
+            ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:3px;">${d.eventosAceleracion.map(ev => `<span style="font-size:.7rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:2px 8px;color:var(--text);">${ev}</span>`).join('')}</div>`
+            : rv('')}
+        </div>
       </div>
     </div>
 
     <!-- COVENANTS -->
-    <div class="review-section">
+    <div class="${sectionCls}">
       <div class="review-section-header">
         <span class="review-section-title">
           <i class="ph ph-shield-check"></i>Covenants
           <div class="review-summary-bar" style="margin:0;">${covSummaryChips}</div>
         </span>
-        <button class="btn-review-edit" onclick="editReviewSection(3)"><i class="ph ph-pencil-simple" style="font-size:12px;"></i>Editar</button>
+        <button class="btn-review-edit" onclick="editReviewSection(4)"><i class="ph ph-pencil-simple" style="font-size:12px;"></i>Editar</button>
       </div>
       <div class="review-body">
         <div class="review-cov-list">${covRows}</div>
