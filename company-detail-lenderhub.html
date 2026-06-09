@@ -1274,6 +1274,8 @@ function applyExtraction() {
     if (quiroData.tipoTasa) quiroTasaMode = quiroData.tipoTasa;
     // 2) Covenants detectados → quiroData.covenants (se siembran en step 4 y se ven en Review)
     quiroData.covenants = (ex.covenants||[]).map(name=>({name, cfg:null}));
+    // 2b) Eventos de aceleración detectados
+    if (ex.accelEvents) { quiroData.eventosAceleracion = ex.accelEvents.slice(); quiroData.eventoAceleracion = ex.accelEvents[0]||''; }
     // 3) Variables nuevas aceptadas → prellenan los campos nuevos (seed) + lista de seguimiento
     const accepted = ex.novel.filter(n=>n.add);
     accepted.forEach(n=>{ if (n.seed) Object.assign(quiroData, n.seed); });
@@ -1332,13 +1334,20 @@ const EXTRACTION_DEMOS = {
       {label:'Fecha Inicio', key:'fechaInicio', value:'2025-01-15', conf:'media', source:'Cláusula Tercera'},
       {label:'Fecha Vencimiento', key:'fechaVenc', value:'2029-01-15', conf:'media', source:'Cláusula Tercera (4 años)'},
       {label:'Frecuencia de Pago', key:'frecuencia', value:'Mensual', conf:'media', source:'Cláusula Sexta (Periodo de Intereses)'},
+      {label:'Garantías', key:'garantias', value:'Sin garantía (quirografario puro)', conf:'alta', source:'Naturaleza del crédito'},
+      {label:'Jurisdicción', key:'jurisdiccion', value:'Ciudad de México, México', conf:'alta', source:'Cláusula de jurisdicción'},
+      {label:'Ley Aplicable', key:'leyAplicable', value:'Legislación mercantil mexicana (LGTOC / LMV)', conf:'alta', source:'Cláusula de ley aplicable'},
     ],
     covenants: ['Deuda total < 60% (activos+colocaciones)','Deuda garantizada < 40%','DSCR ≥ 1.5x','Activos no gravados > 150% deuda no garantizada'],
+    accelEvents: ['Incumplimiento de pago > 3 días hábiles','Cross-default + incumplimiento material','Declaración de concurso mercantil','Quiebra o insolvencia del acreditado','Impugnación del contrato o documentos de la operación'],
     novel: [
       {label:'Sublímite en USD (SOFR)', value:'$XXX MM disponibles en dólares', source:'Cláusula Primera', dest:'moneda', note:'Mapeable al nuevo campo de sublímite multi-divisa.', add:true, seed:{subMoneda:'USD', subMonto:'300000000', subBench:'SOFR (USD)'}},
       {label:'Ajuste de margen por sostenibilidad (ESG)', value:'± X.XX% s/ reducción emisiones GEI vs. 2019', source:'Cláusula Sexta-bis', dest:'pricing', note:'Mapeable al nuevo campo Ajuste ESG.', add:true, seed:{esgAjuste:'5'}},
       {label:'Opción de extensión de vigencia (+1 año)', value:'Renovable hasta 60 días antes del 4º aniversario', source:'Cláusula Tercera', dest:'plazo', note:'Mapeable al nuevo campo Renovación / Extensión.', add:true, seed:{renovacion:'+1 año (a solicitud, al corriente)'}},
       {label:'Destino del crédito', value:'Pago del contrato original + pasivos + usos corporativos', source:'Cláusula Segunda', dest:'plazo', note:'Mapeable al nuevo campo Destino.', add:true, seed:{destino:'Pago del Contrato Original + pasivos + usos corporativos'}},
+      {label:'Entregables con SLA (reporting)', value:'EEFF auditados anuales ≤180d · EEFF internos semestrales ≤45d', source:'Cláusula 11ª (Obligaciones de Hacer)', dest:'reporting', note:'Mapeable al calendario de entregables — dispara el monitoreo.', add:true, seed:{deliverables:[
+        {ent:'EE.FF. auditados anuales',frec:'Anual',sla:'180'},{ent:'EE.FF. internos semestrales',frec:'Semestral',sla:'45'}
+      ]}},
       {label:'Certificación de Consultor Sustentable', value:'PwC/Deloitte/KPMG/EY · anual', source:'Cláusula Sexta-bis B', dest:'reporting', note:'Entregable que dispara el ajuste de tasa.', add:false},
     ],
   },
@@ -1354,6 +1363,7 @@ const EXTRACTION_DEMOS = {
       {label:'Moneda', key:'moneda', value:'MXN', conf:'alta', source:'Sección 2.1'},
       {label:'Instrumento Legal', key:'instrumento', value:'Crédito Simple', conf:'media', source:'Sección 2.1 (simple + cuenta corriente)'},
       {label:'No. Contrato / ISIN', key:'contratoISIN', value:'Sindicado — sin ISIN (no bursátil)', conf:'media', source:'Proemio · firma 11-dic-2024'},
+      {label:'Tipo de Crédito', key:'tipoCredito', value:'Crédito Simple', conf:'alta', source:'Sección 2.1 (simple + cuenta corriente)'},
       {label:'Tipo de Amortización', key:'tipoAmort', value:'Capital Constante / Alemán', conf:'media', source:'Sección 2.4 (A/B progresiva)'},
       {label:'Monto Total', key:'monto', value:'4000000000', conf:'media', source:'Σ Tramos A+B+C (montos reservados — referencia)'},
       {label:'Ranking de Deuda', key:'rankingDeuda', value:'Senior Sindicado', conf:'alta', source:'Garantías / Cláusula Tercera'},
@@ -1363,12 +1373,16 @@ const EXTRACTION_DEMOS = {
       {label:'Commitment Fee (%)', key:'commitmentFee', value:'0.50', conf:'media', source:'Sección 2.4 (Comisión por Disponibilidad)'},
       {label:'Fecha Inicio', key:'fechaInicio', value:'2024-12-11', conf:'alta', source:'Proemio (firma)'},
       {label:'Fecha Vencimiento', key:'fechaVenc', value:'2030-12-11', conf:'alta', source:'Def. «Fecha de Vencimiento Tramo A» (6 años)'},
+      {label:'Garantías', key:'garantias', value:'Garantía corporativa (holding)', conf:'media', source:'Cláusula Tercera (obligación solidaria) — colateral hipotecario en panel Aforo'},
+      {label:'Jurisdicción', key:'jurisdiccion', value:'Ciudad de México, México', conf:'alta', source:'Sección 10.14'},
+      {label:'Ley Aplicable', key:'leyAplicable', value:'Legislación mercantil mexicana (LGTOC / LMV)', conf:'alta', source:'Sección 10.14'},
       {label:'Pricing Grid (margen por apalancamiento)', key:'pricingGrid', value:'4 niveles · 344/319/294/269 pb (Tramo A)', conf:'alta', source:'Def. «Margen Aplicable»', grid:[{lvl:'≥ 3.5x',pb:'344'},{lvl:'3.0x – 3.5x',pb:'319'},{lvl:'2.5x – 3.0x',pb:'294'},{lvl:'< 2.5x',pb:'269'}]},
       {label:'Ajuste ESG / Sostenibilidad (± pb)', key:'esgAjuste', value:'5', conf:'alta', source:'Cláusula Décima Primera (LMA)'},
       {label:'Base de Cálculo', key:'baseCalculo', value:'360 (Actual/360)', conf:'alta', source:'Sección 2.5'},
       {label:'Frecuencia de Pago', key:'frecuencia', value:'Trimestral', conf:'alta', source:'Sección 2.4'},
     ],
     covenants: ['Índice de Cobertura de Intereses ≥ 2.0x','Índice de Apalancamiento ≤ 3.75x→3.00x','Capital Contable ≥ 90% (cierre 2023)','Aforo ≥ 0.5x'],
+    accelEvents: ['Incumplimiento de pago > 3 días hábiles','Cross-default + incumplimiento material','Cambio de control del acreditado','Incumplimiento de covenants financieros (sin cura en período)','Declaración de concurso mercantil','Quiebra o insolvencia del acreditado','Impugnación del contrato o documentos de la operación'],
     novel: [
       {label:'Estructura multi-tramo (A / B / C)', value:'TL A (6a) · TL B (6a, 2 subtramos) · RCF C (3a + 2×12m)', source:'Sección 2.1', dest:'estructura', note:'Mapeable al nuevo builder multi-tramo.', add:true, seed:{quiroTranches:[
         {nombre:'Tramo A (TL)', monto:'2000000000', amort:'Capital Constante / Alemán', venc:'2030-12-11', margen:'344'},
