@@ -1277,6 +1277,8 @@ function applyExtraction() {
     // 3) Variables nuevas aceptadas → prellenan los campos nuevos (seed) + lista de seguimiento
     const accepted = ex.novel.filter(n=>n.add);
     accepted.forEach(n=>{ if (n.seed) Object.assign(quiroData, n.seed); });
+    // Estructura de lender (individual / sindicado) si el seed lo indica
+    if (quiroData._lenderMode) quiroLenderMode = quiroData._lenderMode;
     quiroData.aiNovelVars = accepted.map(n=>({label:n.label, value:n.value, dest:n.dest}));
     quiroData._aiSource = ex.docName;
     showToast('Extracción aplicada · revisa cada paso', 'success');
@@ -1309,14 +1311,26 @@ const EXTRACTION_DEMOS = {
       {label:'Nombre del Facility', key:'facilityName', value:'Crédito RCF Bilateral — Fibra Acreditada 2025', conf:'alta', source:'Portada'},
       {label:'Borrower Legal Name', key:'borrowerName', value:'Fideicomiso F/XXXXXX «Fibra Acreditada»', conf:'media', source:'Declaraciones II'},
       {label:'Tipo de Persona', key:'tipoPersona', value:'Fideicomiso / Vehículo fiduciario', conf:'alta', source:'Declaraciones II.1'},
+      {label:'País', key:'pais', value:'México', conf:'alta', source:'Proemio'},
+      {label:'Sector', key:'sector', value:'Bienes Raíces', conf:'alta', source:'Declaraciones II (fines: inmuebles)'},
+      {label:'Estado', key:'estado', value:'Activo', conf:'media', source:'—'},
       {label:'Moneda', key:'moneda', value:'MXN', conf:'alta', source:'Cláusula Primera'},
       {label:'Instrumento Legal', key:'instrumento', value:'Crédito en Cuenta Corriente', conf:'alta', source:'Cláusula Primera'},
+      {label:'No. Contrato / ISIN', key:'contratoISIN', value:'Bilateral — sin ISIN (no bursátil)', conf:'media', source:'Proemio'},
       {label:'Tipo de Crédito', key:'tipoCredito', value:'Crédito en Cuenta Corriente (Revolvente)', conf:'alta', source:'Cláusula Cuarta'},
+      {label:'Tipo de Amortización', key:'tipoAmort', value:'Pagos Programados (manual)', conf:'media', source:'Cláusula Quinta (recalendarizable ≤30d)'},
+      {label:'Monto Total', key:'monto', value:'5000000000', conf:'media', source:'Cláusula Primera (monto reservado/testado — cifra de referencia)'},
       {label:'Ranking de Deuda', key:'rankingDeuda', value:'Senior No Garantizado', conf:'media', source:'Cláusula 11ª (pari passu)'},
       {label:'Tipo de Tasa', key:'tipoTasa', value:'Variable — TIIE de Fondeo + spread', conf:'alta', source:'Cláusula Sexta'},
       {label:'Benchmark', key:'benchmark', value:'TIIE de Fondeo (TIIE-F)', conf:'alta', source:'Cláusula Sexta'},
+      {label:'Spread (%)', key:'spread', value:'2.50', conf:'media', source:'Cláusula Sexta (margen reservado — referencia)'},
       {label:'Tasa Moratoria (%)', key:'tasaMora', value:'2x ordinaria', conf:'media', source:'Cláusula Séptima'},
+      {label:'Commitment Fee (%)', key:'commitmentFee', value:'0.50', conf:'media', source:'Cláusula 13ª (saldo no dispuesto)'},
+      {label:'Comisión de Estructuración (%)', key:'comEstructuracion', value:'1.00', conf:'media', source:'Cláusula 13ª'},
+      {label:'Comisión de Apertura (%)', key:'comApertura', value:'0.75', conf:'media', source:'Cláusula 13ª'},
       {label:'Base de Cálculo', key:'baseCalculo', value:'360 (Actual/360)', conf:'alta', source:'Cláusula Sexta'},
+      {label:'Fecha Inicio', key:'fechaInicio', value:'2025-01-15', conf:'media', source:'Cláusula Tercera'},
+      {label:'Fecha Vencimiento', key:'fechaVenc', value:'2029-01-15', conf:'media', source:'Cláusula Tercera (4 años)'},
       {label:'Frecuencia de Pago', key:'frecuencia', value:'Mensual', conf:'media', source:'Cláusula Sexta (Periodo de Intereses)'},
     ],
     covenants: ['Deuda total < 60% (activos+colocaciones)','Deuda garantizada < 40%','DSCR ≥ 1.5x','Activos no gravados > 150% deuda no garantizada'],
@@ -1334,12 +1348,21 @@ const EXTRACTION_DEMOS = {
       {label:'Nombre del Facility', key:'facilityName', value:'Crédito Sindicado RCF + TL — Empresa Acreditada 2024', conf:'alta', source:'Portada'},
       {label:'Borrower Legal Name', key:'borrowerName', value:'Empresa Acreditada, S.A. de C.V.', conf:'alta', source:'Proemio'},
       {label:'Tipo de Persona', key:'tipoPersona', value:'Persona Moral', conf:'alta', source:'Proemio'},
+      {label:'País', key:'pais', value:'México', conf:'alta', source:'Proemio'},
+      {label:'Sector', key:'sector', value:'Manufactura', conf:'baja', source:'No explícito — inferido'},
+      {label:'Estado', key:'estado', value:'Activo', conf:'media', source:'—'},
       {label:'Moneda', key:'moneda', value:'MXN', conf:'alta', source:'Sección 2.1'},
       {label:'Instrumento Legal', key:'instrumento', value:'Crédito Simple', conf:'media', source:'Sección 2.1 (simple + cuenta corriente)'},
+      {label:'No. Contrato / ISIN', key:'contratoISIN', value:'Sindicado — sin ISIN (no bursátil)', conf:'media', source:'Proemio · firma 11-dic-2024'},
+      {label:'Tipo de Amortización', key:'tipoAmort', value:'Capital Constante / Alemán', conf:'media', source:'Sección 2.4 (A/B progresiva)'},
+      {label:'Monto Total', key:'monto', value:'4000000000', conf:'media', source:'Σ Tramos A+B+C (montos reservados — referencia)'},
       {label:'Ranking de Deuda', key:'rankingDeuda', value:'Senior Sindicado', conf:'alta', source:'Garantías / Cláusula Tercera'},
       {label:'Tipo de Tasa', key:'tipoTasa', value:'Variable — TIIE 91d + spread', conf:'alta', source:'Sección 2.5'},
       {label:'Benchmark', key:'benchmark', value:'TIIE 91d (SF43784)', conf:'alta', source:'Def. «Tasa TIIE»'},
       {label:'Tasa Moratoria (%)', key:'tasaMora', value:'2x ordinaria', conf:'alta', source:'Sección 2.6'},
+      {label:'Commitment Fee (%)', key:'commitmentFee', value:'0.50', conf:'media', source:'Sección 2.4 (Comisión por Disponibilidad)'},
+      {label:'Fecha Inicio', key:'fechaInicio', value:'2024-12-11', conf:'alta', source:'Proemio (firma)'},
+      {label:'Fecha Vencimiento', key:'fechaVenc', value:'2030-12-11', conf:'alta', source:'Def. «Fecha de Vencimiento Tramo A» (6 años)'},
       {label:'Pricing Grid (margen por apalancamiento)', key:'pricingGrid', value:'4 niveles · 344/319/294/269 pb (Tramo A)', conf:'alta', source:'Def. «Margen Aplicable»', grid:[{lvl:'≥ 3.5x',pb:'344'},{lvl:'3.0x – 3.5x',pb:'319'},{lvl:'2.5x – 3.0x',pb:'294'},{lvl:'< 2.5x',pb:'269'}]},
       {label:'Ajuste ESG / Sostenibilidad (± pb)', key:'esgAjuste', value:'5', conf:'alta', source:'Cláusula Décima Primera (LMA)'},
       {label:'Base de Cálculo', key:'baseCalculo', value:'360 (Actual/360)', conf:'alta', source:'Sección 2.5'},
@@ -1367,7 +1390,7 @@ const EXTRACTION_DEMOS = {
       ]}},
       {label:'Prepago obligatorio (cash sweep)', value:'100% de ventas significativas / emisión de deuda', source:'Sección 2.4 (i)', dest:'prepago', note:'Mapeable al nuevo campo Cash sweep.', add:true, seed:{cashSweep:'100% de ventas significativas / indemnizaciones / emisión de deuda', prepagoVol:'Permitido sin penalidad'}},
       {label:'Aforo ligado a avalúos (revaluación 3a)', value:'Aforo ≥ 0.5x · avalúos cada 3 años', source:'Secciones 5.15-5.16', dest:'colateral', note:'Mapeable al nuevo panel Colateral & Aforo.', add:true, seed:{aforoMin:'0.5', avaluoFrec:'Anual', colateral:[{tipo:'Inmueble industrial', valor:'3500000000', fecha:'2024-09-30'}]}},
-      {label:'Sindicato: % de participación por acreditante', value:'Agente + 3 acreditantes · «Requeridas» >70%', source:'Def. «Acreditantes Requeridas»', dest:'lender', note:'El panel sindicado captura % por lender; mayoría requerida configurable.', add:true, seed:{syndMajority:'70'}},
+      {label:'Sindicato: % de participación por acreditante', value:'Agente + 3 acreditantes · «Requeridas» >70%', source:'Def. «Acreditantes Requeridas»', dest:'lender', note:'Activa el modo Sindicado; mayoría requerida configurable.', add:true, seed:{syndMajority:'70', _lenderMode:'sindicado'}},
     ],
   },
 };
