@@ -1354,7 +1354,15 @@ const EXTRACTION_DEMOS = {
         {nombre:'Subsidiaria Operativa 1, S.A. de C.V.', rol:'Obligado solidario'},
         {nombre:'Inmobiliaria del Grupo, S.A. de C.V.', rol:'Garante hipotecario'}
       ]}},
-      {label:'Apalancamiento escalonado en el tiempo', value:'≤3.75x (a1) · 3.50x (a2-3) · 3.25x (a4) · 3.00x (a5+)', source:'Sección 5.17', dest:'covenant', note:'Covenant con umbral que cambia por año — el constructor de covenants soporta thresholds; el escalón temporal queda como nota.', add:true},
+      {label:'Apalancamiento escalonado en el tiempo', value:'≤3.75x (a1) · 3.50x (a2-3) · 3.25x (a4) · 3.00x (a5+)', source:'Sección 5.17', dest:'covenant', note:'Mapeable al nuevo covenant escalonado en el tiempo.', add:true, seed:{steppedCov:{metric:'Índice de Apalancamiento (Deuda con Costo / UAFIDA)', op:'≤', rows:[
+        {desde:'Año 1', umbral:'3.75x'},{desde:'Años 2-3', umbral:'3.50x'},{desde:'Año 4', umbral:'3.25x'},{desde:'Año 5+', umbral:'3.00x'}
+      ]}}},
+      {label:'Calendario de amortización por % (Tramo A/B)', value:'24 trimestrales: 0% T1-4 … 9% en T24', source:'Sección 2.4', dest:'amortizacion', note:'Mapeable al nuevo calendario de amortización por periodo.', add:true, seed:{amortSchedule:[
+        {per:'T1-4',pct:'0'},{per:'T5-6',pct:'1.0'},{per:'T7-8',pct:'2.0'},{per:'T9-10',pct:'4.35'},{per:'T11',pct:'4.3'},{per:'T12-17',pct:'5.0'},{per:'T18-19',pct:'6.0'},{per:'T20-23',pct:'7.0'},{per:'T24',pct:'9.0'}
+      ]}},
+      {label:'Entregables con SLA (reporting)', value:'EEFF auditados ≤270d · Certificado de Cumplimiento trimestral', source:'Sección 5.1', dest:'reporting', note:'Mapeable al nuevo calendario de entregables — dispara el monitoreo.', add:true, seed:{deliverables:[
+        {ent:'EE.FF. auditados anuales',frec:'Anual',sla:'270'},{ent:'Certificado de Cumplimiento',frec:'Trimestral',sla:'45'},{ent:'Avalúo de colateral',frec:'Anual',sla:'90'}
+      ]}},
       {label:'Prepago obligatorio (cash sweep)', value:'100% de ventas significativas / emisión de deuda', source:'Sección 2.4 (i)', dest:'prepago', note:'Mapeable al nuevo campo Cash sweep.', add:true, seed:{cashSweep:'100% de ventas significativas / indemnizaciones / emisión de deuda', prepagoVol:'Permitido sin penalidad'}},
       {label:'Aforo ligado a avalúos (revaluación 3a)', value:'Aforo ≥ 0.5x · avalúos cada 3 años', source:'Secciones 5.15-5.16', dest:'colateral', note:'Mapeable al nuevo panel Colateral & Aforo.', add:true, seed:{aforoMin:'0.5', avaluoFrec:'Anual', colateral:[{tipo:'Inmueble industrial', valor:'3500000000', fecha:'2024-09-30'}]}},
       {label:'Sindicato: % de participación por acreditante', value:'Agente + 3 acreditantes · «Requeridas» >70%', source:'Def. «Acreditantes Requeridas»', dest:'lender', note:'El panel sindicado captura % por lender; mayoría requerida configurable.', add:true, seed:{syndMajority:'70'}},
@@ -2062,6 +2070,13 @@ function captureQuiroStep(step) {
       quiroData.prepagoVol = gt('q-prepago-vol');
       quiroData.cashSweep  = gv('q-cash-sweep');
     }
+    // Calendario de amortización por %
+    if (document.getElementById('q-amort-tgl')?.checked) {
+      quiroData.amortSchedule = [...document.querySelectorAll('.q-amort-row')].map(r=>({
+        per: r.querySelector('.q-am-per')?.value.trim() || '',
+        pct: r.querySelector('.q-am-pct')?.value.trim() || ''
+      })).filter(r=>r.pct);
+    } else { quiroData.amortSchedule = []; }
     // Plazo
     if (document.getElementById('q-fecha-inicio')) {
       quiroData.fechaInicio     = gv('q-fecha-inicio');
@@ -2115,6 +2130,23 @@ function captureQuiroStep(step) {
       const cfg  = btn?.dataset?.covConfig ? JSON.parse(btn.dataset.covConfig) : null;
       return { name, cfg };
     }).filter(c => c.name);
+    // Covenant escalonado en el tiempo
+    if (document.getElementById('q-stepped-tgl')?.checked) {
+      quiroData.steppedCov = {
+        metric: gv('q-stepped-metric'),
+        op:     document.getElementById('q-stepped-op')?.value || '≤',
+        rows:   [...document.querySelectorAll('.q-stepped-row')].map(r=>({
+          desde:  r.querySelector('.q-st-desde')?.value.trim() || '',
+          umbral: r.querySelector('.q-st-umbral')?.value.trim() || ''
+        })).filter(r=>r.umbral)
+      };
+    } else { quiroData.steppedCov = null; }
+    // Calendario de entregables (SLA)
+    quiroData.deliverables = [...document.querySelectorAll('.q-deliv-row')].map(r=>({
+      ent:  r.querySelector('.q-dl-ent')?.value.trim() || '',
+      frec: r.querySelector('.q-dl-frec')?.value || '',
+      sla:  r.querySelector('.q-dl-sla')?.value.trim() || ''
+    })).filter(x=>x.ent);
   }
 }
 
@@ -2833,7 +2865,87 @@ function renderCovenantsStep(flow, isAbs) {
     : `<div id="cov-${flow}-tab3" class="inner-tab-panel" role="tabpanel" aria-labelledby="cov-btn-${flow}-tab3">
         ${renderCovTable(flow,'tab3', CATALOGS.covenant_informativo, 'Ej. EE.FF. auditados anuales · Compliance Certificate trimestral · Certificado de No Incumplimiento')}
        </div>`}
+  ${isAbs ? '' : renderSteppedCovenant() + renderDeliverables()}
   `;
+}
+
+/* ── Gap 1: Covenant con umbral escalonado en el tiempo ──────────── */
+function renderSteppedCovenant(){
+  const d = quiroData;
+  const on = d.steppedCov?.rows?.length;
+  return `
+  <hr class="section-divider" style="margin:16px 0 12px">
+  <label style="display:flex;align-items:center;gap:7px;margin:0 0 6px;font-size:0.85rem;font-weight:700;color:var(--text);cursor:pointer;">
+    <input type="checkbox" id="q-stepped-tgl" ${on?'checked':''} onchange="toggleSteppedCov()">
+    Covenant con umbral escalonado en el tiempo
+    <span class="tooltip-trigger" data-tip="Un mismo covenant cuyo umbral cambia por periodo. Ej. Apalancamiento ≤ 3.75x el año 1, 3.50x el año 2-3, 3.00x el año 5+.">?</span>
+  </label>
+  <div id="q-stepped-panel" class="panel ${on?'visible':''}" style="margin-bottom:8px;">
+    <div class="form-grid" style="grid-template-columns:1.4fr 0.8fr;">
+      ${makeField('Métrica',`<input id="q-stepped-metric" type="text" placeholder="Ej. Índice de Apalancamiento (Deuda con Costo / UAFIDA)" value="${d.steppedCov?.metric||''}">`,false)}
+      ${makeField('Operador',`<select id="q-stepped-op">${['≤','≥','=','<','>'].map(o=>`<option${d.steppedCov?.op===o?' selected':''}>${o}</option>`).join('')}</select>`,false)}
+    </div>
+    <div style="display:grid;grid-template-columns:1.4fr 1fr auto;gap:6px;padding:2px 2px 4px;font-size:0.66rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;">
+      <span>Vigencia (desde)</span><span>Umbral</span><span></span>
+    </div>
+    <div id="q-stepped-list">${(d.steppedCov?.rows||[]).map((r,i)=>steppedRowHtml(r,i)).join('')}</div>
+    <button type="button" onclick="addSteppedRow()" style="margin-top:4px;padding:5px 12px;font-size:0.76rem;font-weight:600;background:transparent;border:1px dashed var(--border-strong);border-radius:7px;color:var(--text-muted);cursor:pointer;font-family:var(--font-ui);"><i class="ph ph-plus" style="font-size:12px;"></i> Agregar escalón</button>
+    <p id="q-stepped-preview" style="font-size:0.78rem;color:var(--text-secondary);margin:8px 2px 0;"></p>
+  </div>`;
+}
+function steppedRowHtml(r={}, i=0){
+  const def = ['Año 1','Año 2','Año 3','Año 4','Año 5+'][i] || ('Periodo '+(i+1));
+  return `<div class="q-stepped-row" style="display:grid;grid-template-columns:1.4fr 1fr auto;gap:6px;margin-bottom:6px;align-items:center;">
+    <input type="text" class="q-st-desde" placeholder="${def}" value="${(r.desde||'').replace(/"/g,'&quot;')}" oninput="updateSteppedPreview()">
+    <input type="text" class="q-st-umbral" placeholder="Ej. 3.75x" value="${(r.umbral||'').replace(/"/g,'&quot;')}" oninput="updateSteppedPreview()">
+    <button type="button" onclick="this.closest('.q-stepped-row').remove();updateSteppedPreview()" style="background:none;border:1px solid var(--border);border-radius:6px;padding:7px 9px;color:var(--text-muted);cursor:pointer;"><i class="ph ph-trash"></i></button>
+  </div>`;
+}
+function addSteppedRow(){ const l=document.getElementById('q-stepped-list'); if(l){ l.insertAdjacentHTML('beforeend', steppedRowHtml({}, l.children.length)); updateSteppedPreview(); } }
+function toggleSteppedCov(){
+  const on=document.getElementById('q-stepped-tgl')?.checked;
+  document.getElementById('q-stepped-panel')?.classList.toggle('visible', !!on);
+  const l=document.getElementById('q-stepped-list');
+  if(on && l && !l.children.length){ addSteppedRow(); addSteppedRow(); }
+  updateSteppedPreview();
+}
+function updateSteppedPreview(){
+  const op=document.getElementById('q-stepped-op')?.value||'≤';
+  const rows=[...document.querySelectorAll('.q-stepped-row')].map(r=>({d:r.querySelector('.q-st-desde').value,u:r.querySelector('.q-st-umbral').value})).filter(r=>r.u);
+  const el=document.getElementById('q-stepped-preview');
+  if(el) el.innerHTML = rows.length ? `<i class="ph ph-chart-line-down"></i> Curva: ${rows.map(r=>`${r.d||'—'}: ${op} ${r.u}`).join(' · ')}` : '';
+}
+
+/* ── Gap 3: Calendario de entregables con SLA (disparador del monitoreo) ── */
+function renderDeliverables(){
+  const d = quiroData;
+  return `
+  <hr class="section-divider" style="margin:16px 0 12px">
+  <p class="section-title" style="display:flex;align-items:center;gap:6px;">Calendario de entregables (SLA) <span style="font-size:0.7rem;font-weight:500;color:var(--text-muted);text-transform:none;letter-spacing:0;">— dispara el monitoreo de LenderHub</span></p>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr auto;gap:6px;padding:2px 2px 4px;font-size:0.66rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;">
+    <span>Entregable</span><span>Frecuencia</span><span>SLA (días post-corte)</span><span></span>
+  </div>
+  <div id="q-deliv-list">${(d.deliverables||[]).map((x,i)=>delivRowHtml(x,i)).join('')}</div>
+  <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+    <button type="button" onclick="addDelivRow()" style="padding:5px 12px;font-size:0.76rem;font-weight:600;background:transparent;border:1px dashed var(--border-strong);border-radius:7px;color:var(--text-muted);cursor:pointer;font-family:var(--font-ui);"><i class="ph ph-plus" style="font-size:12px;"></i> Agregar entregable</button>
+    <button type="button" onclick="seedStdDeliverables()" style="padding:5px 12px;font-size:0.76rem;font-weight:600;background:var(--secondary);border:none;border-radius:7px;color:#fff;cursor:pointer;font-family:var(--font-ui);"><i class="ph ph-check-square" style="font-size:12px;"></i> Paquete estándar</button>
+  </div>`;
+}
+function delivRowHtml(x={}, i=0){
+  const ents=['EE.FF. auditados anuales','EE.FF. internos trimestrales','EE.FF. internos semestrales','Certificado de Cumplimiento','Certificado de No Incumplimiento','Reporte de covenants','Avalúo de colateral','Reporte de cartera'];
+  return `<div class="q-deliv-row" style="display:grid;grid-template-columns:1.5fr 1fr 1fr auto;gap:6px;margin-bottom:6px;align-items:center;">
+    <input type="text" class="q-dl-ent" list="q-dl-opts" placeholder="Entregable" value="${(x.ent||'').replace(/"/g,'&quot;')}">
+    <select class="q-dl-frec">${CATALOGS.periodicidad.map(p=>`<option${x.frec===p?' selected':''}>${p}</option>`).join('')}</select>
+    <input type="number" class="q-dl-sla" placeholder="Ej. 180" value="${x.sla||''}">
+    <button type="button" onclick="this.closest('.q-deliv-row').remove()" style="background:none;border:1px solid var(--border);border-radius:6px;padding:7px 9px;color:var(--text-muted);cursor:pointer;"><i class="ph ph-trash"></i></button>
+  </div>${i===0?`<datalist id="q-dl-opts">${ents.map(e=>`<option value="${e}">`).join('')}</datalist>`:''}`;
+}
+function addDelivRow(x){ const l=document.getElementById('q-deliv-list'); if(l) l.insertAdjacentHTML('beforeend', delivRowHtml(x||{}, l.children.length)); }
+function seedStdDeliverables(){
+  const l=document.getElementById('q-deliv-list'); if(!l) return; l.innerHTML='';
+  [{ent:'EE.FF. auditados anuales',frec:'Anual',sla:'180'},
+   {ent:'EE.FF. internos trimestrales',frec:'Trimestral',sla:'45'},
+   {ent:'Certificado de Cumplimiento',frec:'Trimestral',sla:'45'}].forEach((x,i)=>l.insertAdjacentHTML('beforeend', delivRowHtml(x,i)));
 }
 
 function renderCovTable(flow, tab, catalog, hint) {
@@ -3186,6 +3298,22 @@ function renderQ2() {
   <div class="form-grid">
     ${makeField('Prepago Voluntario',qSelOpt('q-prepago-vol',CATALOGS.prepago_opts,d.prepagoVol),false,'Condiciones de pago anticipado')}
     ${makeField('Prepago Obligatorio (cash sweep)',`<input id="q-cash-sweep" type="text" placeholder="Ej. 100% de ventas de activos / emisión de deuda" value="${d.cashSweep||''}">`,false,'Eventos que obligan a prepagar — afecta la proyección de saldo')}
+  </div>
+  <!-- Calendario de amortización por % -->
+  <label style="display:flex;align-items:center;gap:7px;margin:2px 0 6px;font-size:0.8rem;font-weight:600;color:var(--text);cursor:pointer;">
+    <input type="checkbox" id="q-amort-tgl" ${d.amortSchedule?.length?'checked':''} onchange="toggleAmortSched()">
+    Calendario de amortización por % por periodo
+    <span class="tooltip-trigger" data-tip="Para amortización progresiva: define el % de capital que vence en cada periodo. Ej. Contrato B: 0% T1-4 … 9% en T24.">?</span>
+  </label>
+  <div id="q-amort-panel" class="panel ${d.amortSchedule?.length?'visible':''}" style="margin-bottom:10px;">
+    <div style="display:grid;grid-template-columns:0.8fr 1.4fr auto;gap:6px;padding:2px 2px 4px;font-size:0.66rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;">
+      <span>Periodo</span><span>% de capital</span><span></span>
+    </div>
+    <div id="q-amort-list">${(d.amortSchedule||[]).map((r,i)=>amortRowHtml(r,i)).join('')}</div>
+    <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;align-items:center;">
+      <button type="button" onclick="addAmortRow()" style="padding:5px 12px;font-size:0.76rem;font-weight:600;background:transparent;border:1px dashed var(--border-strong);border-radius:7px;color:var(--text-muted);cursor:pointer;font-family:var(--font-ui);"><i class="ph ph-plus" style="font-size:12px;"></i> Agregar periodo</button>
+      <p id="q-amort-sum" style="font-size:0.78rem;color:var(--text-secondary);margin:0;"></p>
+    </div>
   </div>`;
 }
 
@@ -3454,6 +3582,29 @@ function updateTramoSum(){
   if (montoEl) montoEl.value = total || '';
   if (sumEl) sumEl.innerHTML = `<i class="ph ph-sigma"></i> Monto Total = suma de ${montos.length} tramos: <b>$${total.toLocaleString('es-MX')}</b>`;
 }
+/* ── Gap 2: Calendario de amortización por % por periodo ──────────── */
+function amortRowHtml(r={}, i=0){
+  return `<div class="q-amort-row" style="display:grid;grid-template-columns:0.8fr 1.4fr auto;gap:6px;margin-bottom:5px;align-items:center;">
+    <input type="text" class="q-am-per" placeholder="T${i+1}" value="${(r.per||('T'+(i+1))).replace(/"/g,'&quot;')}">
+    <input type="number" class="q-am-pct" step="0.01" placeholder="0.00" value="${r.pct||''}" oninput="updateAmortSum()">
+    <button type="button" onclick="this.closest('.q-amort-row').remove();updateAmortSum()" style="background:none;border:1px solid var(--border);border-radius:6px;padding:6px 9px;color:var(--text-muted);cursor:pointer;"><i class="ph ph-trash"></i></button>
+  </div>`;
+}
+function addAmortRow(){ const l=document.getElementById('q-amort-list'); if(l){ l.insertAdjacentHTML('beforeend', amortRowHtml({}, l.children.length)); updateAmortSum(); } }
+function toggleAmortSched(){
+  const on=document.getElementById('q-amort-tgl')?.checked;
+  document.getElementById('q-amort-panel')?.classList.toggle('visible', !!on);
+  const l=document.getElementById('q-amort-list');
+  if(on && l && !l.children.length){ for(let i=0;i<4;i++) addAmortRow(); }
+  updateAmortSum();
+}
+function updateAmortSum(){
+  const pcts=[...document.querySelectorAll('.q-am-pct')].map(i=>+i.value||0);
+  const total=pcts.reduce((a,b)=>a+b,0);
+  const el=document.getElementById('q-amort-sum'); if(!el) return;
+  const ok = Math.abs(total-100) < 0.01;
+  el.innerHTML = `<i class="ph ${ok?'ph-check-circle':'ph-warning'}" style="color:${ok?'var(--green)':'var(--yellow)'};"></i> Suma de %: <b style="color:${ok?'var(--green)':'var(--yellow)'};">${total.toFixed(2)}%</b>${ok?' (cuadra)':' (debe sumar 100%)'}`;
+}
 /* ── Pricing grid: margen escalonado por apalancamiento ───────────── */
 function gridRowHtml(lvl='', pb='') {
   return `<tr>
@@ -3715,7 +3866,7 @@ function renderQ5() {
       </div>
     </div>
 
-    ${(d.quiroTranches?.length || d.subMoneda || d.garantes?.length || d.colateral?.length || d.aforoMin || d.destino || d.cashSweep || d.renovacion || Object.keys(d.eventosCura||{}).length) ? `
+    ${(d.quiroTranches?.length || d.subMoneda || d.garantes?.length || d.colateral?.length || d.aforoMin || d.destino || d.cashSweep || d.renovacion || Object.keys(d.eventosCura||{}).length || d.amortSchedule?.length || d.steppedCov?.rows?.length || d.deliverables?.length) ? `
     <!-- ESTRUCTURA AVANZADA -->
     <div class="review-section">
       <div class="review-section-header">
@@ -3732,6 +3883,9 @@ function renderQ5() {
         ${d.cashSweep ? `<div class="review-item"><span class="review-label">Cash sweep</span><span class="review-value">${d.cashSweep}</span></div>`:''}
         ${d.syndMajority ? `<div class="review-item"><span class="review-label">Mayoría requerida</span><span class="review-value mono">>${d.syndMajority}%</span></div>`:''}
         ${Object.keys(d.eventosCura||{}).length ? `<div class="review-item" style="grid-column:1/-1;"><span class="review-label">Periodos de cura</span><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:3px;">${Object.entries(d.eventosCura).map(([ev,c])=>`<span style="font-size:.7rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:2px 8px;">${ev.slice(0,28)}${ev.length>28?'…':''}: ${c}</span>`).join('')}</div></div>`:''}
+        ${d.amortSchedule?.length ? `<div class="review-item" style="grid-column:1/-1;"><span class="review-label">Calendario de amortización</span><span class="review-value mono">${d.amortSchedule.length} periodos · Σ ${d.amortSchedule.reduce((a,b)=>a+(+b.pct||0),0).toFixed(2)}%</span></div>`:''}
+        ${d.steppedCov?.rows?.length ? `<div class="review-item" style="grid-column:1/-1;"><span class="review-label">Covenant escalonado</span><div style="font-size:.8rem;margin-top:3px;"><b>${d.steppedCov.metric||'Métrica'}</b>: ${d.steppedCov.rows.map(r=>`${r.desde||'—'} ${d.steppedCov.op} ${r.umbral}`).join(' · ')}</div></div>`:''}
+        ${d.deliverables?.length ? `<div class="review-item" style="grid-column:1/-1;"><span class="review-label">Entregables (SLA)</span><div style="display:flex;flex-direction:column;gap:2px;margin-top:3px;">${d.deliverables.map(x=>`<span style="font-size:.78rem;">• ${x.ent} — ${x.frec}${x.sla?' · '+x.sla+' días post-corte':''}</span>`).join('')}</div></div>`:''}
       </div></div>
     </div>` : ''}
 
