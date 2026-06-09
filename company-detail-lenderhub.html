@@ -912,7 +912,7 @@ const CATALOGS = {
   garantias_quiro: ['Sin garantía (quirografario puro)','Fianza de empresa relacionada','Garantía corporativa (holding)','Carta de crédito stand-by','Fondo de Garantía NAFINSA','Aval personal de accionistas'],
   jurisdicciones: ['Ciudad de México, México','Estado de Nueva York, EUA','Estado de Delaware, EUA','Londres, Reino Unido'],
   leyes_aplicables: ['Legislación mercantil mexicana (LGTOC / LMV)','Ley del Estado de Nueva York','Ley de Inglaterra y Gales'],
-  eventos_aceleracion: ['Incumplimiento de pago > 3 días hábiles','Cross-default + incumplimiento material','Cambio de control del acreditado','Incumplimiento de covenants financieros (sin cura en período)','Declaración de concurso mercantil','Quiebra o insolvencia del acreditado','Impugnación del contrato o documentos de la operación'],
+  eventos_aceleracion: ['Incumplimiento de pago > 3 días hábiles','Cross-default + incumplimiento material','Cambio de control del acreditado','Incumplimiento de covenants financieros (sin cura en período)','Declaración de concurso mercantil','Quiebra o insolvencia del acreditado','Impugnación del contrato o documentos de la operación','Adeudo fiscal o cuotas IMSS / INFONAVIT / SAR','Conflictos laborales que afecten el funcionamiento','Efecto Significativo Adverso (MAC)','Sentencia firme por monto &gt; umbral','Listas OFAC / personas bloqueadas','Expropiación o extinción de dominio'],
   representantes_comunes_quiro: ['Monex Casa de Bolsa','CIBanco','Banco Actinver','Banco INVEX','CI Casa de Bolsa'],
   calificadoras_quiro: ['HR Ratings México','Fitch Ratings México',"Moody's Local MX",'S&P Global Ratings','Verum Calificadora','DBRS Morningstar'],
 
@@ -1326,10 +1326,12 @@ const EXTRACTION_DEMOS = {
       {label:'Tipo de Tasa', key:'tipoTasa', value:'Variable — TIIE de Fondeo + spread', conf:'alta', source:'Cláusula Sexta'},
       {label:'Benchmark', key:'benchmark', value:'TIIE de Fondeo (TIIE-F)', conf:'alta', source:'Cláusula Sexta'},
       {label:'Spread (%)', key:'spread', value:'2.50', conf:'media', source:'Cláusula Sexta (margen reservado — referencia)'},
-      {label:'Tasa Moratoria (%)', key:'tasaMora', value:'2x ordinaria', conf:'media', source:'Cláusula Séptima'},
+      {label:'Tasa sustituta (fallback)', key:'tasaSustituta', value:'CETES (Pesos) · EFFR (USD)', conf:'alta', source:'Cláusula Sexta (tasa sustituta)'},
+      {label:'Tasa Moratoria (× ordinaria)', key:'tasaMora', value:'2', conf:'alta', source:'Cláusula Séptima (× 2)'},
       {label:'Commitment Fee (%)', key:'commitmentFee', value:'0.50', conf:'media', source:'Cláusula 13ª (saldo no dispuesto)'},
       {label:'Comisión de Estructuración (%)', key:'comEstructuracion', value:'1.00', conf:'media', source:'Cláusula 13ª'},
       {label:'Comisión de Apertura (%)', key:'comApertura', value:'0.75', conf:'media', source:'Cláusula 13ª'},
+      {label:'Comisión por Ampliación de Vigencia (%)', key:'comAmpliacion', value:'0.25', conf:'media', source:'Cláusula 13ª (ampliación)'},
       {label:'Base de Cálculo', key:'baseCalculo', value:'360 (Actual/360)', conf:'alta', source:'Cláusula Sexta'},
       {label:'Fecha Inicio', key:'fechaInicio', value:'2025-01-15', conf:'media', source:'Cláusula Tercera'},
       {label:'Fecha Vencimiento', key:'fechaVenc', value:'2029-01-15', conf:'media', source:'Cláusula Tercera (4 años)'},
@@ -1341,10 +1343,11 @@ const EXTRACTION_DEMOS = {
     covenants: ['Deuda total < 60% (activos+colocaciones)','Deuda garantizada < 40%','DSCR ≥ 1.5x','Activos no gravados > 150% deuda no garantizada'],
     accelEvents: ['Incumplimiento de pago > 3 días hábiles','Cross-default + incumplimiento material','Declaración de concurso mercantil','Quiebra o insolvencia del acreditado','Impugnación del contrato o documentos de la operación'],
     novel: [
-      {label:'Sublímite en USD (SOFR)', value:'$XXX MM disponibles en dólares', source:'Cláusula Primera', dest:'moneda', note:'Mapeable al nuevo campo de sublímite multi-divisa.', add:true, seed:{subMoneda:'USD', subMonto:'300000000', subBench:'SOFR (USD)'}},
+      {label:'Sublímite en USD (SOFR + margen propio)', value:'$XXX MM en dólares · SOFR a Plazo + Margen Dólares', source:'Cláusula Primera + Sexta', dest:'moneda', note:'Mapeable al sublímite multi-divisa con su margen propio.', add:true, seed:{subMoneda:'USD', subMonto:'300000000', subBench:'SOFR (USD)', subSpread:'2.10'}},
       {label:'Ajuste de margen por sostenibilidad (ESG)', value:'± X.XX% s/ reducción emisiones GEI vs. 2019', source:'Cláusula Sexta-bis', dest:'pricing', note:'Mapeable al nuevo campo Ajuste ESG.', add:true, seed:{esgAjuste:'5'}},
       {label:'Opción de extensión de vigencia (+1 año)', value:'Renovable hasta 60 días antes del 4º aniversario', source:'Cláusula Tercera', dest:'plazo', note:'Mapeable al nuevo campo Renovación / Extensión.', add:true, seed:{renovacion:'+1 año (a solicitud, al corriente)'}},
       {label:'Destino del crédito', value:'Pago del contrato original + pasivos + usos corporativos', source:'Cláusula Segunda', dest:'plazo', note:'Mapeable al nuevo campo Destino.', add:true, seed:{destino:'Pago del Contrato Original + pasivos + usos corporativos'}},
+      {label:'Recalendarización de disposiciones', value:'Revolvente · pago parcial ≤30 días, extensible +30 días', source:'Cláusula Cuarta/Quinta', dest:'plazo', note:'Mapeable al nuevo campo Recalendarización.', add:true, seed:{recalendar:'Revolvente · disposiciones recalendarizables ≤30 días naturales (extensible +30d)'}},
       {label:'Entregables con SLA (reporting)', value:'EEFF auditados anuales ≤180d · EEFF internos semestrales ≤45d', source:'Cláusula 11ª (Obligaciones de Hacer)', dest:'reporting', note:'Mapeable al calendario de entregables — dispara el monitoreo.', add:true, seed:{deliverables:[
         {ent:'EE.FF. auditados anuales',frec:'Anual',sla:'180'},{ent:'EE.FF. internos semestrales',frec:'Semestral',sla:'45'}
       ]}},
@@ -1369,8 +1372,10 @@ const EXTRACTION_DEMOS = {
       {label:'Ranking de Deuda', key:'rankingDeuda', value:'Senior Sindicado', conf:'alta', source:'Garantías / Cláusula Tercera'},
       {label:'Tipo de Tasa', key:'tipoTasa', value:'Variable — TIIE 91d + spread', conf:'alta', source:'Sección 2.5'},
       {label:'Benchmark', key:'benchmark', value:'TIIE 91d (SF43784)', conf:'alta', source:'Def. «Tasa TIIE»'},
-      {label:'Tasa Moratoria (%)', key:'tasaMora', value:'2x ordinaria', conf:'alta', source:'Sección 2.6'},
-      {label:'Commitment Fee (%)', key:'commitmentFee', value:'0.50', conf:'media', source:'Sección 2.4 (Comisión por Disponibilidad)'},
+      {label:'Tasa sustituta (fallback)', key:'tasaSustituta', value:'CETE → CCP → tasa acordada', conf:'alta', source:'Sección 2.5 (b)'},
+      {label:'Tasa Moratoria (× ordinaria)', key:'tasaMora', value:'2', conf:'alta', source:'Sección 2.6 (× 2)'},
+      {label:'Comisión por Disponibilidad', key:'comDisponibilidad', value:'35% del margen s/ no dispuesto', conf:'alta', source:'Sección 2.4 (f)'},
+      {label:'Comisión por Extensión (pb)', key:'comExtension', value:'25 / 50 pb', conf:'alta', source:'Sección 2.4 (Extensión Tramo C)'},
       {label:'Fecha Inicio', key:'fechaInicio', value:'2024-12-11', conf:'alta', source:'Proemio (firma)'},
       {label:'Fecha Vencimiento', key:'fechaVenc', value:'2030-12-11', conf:'alta', source:'Def. «Fecha de Vencimiento Tramo A» (6 años)'},
       {label:'Garantías', key:'garantias', value:'Garantía corporativa (holding)', conf:'media', source:'Cláusula Tercera (obligación solidaria) — colateral hipotecario en panel Aforo'},
@@ -1385,9 +1390,9 @@ const EXTRACTION_DEMOS = {
     accelEvents: ['Incumplimiento de pago > 3 días hábiles','Cross-default + incumplimiento material','Cambio de control del acreditado','Incumplimiento de covenants financieros (sin cura en período)','Declaración de concurso mercantil','Quiebra o insolvencia del acreditado','Impugnación del contrato o documentos de la operación'],
     novel: [
       {label:'Estructura multi-tramo (A / B / C)', value:'TL A (6a) · TL B (6a, 2 subtramos) · RCF C (3a + 2×12m)', source:'Sección 2.1', dest:'estructura', note:'Mapeable al nuevo builder multi-tramo.', add:true, seed:{quiroTranches:[
-        {nombre:'Tramo A (TL)', monto:'2000000000', amort:'Capital Constante / Alemán', venc:'2030-12-11', margen:'344'},
-        {nombre:'Tramo B (TL)', monto:'1500000000', amort:'Capital Constante / Alemán', venc:'2030-12-11', margen:'349'},
-        {nombre:'Tramo C (RCF)', monto:'500000000', amort:'Bullet / Americano', venc:'2027-12-11', margen:'324'}
+        {nombre:'Tramo A (TL)', monto:'2000000000', amort:'Capital Constante / Alemán', venc:'2030-12-11', margen:'344', subtramos:''},
+        {nombre:'Tramo B (TL)', monto:'1500000000', amort:'Capital Constante / Alemán', venc:'2030-12-11', margen:'349', subtramos:'B-1, B-2'},
+        {nombre:'Tramo C (RCF)', monto:'500000000', amort:'Bullet / Americano', venc:'2027-12-11', margen:'324', subtramos:''}
       ]}},
       {label:'Obligadas solidarias / garantes', value:'Múltiples obligadas + garantes hipotecarias', source:'Cláusula Tercera', dest:'partes', note:'Mapeable al nuevo campo Obligados / Garantes.', add:true, seed:{garantes:[
         {nombre:'Subsidiaria Operativa 1, S.A. de C.V.', rol:'Obligado solidario'},
@@ -2069,7 +2074,9 @@ function captureQuiroStep(step) {
       quiroData.benchmark       = gt('q-benchmark');
       quiroData.spread          = gv('spreadVal');
       quiroData.tiieFloor       = gv('q-tiie-floor');
+      quiroData.tasaSustituta   = gv('q-tasa-sustituta');
       quiroData.tasaMora        = gv('q-tasa-mora');
+      quiroData.moraTipo        = document.getElementById('q-mora-tipo')?.value || 'multiplo';
       quiroData.commitmentFee   = gv('q-commitment-fee');
       // Pricing grid (margen por apalancamiento)
       if (document.getElementById('q-grid-toggle')?.checked) {
@@ -2083,6 +2090,9 @@ function captureQuiroStep(step) {
       // Comisiones, ESG, base de cálculo
       quiroData.comEstructuracion = gv('q-com-estructuracion');
       quiroData.comApertura       = gv('q-com-apertura');
+      quiroData.comDisponibilidad = gv('q-com-disponibilidad');
+      quiroData.comExtension      = gv('q-com-extension');
+      quiroData.comAmpliacion     = gv('q-com-ampliacion');
       quiroData.esgAjuste         = gv('q-esg-ajuste');
       quiroData.baseCalculo       = gt('q-base-calculo');
     }
@@ -2091,6 +2101,7 @@ function captureQuiroStep(step) {
       quiroData.subMoneda = gt('q-submoneda');
       quiroData.subMonto  = gv('q-submonto');
       quiroData.subBench  = gt('q-subbench');
+      quiroData.subSpread = gv('q-sub-spread');
     } else { quiroData.subMoneda = ''; }
     // Multi-tramo
     if (document.getElementById('q-multitramo-tgl')?.checked) {
@@ -2099,15 +2110,17 @@ function captureQuiroStep(step) {
         monto:  r.querySelector('.q-tr-monto')?.value.trim() || '',
         amort:  r.querySelector('.q-tr-amort')?.value || '',
         venc:   r.querySelector('.q-tr-venc')?.value || '',
-        margen: r.querySelector('.q-tr-margen')?.value.trim() || ''
+        margen: r.querySelector('.q-tr-margen')?.value.trim() || '',
+        subtramos: r.querySelector('.q-tr-sub')?.value.trim() || ''
       })).filter(t=>t.nombre || t.monto);
     } else { quiroData.quiroTranches = []; }
-    // Destino, renovación, prepago
+    // Destino, renovación, prepago, recalendarización
     if (document.getElementById('q-destino')) {
       quiroData.destino    = gv('q-destino');
       quiroData.renovacion = gt('q-renovacion');
       quiroData.prepagoVol = gt('q-prepago-vol');
       quiroData.cashSweep  = gv('q-cash-sweep');
+      quiroData.recalendar = gv('q-recalendar');
     }
     // Calendario de amortización por %
     if (document.getElementById('q-amort-tgl')?.checked) {
@@ -3255,6 +3268,7 @@ function renderQ2() {
       ${makeField('Moneda del sublímite',qSelOpt('q-submoneda',CATALOGS.monedas,d.subMoneda),false)}
       ${makeField('Monto del sublímite',`<input id="q-submonto" type="number" placeholder="0.00" value="${d.subMonto||''}">`,false)}
       ${makeField('Benchmark del sublímite',qSelOpt('q-subbench',CATALOGS.benchmarks_tasa,d.subBench),false,'Ej. SOFR para tramo en USD')}
+      ${makeField('Margen del sublímite (%)',`<input id="q-sub-spread" type="number" step="0.01" placeholder="Ej. 2.10" value="${d.subSpread||''}">`,false,'Margen aplicable propio de la 2ª divisa (distinto al de Pesos)')}
     </div>
   </div>
   <!-- Multi-tramo -->
@@ -3264,8 +3278,8 @@ function renderQ2() {
     <span class="tooltip-trigger" data-tip="Un facility con varios tramos, cada uno con su monto, amortización, vencimiento y margen. Ej. sindicado TL A + TL B + RCF C.">?</span>
   </label>
   <div id="q-tramo-panel" class="panel ${d.quiroTranches?.length?'visible':''}" style="margin-bottom:10px;">
-    <div style="display:grid;grid-template-columns:1.1fr 1fr 1.3fr 1fr 0.8fr auto;gap:6px;padding:0 2px 4px;font-size:0.66rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;">
-      <span>Tramo</span><span>Monto</span><span>Amortización</span><span>Vencimiento</span><span>Margen pb</span><span></span>
+    <div style="display:grid;grid-template-columns:1.1fr 1fr 1.2fr 1fr 0.7fr 0.9fr auto;gap:6px;padding:0 2px 4px;font-size:0.66rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;">
+      <span>Tramo</span><span>Monto</span><span>Amortización</span><span>Vencimiento</span><span>Margen pb</span><span>Subtramos</span><span></span>
     </div>
     <div id="q-tramo-list">${(d.quiroTranches||[]).map((t,i)=>tramoRowHtml(t,i)).join('')}</div>
     <button type="button" onclick="addTramoRow()" style="margin-top:4px;padding:5px 12px;font-size:0.76rem;font-weight:600;background:transparent;border:1px dashed var(--border-strong);border-radius:7px;color:var(--text-muted);cursor:pointer;font-family:var(--font-ui);"><i class="ph ph-plus" style="font-size:12px;"></i> Agregar tramo</button>
@@ -3287,6 +3301,7 @@ function renderQ2() {
         ${makeField('Benchmark',qSelOpt('q-benchmark',CATALOGS.benchmarks_tasa,d.benchmark),true)}
         ${makeField('Spread (%)',`<input type="number" id="spreadVal" placeholder="3.50" step="0.01" value="${d.spread||''}" oninput="calcActiveTasa()">`,true)}
         ${makeField('Floor de Referencia (%)',`<input type="number" id="q-tiie-floor" placeholder="Ej. 8.50" step="0.01" value="${d.tiieFloor||''}">`,false,'Tasa mínima de referencia aunque TIIE baje')}
+        ${makeField('Tasa sustituta (fallback)',`<input type="text" id="q-tasa-sustituta" placeholder="Ej. CETES → CCP / EFFR" value="${d.tasaSustituta||''}">`,false,'Cascada de reemplazo si deja de publicarse el benchmark (CETE/CCP, EFFR para SOFR)')}
       </div>
       <p class="rate-calculated" id="activeRateDisplay">Tasa activa estimada: —</p>
       <label style="display:flex;align-items:center;gap:7px;margin-top:8px;font-size:0.8rem;font-weight:600;color:var(--text);cursor:pointer;">
@@ -3308,7 +3323,7 @@ function renderQ2() {
     </div>
   </div>
   <div class="form-grid">
-    ${makeField('Tasa Moratoria (%)',`<input id="q-tasa-mora" type="number" placeholder="Ej. 2.50" step="0.01" value="${d.tasaMora||''}">`,false,'Sobretasa aplicable en caso de mora')}
+    ${makeField('Tasa Moratoria',`<div style="display:flex;gap:6px;"><select id="q-mora-tipo" style="flex:0 0 130px;"><option value="multiplo"${d.moraTipo!=='absoluta'?' selected':''}>× tasa ordinaria</option><option value="absoluta"${d.moraTipo==='absoluta'?' selected':''}>+ % absoluto</option></select><input id="q-tasa-mora" type="number" placeholder="Ej. 2" step="0.01" value="${d.tasaMora||''}" style="flex:1;"></div>`,false,'Ej. "× 2" = el doble de la ordinaria (ambos contratos); o un % de sobretasa fijo')}
     ${makeField('Commitment Fee (%)',`<input id="q-commitment-fee" type="number" placeholder="Ej. 0.50" step="0.01" value="${d.commitmentFee||''}">`,false,'Fee sobre monto no dispuesto (revolventes)')}
   </div>
   <hr class="section-divider" style="margin:8px 0 12px">
@@ -3316,6 +3331,9 @@ function renderQ2() {
   <div class="form-grid">
     ${makeField('Comisión de Estructuración (%)',`<input id="q-com-estructuracion" type="number" placeholder="Ej. 1.00" step="0.01" value="${d.comEstructuracion||''}">`,false,'One-time sobre el monto de la línea')}
     ${makeField('Comisión de Apertura (%)',`<input id="q-com-apertura" type="number" placeholder="Ej. 0.75" step="0.01" value="${d.comApertura||''}">`,false)}
+    ${makeField('Comisión por Disponibilidad',`<input id="q-com-disponibilidad" type="text" placeholder="Ej. 35% del margen s/ no dispuesto" value="${d.comDisponibilidad||''}">`,false,'Sobre saldo no dispuesto — puede ser % del margen (sindicado) o % plano')}
+    ${makeField('Comisión por Extensión (pb)',`<input id="q-com-extension" type="text" placeholder="Ej. 25 / 50 pb" value="${d.comExtension||''}">`,false,'Fee al extender vigencia (ej. Tramo C: 1ª 25 pb / 2ª 50 pb)')}
+    ${makeField('Comisión por Ampliación de Vigencia (%)',`<input id="q-com-ampliacion" type="number" step="0.01" placeholder="Ej. 0.25" value="${d.comAmpliacion||''}">`,false)}
     ${makeField('Ajuste ESG / Sostenibilidad (± pb)',`<input id="q-esg-ajuste" type="number" placeholder="Ej. 5" step="1" value="${d.esgAjuste||''}">`,false,'Descuento/prima al margen ligado a KPI sostenible. Presente en ambos contratos analizados.')}
     ${makeField('Base de Cálculo',qSelOpt('q-base-calculo',CATALOGS.base_calculo,d.baseCalculo),false,'Convención de conteo de días (day count)')}
   </div>
@@ -3337,6 +3355,7 @@ function renderQ2() {
   <div class="form-grid">
     ${makeField('Prepago Voluntario',qSelOpt('q-prepago-vol',CATALOGS.prepago_opts,d.prepagoVol),false,'Condiciones de pago anticipado')}
     ${makeField('Prepago Obligatorio (cash sweep)',`<input id="q-cash-sweep" type="text" placeholder="Ej. 100% de ventas de activos / emisión de deuda" value="${d.cashSweep||''}">`,false,'Eventos que obligan a prepagar — afecta la proyección de saldo')}
+    ${makeField('Recalendarización de disposiciones',`<input id="q-recalendar" type="text" placeholder="Ej. revolvente, recalendarizable ≤30 días naturales" value="${d.recalendar||''}">`,false,'Si las disposiciones se reprograman automáticamente (revolvente). Ej. Contrato A: ≤30d, extensible +30d')}
   </div>
   <!-- Calendario de amortización por % -->
   <label style="display:flex;align-items:center;gap:7px;margin:2px 0 6px;font-size:0.8rem;font-weight:600;color:var(--text);cursor:pointer;">
@@ -3592,12 +3611,13 @@ function toggleSubMoneda(){
 function tramoRowHtml(t={}, i=0){
   const amorts = CATALOGS.tipos_amortizacion;
   const def = ['Tramo A','Tramo B','Tramo C','Tramo D'][i] || ('Tramo '+(i+1));
-  return `<div class="q-tramo-row" style="display:grid;grid-template-columns:1.1fr 1fr 1.3fr 1fr 0.8fr auto;gap:6px;margin-bottom:6px;align-items:center;">
+  return `<div class="q-tramo-row" style="display:grid;grid-template-columns:1.1fr 1fr 1.2fr 1fr 0.7fr 0.9fr auto;gap:6px;margin-bottom:6px;align-items:center;">
     <input type="text" class="q-tr-nombre" placeholder="${def}" value="${(t.nombre||'').replace(/"/g,'&quot;')}">
     <input type="number" class="q-tr-monto" placeholder="0.00" value="${t.monto||''}" oninput="updateTramoSum()">
     <select class="q-tr-amort">${amorts.map(a=>`<option${t.amort===a?' selected':''}>${a}</option>`).join('')}</select>
     <input type="date" class="q-tr-venc" value="${t.venc||''}">
     <input type="number" class="q-tr-margen" placeholder="pb" value="${t.margen||''}">
+    <input type="text" class="q-tr-sub" placeholder="Subtramos" title="Subtramos anidados, ej. B-1, B-2" value="${(t.subtramos||'').replace(/"/g,'&quot;')}">
     <button type="button" onclick="this.closest('.q-tramo-row').remove();updateTramoSum()" style="background:none;border:1px solid var(--border);border-radius:6px;padding:7px 9px;color:var(--text-muted);cursor:pointer;"><i class="ph ph-trash"></i></button>
   </div>`;
 }
@@ -3837,11 +3857,15 @@ function renderQ5() {
             ${rv(tasaDisplay, 'mono')}
           </div>
           ${d.tiieFloor ? `<div class="review-item"><span class="review-label">Floor de Referencia</span>${rv(d.tiieFloor+'%', 'mono')}</div>` : ''}
-          ${d.tasaMora ? `<div class="review-item"><span class="review-label">Tasa Moratoria</span>${rv('+'+d.tasaMora+'%', 'mono')}</div>` : ''}
+          ${d.tasaSustituta ? `<div class="review-item"><span class="review-label">Tasa sustituta</span>${rv(d.tasaSustituta, 'mono')}</div>` : ''}
+          ${d.tasaMora ? `<div class="review-item"><span class="review-label">Tasa Moratoria</span>${rv((d.moraTipo==='absoluta'?'+'+d.tasaMora+'%':'× '+d.tasaMora+' ordinaria'), 'mono')}</div>` : ''}
           ${d.pricingGrid?.length ? `<div class="review-item"><span class="review-label">Pricing Grid</span>${rv(d.pricingGrid.length+' niveles · '+d.pricingGrid.map(r=>r.pb+'pb').join(' / '), 'mono')}</div>` : ''}
           ${d.commitmentFee ? `<div class="review-item"><span class="review-label">Commitment Fee</span>${rv(d.commitmentFee+'%', 'mono')}</div>` : ''}
           ${d.comEstructuracion ? `<div class="review-item"><span class="review-label">Com. Estructuración</span>${rv(d.comEstructuracion+'%', 'mono')}</div>` : ''}
           ${d.comApertura ? `<div class="review-item"><span class="review-label">Com. Apertura</span>${rv(d.comApertura+'%', 'mono')}</div>` : ''}
+          ${d.comDisponibilidad ? `<div class="review-item"><span class="review-label">Com. Disponibilidad</span>${rv(d.comDisponibilidad, 'mono')}</div>` : ''}
+          ${d.comExtension ? `<div class="review-item"><span class="review-label">Com. Extensión</span>${rv(d.comExtension, 'mono')}</div>` : ''}
+          ${d.comAmpliacion ? `<div class="review-item"><span class="review-label">Com. Ampliación vigencia</span>${rv(d.comAmpliacion+'%', 'mono')}</div>` : ''}
           ${d.esgAjuste ? `<div class="review-item"><span class="review-label">Ajuste ESG</span>${rv('± '+d.esgAjuste+' pb', 'mono')}</div>` : ''}
           ${d.baseCalculo ? `<div class="review-item"><span class="review-label">Base de Cálculo</span>${rv(d.baseCalculo, 'mono')}</div>` : ''}
           <div class="review-item">
@@ -3905,15 +3929,16 @@ function renderQ5() {
       </div>
     </div>
 
-    ${(d.quiroTranches?.length || d.subMoneda || d.garantes?.length || d.colateral?.length || d.aforoMin || d.destino || d.cashSweep || d.renovacion || Object.keys(d.eventosCura||{}).length || d.amortSchedule?.length || d.steppedCov?.rows?.length || d.deliverables?.length) ? `
+    ${(d.quiroTranches?.length || d.subMoneda || d.garantes?.length || d.colateral?.length || d.aforoMin || d.destino || d.cashSweep || d.renovacion || d.recalendar || Object.keys(d.eventosCura||{}).length || d.amortSchedule?.length || d.steppedCov?.rows?.length || d.deliverables?.length) ? `
     <!-- ESTRUCTURA AVANZADA -->
     <div class="review-section">
       <div class="review-section-header">
         <span class="review-section-title"><i class="ph ph-stack"></i>Estructura & Garantías</span>
       </div>
       <div class="review-body"><div class="review-grid">
-        ${d.quiroTranches?.length ? `<div class="review-item" style="grid-column:1/-1;"><span class="review-label">Tramos (${d.quiroTranches.length})</span><div style="display:flex;flex-direction:column;gap:3px;margin-top:3px;">${d.quiroTranches.map(t=>`<span style="font-size:.8rem;">• <b>${t.nombre||'Tramo'}</b> — $${(+t.monto||0).toLocaleString('es-MX')}${t.amort?' · '+t.amort:''}${t.venc?' · vence '+t.venc:''}${t.margen?' · '+t.margen+'pb':''}</span>`).join('')}</div></div>`:''}
-        ${d.subMoneda ? `<div class="review-item"><span class="review-label">Sublímite multi-divisa</span><span class="review-value mono">${d.subMoneda}${d.subMonto?' · '+(+d.subMonto).toLocaleString('es-MX'):''}${d.subBench?' · '+d.subBench:''}</span></div>`:''}
+        ${d.quiroTranches?.length ? `<div class="review-item" style="grid-column:1/-1;"><span class="review-label">Tramos (${d.quiroTranches.length})</span><div style="display:flex;flex-direction:column;gap:3px;margin-top:3px;">${d.quiroTranches.map(t=>`<span style="font-size:.8rem;">• <b>${t.nombre||'Tramo'}</b> — $${(+t.monto||0).toLocaleString('es-MX')}${t.amort?' · '+t.amort:''}${t.venc?' · vence '+t.venc:''}${t.margen?' · '+t.margen+'pb':''}${t.subtramos?' · subtramos: '+t.subtramos:''}</span>`).join('')}</div></div>`:''}
+        ${d.subMoneda ? `<div class="review-item"><span class="review-label">Sublímite multi-divisa</span><span class="review-value mono">${d.subMoneda}${d.subMonto?' · '+(+d.subMonto).toLocaleString('es-MX'):''}${d.subBench?' · '+d.subBench:''}${d.subSpread?' · +'+d.subSpread+'%':''}</span></div>`:''}
+        ${d.recalendar ? `<div class="review-item"><span class="review-label">Recalendarización</span><span class="review-value">${d.recalendar}</span></div>`:''}
         ${d.garantes?.length ? `<div class="review-item" style="grid-column:1/-1;"><span class="review-label">Obligados / Garantes</span><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:3px;">${d.garantes.map(g=>`<span style="font-size:.72rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:2px 8px;">${g.nombre} · ${g.rol}</span>`).join('')}</div></div>`:''}
         ${(d.colateral?.length||d.aforoMin) ? `<div class="review-item"><span class="review-label">Colateral / Aforo</span><span class="review-value">${d.colateral?.length?d.colateral.length+' bien(es)':''}${d.aforoMin?` · aforo mín. ${d.aforoMin}x`:''}${d.avaluoFrec?` · avalúo ${d.avaluoFrec.toLowerCase()}`:''}</span></div>`:''}
         ${d.destino ? `<div class="review-item"><span class="review-label">Destino</span><span class="review-value">${d.destino}</span></div>`:''}
