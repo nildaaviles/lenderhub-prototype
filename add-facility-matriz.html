@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Facility — Matriz de carga · 2 contratos reales</title>
+<style>
+  :root{
+    --wine:#8a1e44; --wine-soft:#b03a63; --navy:#1b2030; --ink:#2a2f3a;
+    --muted:#6b7280; --line:#e7e8ee; --bg:#f4f5f8;
+    --ok:#16794c; --okbg:#e7f5ee; --warn:#9a6400; --warnbg:#fdf3e0;
+    --bad:#a3122b; --badbg:#fbe9ec;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 22px 80px}
+  header.top{margin-bottom:8px}
+  h1{font-size:26px;margin:0 0 4px;color:var(--navy)}
+  .sub{color:var(--muted);font-size:14px;margin-bottom:22px}
+  .tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+  .tab{padding:9px 16px;border:1px solid var(--line);background:#fff;border-radius:9px;cursor:pointer;font-weight:600;font-size:14px;color:var(--muted)}
+  .tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .panel{display:none}
+  .panel.active{display:block}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:0;margin-bottom:20px;overflow:hidden;box-shadow:0 1px 2px rgba(20,20,40,.04)}
+  .cardhead{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .cardhead h2{font-size:16px;margin:0;color:var(--navy)}
+  .pill{font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.02em}
+  .pill.bil{background:#eef0fb;color:#34408a}
+  .pill.sin{background:#f3eafr;background:#f1e9f4;color:#6a2b6e}
+  .step{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--wine);padding:14px 20px 6px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:9px 20px;border-bottom:1px solid #f1f2f6;vertical-align:top}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;background:#fafbfc}
+  td.field{font-weight:600;color:var(--ink);width:30%}
+  td.val{width:48%;color:#33384a}
+  td.val .raw{color:#9aa0ad;font-style:italic}
+  td.st{width:22%}
+  .badge{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:7px;white-space:nowrap}
+  .ok{background:var(--okbg);color:var(--ok)}
+  .warn{background:var(--warnbg);color:var(--warn)}
+  .bad{background:var(--badbg);color:var(--bad)}
+  .calc{background:#e6eefb;color:#2b4ba0}
+  .decl{background:#f0ece6;color:#8a6d3b}
+  .grp{font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--wine);padding:16px 20px 4px;border-top:1px solid #f1f2f6}
+  ul.cl{margin:6px 20px 14px;padding:0;list-style:none}
+  ul.cl li{padding:7px 0;border-bottom:1px solid #f4f5f8;display:flex;justify-content:space-between;gap:12px;align-items:flex-start;font-size:13px;color:#33384a}
+  ul.cl li span.t{flex:1}
+  .legend2{display:flex;gap:14px;flex-wrap:wrap;margin:0 0 16px;font-size:12.5px;color:var(--muted)}
+  .note{font-size:12px;color:var(--muted);margin-top:3px}
+  /* Gap analysis */
+  .gapsec{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-top:6px}
+  .gapsec h2{margin:0 0 4px;color:var(--navy);font-size:19px}
+  .gap{border-left:4px solid var(--line);padding:12px 16px;margin:12px 0;background:#fafbfc;border-radius:0 9px 9px 0}
+  .gap.p0{border-color:var(--bad)}
+  .gap.p1{border-color:var(--warn)}
+  .gap.p2{border-color:#9aa0ad}
+  .gap .h{font-weight:700;color:var(--ink);font-size:14.5px}
+  .gap .prio{font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:5px;margin-right:8px;vertical-align:middle}
+  .prio.p0{background:var(--badbg);color:var(--bad)}
+  .prio.p1{background:var(--warnbg);color:var(--warn)}
+  .prio.p2{background:#eef0f3;color:#566}
+  .gap .why{font-size:13px;color:#4a5060;margin-top:5px}
+  .gap .ev{font-size:12px;color:var(--muted);margin-top:5px}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin:14px 0 22px;font-size:12.5px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0 26px}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .kpi .n{font-size:26px;font-weight:800;color:var(--navy)}
+  .kpi .l{font-size:12px;color:var(--muted)}
+  .kpi.bad .n{color:var(--bad)} .kpi.warn .n{color:var(--warn)} .kpi.ok .n{color:var(--ok)}
+  footer{margin-top:30px;font-size:12px;color:#9aa0ad;text-align:center}
+  /* ── Modelo operativo ── */
+  .om-grid{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+  @media(max-width:900px){.om-grid{grid-template-columns:1fr}}
+  .om-flow{display:flex;flex-direction:column;gap:0}
+  .om-pillar{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;position:relative}
+  .om-pillar.built{border-left:5px solid var(--ok)}
+  .om-pillar.todo{border-left:5px solid var(--bad)}
+  .om-pillar.partial{border-left:5px solid var(--warn)}
+  .om-ph{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+  .om-num{width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0}
+  .om-pillar h3{margin:0;font-size:15px;color:var(--navy)}
+  .om-pillar p{margin:4px 0 0;font-size:12.5px;color:#4a5060;line-height:1.5}
+  .om-chip{font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:20px;letter-spacing:.02em}
+  .om-chip.built{background:var(--okbg);color:var(--ok)}
+  .om-chip.todo{background:var(--badbg);color:var(--bad)}
+  .om-chip.partial{background:var(--warnbg);color:var(--warn)}
+  .om-steps{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  .om-step{font-size:11.5px;background:#f4f5f8;border:1px solid var(--line);border-radius:7px;padding:4px 9px;color:#33384a}
+  .om-arrow{display:flex;justify-content:center;align-items:center;color:#b9bdc7;font-size:20px;padding:5px 0}
+  .om-side{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;position:sticky;top:14px}
+  .om-side h4{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--wine)}
+  .om-side .jtbd{font-style:italic;font-size:12.5px;color:#33384a;line-height:1.55;background:#fafbfc;border-left:3px solid var(--wine);padding:9px 11px;border-radius:0 8px 8px 0;margin-bottom:14px}
+  .om-side .blk{font-size:12px;color:#4a5060;line-height:1.5;margin-bottom:12px}
+  .om-side .blk b{color:var(--ink)}
+  .om-moat{background:#fff7ed;border:1px solid #fde6c8;border-radius:10px;padding:11px 13px;font-size:12px;color:#7a4a10;line-height:1.5}
+  .om-src{background:#eef0fb;border:1px solid #dfe3f7;border-radius:9px;padding:10px 12px;font-size:11.5px;color:#34408a;margin:14px 0 16px;line-height:1.5}
+  .om-loop{background:#f1e9f4;border:1px dashed #c9a6cf;border-radius:10px;padding:9px 13px;font-size:12px;color:#6a2b6e;text-align:center;margin:4px 0;font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Add Facility — Matriz de carga · data real del contrato</h1>
+    <div class="sub">Llenado de los <b>2 contratos reales</b> contra tu wizard de 5 pasos, con sus términos textuales · montos $ y RFC <b>testados (redactados)</b> en el contrato fuente · LenderHub · 9 jun 2026</div>
+  </header>
+
+  <div class="legend">
+    <span><i class="dot ok"></i> Cabe — el campo existe y recibe el dato</span>
+    <span><i class="dot warn"></i> Parcial — entra forzado / se pierde detalle</span>
+    <span><i class="dot bad"></i> No existe campo — dato sin lugar en el setup</span>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="show('modelo',this)">🏗️ Modelo operativo</div>
+    <div class="tab" onclick="show('extraccion',this)">📄 Extracción por contrato</div>
+    <div class="tab" onclick="show('a',this)">Facility A · RCF Bilateral (Fibra)</div>
+    <div class="tab" onclick="show('b',this)">Facility B · Sindicado RCF+TL (3 tramos)</div>
+    <div class="tab" onclick="show('gap',this)">⚠ Diagnóstico del setup (gaps)</div>
+    <div class="tab" onclick="show('test',this)">🔒 Valores testados</div>
+    <div class="tab" onclick="show('setup',this)">❓ ¿Setup posible?</div>
+  </div>
+
+  <!-- ============ MODELO OPERATIVO ============ -->
+  <div class="panel active" id="modelo">
+    <div class="om-src">
+      <b>Fuente:</b> Product Discovery — Quirografarios (BBVA IB&F · ~260 facilities · usuario primario: Back Office · sponsor: Jorge Santiago, Portfolio Monitoring). El producto no reemplaza a <b>Clan</b> (motor de la holding): lo <b>audita y monitorea de forma independiente</b>, del contrato a la alerta — con <b>Human-in-the-loop</b> (la IA extrae, el humano valida).
+    </div>
+    <div style="text-align:center;font-weight:800;font-size:13px;color:var(--navy);background:#eef0fb;border:1px solid #dfe3f7;border-radius:10px;padding:9px 12px;margin-bottom:16px;letter-spacing:.01em;">
+      Secuencia: &nbsp;Set up&nbsp; → &nbsp;Data flow <span style="font-weight:600;color:var(--muted);">(originador o lender)</span>&nbsp; → &nbsp;Motor&nbsp; → &nbsp;Workflow Orchestrator
+    </div>
+    <div class="om-grid">
+      <div class="om-flow">
+
+        <div class="om-pillar todo" style="background:#fbfdff;border-color:#dbeafe;">
+          <div class="om-ph"><i style="font-size:18px;">🏢</i><h3>Originador o Lender (fuente de documentos)</h3></div>
+          <p>Cualquiera de las dos partes alimenta los documentos: <b>contrato</b>, estados financieros, flujos de pago, avalúos, certificados (covenant compliance). Hoy llegan dispersos — Word, PDF, Excel — y "hay que cruzarlos a mano". <i>El estado de cuenta de Clan lo aporta el <b>Back Office</b> (interno), no el originador.</i></p>
+        </div>
+        <div class="om-arrow">↓ &nbsp;<span style="font-size:11px;color:#9aa0ad;">documentos</span></div>
+
+        <div class="om-pillar built">
+          <div class="om-ph"><span class="om-num">1</span><h3>Set up asistida por AI</h3><span class="om-chip built">✓ Construido (live)</span></div>
+          <p>Carga el contrato → la IA <b>extrae</b> términos, covenants, fechas y obligaciones → el humano <b>valida/edita/descarta</b> cada valor (con la cláusula fuente) → Facility parametrizado. Resuelve el <b>error de interpretación y captura manual</b> de la causa raíz.</p>
+          <div class="om-steps"><span class="om-step">Upload contrato</span><span class="om-step">IA extrae + confianza</span><span class="om-step">Variables nuevas (schema abierto)</span><span class="om-step">Humano valida</span><span class="om-step">Facility cargado</span></div>
+        </div>
+        <div class="om-loop">⇅ Human-in-the-loop · <b>lente extracción</b> — la IA <b>extrae</b> términos del contrato (con confianza y cláusula fuente); el humano <b>valida / edita / descarta</b> ⇅</div>
+        <div class="om-arrow">↓</div>
+
+        <div class="om-pillar partial">
+          <div class="om-ph"><span class="om-num">3</span><h3>Data flow — ingesta continua (originador o lender)</h3><span class="om-chip partial">◐ Parcial (intake AI sí; feed continuo no)</span></div>
+          <p><b>Dos fuentes de ingesta:</b> (1) <b>originador / lender</b> → contrato, EEFF, flujos de pago, avalúos, certificados; (2) <b>Back Office</b> → sube el <b>estado de cuenta de Clan</b> (el cobro reportado a auditar). El SLA de cada entregable (180/270/45 días) es el <b>disparador</b> del monitoreo. <i>La lectura/interpretación de los financieros la hace el Motor (pilar 2), no aquí.</i></p>
+          <div class="om-steps"><span class="om-step">Recibir doc</span><span class="om-step">Clasificar / OCR</span><span class="om-step">Normalizar / extraer</span><span class="om-step">Vincular al Facility</span><span class="om-step">→ pasa al Motor</span></div>
+        </div>
+        <div class="om-arrow">↓</div>
+
+        <div class="om-pillar partial">
+          <div class="om-ph"><span class="om-num">2</span><h3>Motor de monitoreo — "segunda opinión" independiente</h3><span class="om-chip partial">◐ Parcial · el moat — falta backend + vista del facility</span></div>
+          <p><b>Recálculo independiente</b> de tasas, amortización y márgenes <b>desde el contrato</b> (no desde Clan), y <b>comparación vs. el cobro reportado</b> que el Back Office aporta — Clan es el <b>sujeto auditado, no una fuente de datos</b> (no hay integración). Evaluación de <b>covenants</b> (incl. escalonados) y <b>lectura de financieros</b> → ratios. <b>Alertas en el momento</b>, no meses después (cierra el <i>desfase temporal</i>).</p>
+          <div class="om-steps"><span class="om-step">Lectura/mapeo de EEFF</span><span class="om-step">Recálculo desde el contrato</span><span class="om-step">Comparar vs cobro reportado</span><span class="om-step">Evaluar covenants</span><span class="om-step">Ratios financieros</span><span class="om-step">⚠ Alerta de breach</span></div>
+          <p style="font-size:11.5px;color:var(--muted);margin:8px 0 0;font-style:italic;">El motor solo <b>calcula y propone</b> (alertas) — la decisión humana ocurre en el Workflow Orchestrator ↓</p>
+          <p style="font-size:11.5px;color:var(--warn);margin:6px 0 0;"><b>Estado:</b> la <b>vista del facility ya existe para ABS</b>. Falta <b>ajustarla para unsecured (quirografario)</b>, el <b>backend de cálculo/reconciliación</b>, y el <b>ajuste de la visualización del facility</b> para mostrar recálculo, covenants evaluados y alertas.</p>
+        </div>
+        <div class="om-arrow">↓</div>
+
+        <div class="om-pillar todo">
+          <div class="om-ph"><span class="om-num">4</span><h3>Workflow Orchestrator</h3><span class="om-chip todo">○ Por construir</span></div>
+          <p>Orquesta y <b>opera cambios</b> (ajustes de parámetros, waivers, amendments), <b>monitorea seguimientos</b> (entregables pendientes, próximos cortes), gestiona <b>ajustes</b> y mantiene <b>trazabilidad completa</b>: del <b>contrato → cláusula → cálculo → alerta → acción</b>. Es el centro que el Back Office usa en vez de "quemar horas corrigiendo en Excel".</p>
+          <div class="om-steps"><span class="om-step">Cola de seguimientos</span><span class="om-step">Operar cambios</span><span class="om-step">Waivers / amendments</span><span class="om-step">Bitácora / audit trail</span><span class="om-step">Reporting a sponsor</span></div>
+        </div>
+        <div class="om-loop">⇅ Human-in-the-loop · <b>lente decisión</b> — la IA <b>propone cálculos y alertas</b> (desde el motor); el analista <b>confirma, anota y decide la acción</b> (waiver, ajuste, escalar) ⇅</div>
+
+      </div>
+
+      <aside class="om-side">
+        <h4>Job-to-be-done (raíz)</h4>
+        <div class="jtbd">"Cuando opero créditos con múltiples covenants en un motor (Clan) que no controlo, quiero validar de forma independiente que los cálculos y obligaciones son correctos y recibir alertas, para no depender de la interpretación manual ni descubrir errores de margen cuando ya cobré mal."</div>
+
+        <h4>Causa raíz</h4>
+        <div class="blk">Dependen de <b>interpretación y captura manual</b> sobre un motor (Clan) rígido que <b>no controlan</b> ("sistema soviético").</div>
+
+        <h4>Los 2 problemas</h4>
+        <div class="blk"><b>#1</b> Monitoreo contractual manual + sin alertas.<br><b>#2</b> Sin validación independiente del cálculo.</div>
+
+        <h4>Por qué duele</h4>
+        <div class="blk"><b>Riesgo financiero directo:</b> error de parámetro → margen mal reportado / se cobra mal. <b>Costo operativo:</b> Back Office corrige en vez de analizar. <b>Cero alertas</b> ante breach.</div>
+
+        <h4>⚠ Riesgo a vigilar</h4>
+        <div class="om-moat">Que el piloto se desvíe a <b>solo "validador de Clan"</b> (commodity, fácil de replicar) en vez de <b>monitoreo contractual</b> — el <b>moat</b> es el dato: financieros, documentos y flujos de pago. El motor de cálculo es el <b>gancho de confianza</b>; el monitoreo contractual es el negocio.</div>
+
+        <h4 style="margin-top:14px;">Piloto</h4>
+        <div class="blk">10 operaciones, foco en <b>problema #1</b> (interpretación de covenants + alertas).</div>
+      </aside>
+    </div>
+
+    <div style="margin-top:20px;padding:16px 18px;background:#fbf7f9;border:1px solid #f0e3ea;border-radius:12px;font-size:13px;color:#33384a;line-height:1.6;">
+      <b style="color:var(--wine);">Lectura de PM:</b> el <b>pilar #1 (set up) está construido</b> — el que esta matriz validó (18 gaps cerrados) — y el <b>#2 (motor) está parcial</b>: la vista del facility existe, falta el <b>backend de cálculo/reconciliación</b> y el ajuste de la visualización. El Discovery dice que <b>el dolor de negocio y el moat viven en los pilares 2 y 4</b> (recálculo independiente + alertas + Workflow Orchestrator con trazabilidad). El set up es <b>condición necesaria, no el diferenciador</b>. Siguiente apuesta: <b>terminar el pilar 2 (motor / segunda opinión) — backend + vista</b> sobre las 10 operaciones del piloto.
+    </div>
+  </div>
+
+  <!-- ============ EXTRACCIÓN POR CONTRATO (primer análisis) ============ -->
+  <div class="panel" id="extraccion">
+    <div class="legend2">
+      <span><i class="dot" style="background:#2b4ba0"></i> <b>Calculado</b> — LenderHub lo computa de los datos/EEFF</span>
+      <span><i class="dot" style="background:#8a6d3b"></i> <b>Declaración</b> — entra como carta/booleano firmado por la empresa</span>
+    </div>
+
+    <!-- CONTRATO 1 -->
+    <div class="card">
+      <div class="cardhead">
+        <h2>Contrato 1 · Crédito RCF Bilateral — Fibra Acreditada</h2>
+        <span class="pill bil">BILATERAL · QUIROGRAFARIO · DUAL MXN/USD</span>
+      </div>
+
+      <div class="grp">Datos Generales (Extraer)</div>
+      <table>
+        <tr><th>Dato</th><th>Valor en el contrato</th></tr>
+        <tr><td class="field">Contratación / modificatorios</td><td class="val">Contrato Original + 5 convenios modificatorios <span class="raw">(fechas testadas)</span></td></tr>
+        <tr><td class="field">Monto de la línea</td><td class="val">$XX,XXX,000,000 MXN <span class="raw">(testado)</span></td></tr>
+        <tr><td class="field">Sublímite en Dólares</td><td class="val">$XXX,000,000 equivalente USD</td></tr>
+        <tr><td class="field">Destino</td><td class="val">(i) Pago total del Contrato Original · (ii) pago de pasivos · (iii) usos corporativos · (iv) actividad para sus fines</td></tr>
+        <tr><td class="field">Vigencia</td><td class="val">4 años + opción 1 año adicional (al corriente; ejercible hasta 60 días antes del 4º aniversario, a discreción del Banco)</td></tr>
+        <tr><td class="field">Esquema</td><td class="val">Revolvente; disposiciones con pago parcial ≤30 días, recalendarizable +30 días</td></tr>
+        <tr><td class="field">Interés Pesos</td><td class="val">TIIEF (28d, fondeo compuesta) + Margen Aplicable Pesos</td></tr>
+        <tr><td class="field">Interés Dólares</td><td class="val">Tasa SOFR a Plazo (CME Term SOFR) + Margen Aplicable Dólares</td></tr>
+        <tr><td class="field">Tasa moratoria</td><td class="val">Tasa ordinaria × 2</td></tr>
+        <tr><td class="field">Divisor tasa anualizada</td><td class="val">360</td></tr>
+        <tr><td class="field">Modificación de tasa (ESG)</td><td class="val">Beneficio/penalidad ±X.XX% al margen según reducción de intensidad de emisiones GEI alcance 1 y 2 (vs. base 2019), certificado por Consultor Sustentable (PwC/Deloitte/KPMG/EY)</td></tr>
+        <tr><td class="field">Comisiones</td><td class="val">(i) Estructuración · (ii) Apertura · (iii) Ampliación de vigencia · (iv) Saldo no dispuesto (0.XX% anual, trimestral)</td></tr>
+      </table>
+
+      <div class="grp">Obligaciones de Hacer</div>
+      <ul class="cl">
+        <li><span class="t">EEFF anuales dictaminados ≤180 días post-cierre, firmados por rep. legal</span><span class="badge calc">Calculado</span></li>
+        <li><span class="t">EEFF internos semestrales ≤45 días post-cierre (BG, ER, cambios situación financiera)</span><span class="badge calc">Calculado</span></li>
+        <li><span class="t">Mantenerse como negocio en marcha</span><span class="badge decl">Declaración / SAT</span></li>
+        <li><span class="t">No subordinar obligaciones · trato pari passu</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">Cumplir Ley Gral. de Equilibrio y Protección del Ambiente</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">Informar aspectos legales/fiscales/financieros que afecten capacidad crediticia (≤10 días háb.)</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">Permitir inspección (3 días háb. de aviso)</span><span class="badge decl">Declaración</span></li>
+      </ul>
+
+      <div class="grp">Obligaciones Especiales (covenants)</div>
+      <table>
+        <tr><th>Covenant</th><th>Umbral</th><th>LenderHub</th></tr>
+        <tr><td class="field">Deuda Insoluta total</td><td class="val">&lt; 60% de (activos totales + inmob. adquiridos + recursos por colocación de valores)</td><td class="st"><span class="badge calc">Calculado</span></td></tr>
+        <tr><td class="field">Deuda Garantizada</td><td class="val">&lt; 40% de la misma base</td><td class="st"><span class="badge calc">Calculado</span></td></tr>
+        <tr><td class="field">Servicio de Deuda (DSCR)</td><td class="val">ingreso disponible / servicio de deuda anual (próx. 4T) ≥ 1.5 : 1</td><td class="st"><span class="badge calc">Calculado</span></td></tr>
+        <tr><td class="field">Activos totales no gravados</td><td class="val">&gt; 150% del principal de deuda no garantizada</td><td class="st"><span class="badge calc">Calculado</span></td></tr>
+      </table>
+
+      <div class="grp">Obligaciones de No Hacer (sin autorización del Banco)</div>
+      <ul class="cl">
+        <li><span class="t">Contratar pasivos que afecten las Obligaciones Especiales</span><span class="badge calc">Calculado</span></li>
+        <li><span class="t">Otorgar préstamos/garantías a terceros o filiales con Efecto Material Adverso</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">Revertir el patrimonio del Fideicomiso (con EMA)</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">Modificar el contrato del Fideicomiso (con EMA)</span><span class="badge decl">Declaración</span></li>
+      </ul>
+
+      <div class="grp">Causas de Vencimiento Anticipado</div>
+      <ul class="cl">
+        <li><span class="t">Impago de capital/intereses/comisiones/gastos</span><span class="badge calc">Calculado</span></li>
+        <li><span class="t">Crédito no destinado a los fines pactados</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">Procedimiento judicial/administrativo que derive en incumplimiento</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">No entregar info en 5 días háb. o info falsa</span><span class="badge calc">Calc. + Decl.</span></li>
+        <li><span class="t">Admisión de incapacidad de pago / cesión de bienes a acreedores</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">Concurso mercantil o quiebra</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">Adeudo fiscal o cuotas IMSS/INFONAVIT/SAR</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">Incumplimiento de cualquier obligación del contrato</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">Conflictos laborales que afecten el funcionamiento</span><span class="badge decl">Declaración</span></li>
+      </ul>
+    </div>
+
+    <!-- CONTRATO 2 -->
+    <div class="card">
+      <div class="cardhead">
+        <h2>Contrato 2 · Crédito RCF + TL "Lending" (Sindicado)</h2>
+        <span class="pill sin">SINDICADO · GARANTIZADO · 3 TRAMOS (A/B/C)</span>
+      </div>
+
+      <div class="grp">Datos Generales (Extraer)</div>
+      <table>
+        <tr><th>Dato</th><th>Valor en el contrato</th></tr>
+        <tr><td class="field">Fecha contratación</td><td class="val">11-dic-2024 (refinancia "Crédito Existente" del 08-sep-2023)</td></tr>
+        <tr><td class="field">Estructura</td><td class="val"><b>Tramo A</b> (simple, no revolvente) · <b>Tramo B</b> (simple, 2 subtramos B-1/B-2) · <b>Tramo C</b> (cuenta corriente, revolvente)</td></tr>
+        <tr><td class="field">Montos por tramo</td><td class="val">Testados — detalle de Compromisos por Acreditante en Anexo B</td></tr>
+        <tr><td class="field">Moneda</td><td class="val">Pesos (MXN)</td></tr>
+        <tr><td class="field">Destino</td><td class="val">(i) Prepago del Crédito Existente · (ii) Inversiones en Activos · (iii) capital de trabajo · (iv) gastos/comisiones</td></tr>
+        <tr><td class="field">Vigencia</td><td class="val">Tramo A: 6 años · Tramo B: 6 años · Tramo C: 3 años + hasta 2 extensiones de 12 meses</td></tr>
+        <tr><td class="field">Plazo de disposición</td><td class="val">A: 5 días háb. (única) · B: 360 días háb. (≤5 disp.) · C: revolvente</td></tr>
+        <tr><td class="field">Interés ordinario</td><td class="val">TIIE 91d (fondeo compuesta) + Margen Aplicable · pago trimestral · base 360</td></tr>
+        <tr><td class="field">Tasa sustituta</td><td class="val">Cascada: sustituta Banxico → CETE + spread → CCP + spread → tasa acordada</td></tr>
+        <tr><td class="field">Tasa moratoria</td><td class="val">Tasa ordinaria × 2</td></tr>
+        <tr><td class="field">Comisiones</td><td class="val">Por Disponibilidad (35% del Margen s/ no dispuesto B y C) · Por Extensión Tramo C (1ª 25 pb / 2ª 50 pb)</td></tr>
+        <tr><td class="field">Sostenibilidad</td><td class="val">Descuento/prima de 5 pb sobre el Margen (KPI sostenible, principios LMA)</td></tr>
+      </table>
+
+      <div class="grp">Margen Aplicable — grid por Índice de Apalancamiento (pb)</div>
+      <table>
+        <tr><th>Apalancamiento</th><th>Tramo A</th><th>Tramo B</th><th style="width:auto">Tramo C</th></tr>
+        <tr><td class="field">≥ 3.5x</td><td class="val">344</td><td class="val">349</td><td>324</td></tr>
+        <tr><td class="field">3.0x – 3.5x</td><td class="val">319</td><td class="val">324</td><td>299</td></tr>
+        <tr><td class="field">2.5x – 3.0x</td><td class="val">294</td><td class="val">299</td><td>274</td></tr>
+        <tr><td class="field">&lt; 2.5x</td><td class="val">269</td><td class="val">274</td><td>249</td></tr>
+      </table>
+      <p class="note" style="padding:0 20px 8px;">Se recalcula cada periodo con el Certificado de Cumplimiento más reciente; sin entrega aplica el margen más alto. → <b>Calculado</b>. Amortización A/B por tabla de % por trimestre (0% T1-4 … 9% en T24); Tramo C bullet.</p>
+
+      <div class="grp">Obligaciones de Hacer (Cláusula Quinta)</div>
+      <ul class="cl">
+        <li><span class="t">EEFF anuales auditados ≤270 días, sin salvedad de negocio en marcha, NIIF</span><span class="badge calc">Calculado</span></li>
+        <li><span class="t">Certificado de Cumplimiento trimestral (certifica covenants 5.16 y 5.17, UAFIDA) — insumo central del monitoreo</span><span class="badge calc">Calculado</span></li>
+        <li><span class="t">Información a solicitud ≤30 días naturales</span><span class="badge calc">Calculado</span></li>
+        <li><span class="t">Aviso de Efecto Significativo Adverso ≤10 días + informe</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">§5.16 Aforo — Hipotecas ≥ 0.5x del saldo en toda Fecha de Medición</span><span class="badge calc">Calculado</span></li>
+        <li><span class="t">§5.15 Avalúos: entrega ≤60 días háb.; renovación cada 3 años</span><span class="badge calc">Calculado</span></li>
+        <li><span class="t">§5.11 Seguros · §5.14 Materia Ambiental · §5.23 Operaciones con Afiliadas · §5.24 Cobertura</span><span class="badge decl">Declaración</span></li>
+      </ul>
+
+      <div class="grp">Obligaciones Financieras (§5.17) — Fecha de Medición = cierre trimestral</div>
+      <table>
+        <tr><th>Covenant</th><th>Umbral</th><th>LenderHub</th></tr>
+        <tr><td class="field">Índice de Cobertura de Intereses</td><td class="val">UAFIDA 12m / Gastos Financieros 12m ≥ 2.0x</td><td class="st"><span class="badge calc">Calculado</span></td></tr>
+        <tr><td class="field">Índice de Apalancamiento</td><td class="val">Deuda con Costo / UAFIDA ≤ 3.75x (a1) · 3.50x (a2-3) · 3.25x (a4) · 3.00x (a5+)</td><td class="st"><span class="badge calc">Calc. escalonado</span></td></tr>
+        <tr><td class="field">Capital Contable consolidado</td><td class="val">≥ 90% del Capital Contable al 31-dic-2023</td><td class="st"><span class="badge calc">Calculado</span></td></tr>
+        <tr><td class="field">Aforo (§5.16)</td><td class="val">≥ 0.5x</td><td class="st"><span class="badge calc">Calculado</span></td></tr>
+      </table>
+
+      <div class="grp">Obligaciones de No Hacer (Cláusula Sexta)</div>
+      <ul class="cl">
+        <li><span class="t">§6.1 No contraer Deuda con Costo (salvo excepciones)</span><span class="badge calc">Calc. + Decl.</span></li>
+        <li><span class="t">§6.2 No otorgar préstamos/garantías fuera de curso ordinario</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">§6.4 No gravar Inmuebles/Bienes Muebles salvo Gravámenes Permitidos (tope $XXX MM)</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">§6.5 No fusionarse/escindirse sin autorización · §6.6 No enajenar bienes bajo Garantía</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">§6.8 No Pagos Restringidos (dividendos) si hay Evento de Incumplimiento</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">§6.12 No operaciones con Partes Relacionadas fuera de mercado · §6.14 No actividades sancionadas</span><span class="badge decl">Declaración</span></li>
+      </ul>
+
+      <div class="grp">Eventos de Incumplimiento (Cláusula Séptima)</div>
+      <ul class="cl">
+        <li><span class="t">Impago de principal/intereses/comisiones</span><span class="badge calc">Calculado</span></li>
+        <li><span class="t">Declaración/información incorrecta (cura 5 días háb.) o falsa</span><span class="badge calc">Calc. + Decl.</span></li>
+        <li><span class="t">Incumplimientos Específicos §§5.1, 5.8, 5.9, 5.16, 5.17 y Cláusula Sexta (sin cura)</span><span class="badge calc">Calculado</span></li>
+        <li><span class="t">Insolvencia / Concurso Mercantil / Quiebra / Embargo</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">Sentencias firmes &gt; $XXX MM (no pagadas en 60 días)</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">Aforo / Hipotecas pierden prelación o validez</span><span class="badge calc">Calc. + Decl.</span></li>
+        <li><span class="t">Incumplimientos cruzados / Cross-default &gt; $XXX MM</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">Cambio de Control · conflictos laborales con EMA · expropiación</span><span class="badge decl">Declaración</span></li>
+        <li><span class="t">Listas OFAC / personas bloqueadas (cura 10 días háb.) · suspensión &gt;15 días</span><span class="badge decl">Declaración</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ FACILITY A ============ -->
+  <div class="panel" id="a">
+    <div class="card">
+      <div class="cardhead">
+        <h2>Crédito RCF Bilateral — Fibra Acreditada 2025</h2>
+        <span class="pill bil">BILATERAL · QUIROGRAFARIO · DUAL MXN/USD</span>
+      </div>
+
+      <div class="step">Paso 1 — Borrower</div>
+      <table>
+        <tr><th>Campo del wizard</th><th>Valor del contrato</th><th>Estado</th></tr>
+        <tr><td class="field">Nombre del Facility</td><td class="val">Crédito RCF Bilateral — Fibra Acreditada 2025</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Borrower Legal Name</td><td class="val">Fideicomiso F/XXXXXX "Fibra Acreditada" <span class="raw">(testado)</span></td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Tipo de Persona</td><td class="val">Fideicomiso (Fideicomiso Fibra Acreditada, fin: adquisición/desarrollo/arrendamiento de inmuebles)<div class="note">Vehículo fiduciario, no sociedad — el wizard solo ofrecía "Persona Moral".</div></td><td class="st"><span class="badge warn">Parcial</span></td></tr>
+        <tr><td class="field">Tax ID / RFC</td><td class="val raw">Testado</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">País</td><td class="val">México</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Sector</td><td class="val">FIBRA / Bienes Raíces</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Moneda</td><td class="val">MXN <b>+ sublímite USD</b><div class="note">Campo es mono-moneda; el crédito dispone en Pesos y Dólares.</div></td><td class="st"><span class="badge bad">Sin campo (2ª moneda)</span></td></tr>
+        <tr><td class="field">Estado</td><td class="val">Activo</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Fecha de Alta</td><td class="val raw">Testada</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Rating Int / Ext / Outlook / Calificadora</td><td class="val raw">Testados</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+      </table>
+
+      <div class="step">Paso 2 — Términos & Pricing</div>
+      <table>
+        <tr><th>Campo del wizard</th><th>Valor del contrato</th><th>Estado</th></tr>
+        <tr><td class="field">Instrumento Legal</td><td class="val">Apertura de crédito en cuenta corriente</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">No. Contrato / ISIN</td><td class="val raw">No. de contrato testado · bilateral (no bursátil, sin ISIN)</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Tipo de Crédito</td><td class="val">Crédito en cuenta corriente revolvente (Contrato Original + 5 convenios modificatorios)</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Tipo de Amortización</td><td class="val">Pago parcial ≤30 días naturales, recalendarizable +30d; capital a más tardar a la Fecha de Terminación</td><td class="st"><span class="badge warn">Parcial</span></td></tr>
+        <tr><td class="field">Monto Total</td><td class="val">$XX,XXX millones MXN <span class="raw">(monto testado en el contrato)</span> · sublímite USD también testado</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Ranking de Deuda</td><td class="val">Quirografario / Senior unsecured · pari passu</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Tipo de Tasa</td><td class="val"><b>Variable</b> — NO fija<div class="note">Pesos: TIIEF (TIIE de Fondeo 28d) + Margen Aplicable Pesos · Dólares: Tasa SOFR a Plazo (CME Term SOFR) + Margen Aplicable Dólares · sustituta: CETES</div></td><td class="st"><span class="badge bad">Falta ref. + 2 tasas</span></td></tr>
+        <tr><td class="field">Tasa Fija Anual (%)</td><td class="val raw">N/A — el crédito es variable</td><td class="st"><span class="badge bad">Campo no aplica</span></td></tr>
+        <tr><td class="field">Tasa Moratoria</td><td class="val">Tasa ordinaria × 2 (Cláusula Séptima)<div class="note">Es un multiplicador, no un % fijo.</div></td><td class="st"><span class="badge warn">Parcial</span></td></tr>
+        <tr><td class="field">Commitment Fee</td><td class="val">Comisión por saldo no dispuesto 0.XX% anual <span class="raw">(% testado)</span>, pagadera trimestral</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">— Otras comisiones</td><td class="val">Estructuración · Apertura · Ampliación de vigencia (Cláusula 13ª)</td><td class="st"><span class="badge bad">Sin campos</span></td></tr>
+        <tr><td class="field">— Ajuste ESG (sostenible)</td><td class="val">±X.XX% al margen <span class="raw">(% testado)</span> según reducción de intensidad de emisiones GEI alcance 1 y 2 vs. base 2019; cap anual; Consultor Sustentable (PwC/Deloitte/KPMG/EY)</td><td class="st"><span class="badge bad">Sin campo</span></td></tr>
+        <tr><td class="field">— Base de cálculo (day count)</td><td class="val">360 (Cláusula Sexta)</td><td class="st"><span class="badge bad">Sin campo</span></td></tr>
+        <tr><td class="field">Fecha Inicio / Vencimiento</td><td class="val">4 años desde la firma + opción +1 año (al corriente; ejercible hasta 60 días naturales antes del 4º aniversario, a discreción del Banco)</td><td class="st"><span class="badge warn">Parcial (sin extensión)</span></td></tr>
+        <tr><td class="field">Frecuencia de Pago</td><td class="val">Intereses por Periodo de ~30 días (termina día 25 de cada mes) · capital recalendarizable</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+      </table>
+
+      <div class="step">Paso 3 — Cláusulas & Lender</div>
+      <table>
+        <tr><th>Campo del wizard</th><th>Valor del contrato</th><th>Estado</th></tr>
+        <tr><td class="field">Garantías</td><td class="val">Ninguna (quirografario)</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Jurisdicción</td><td class="val">Tribunales CDMX</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Ley Aplicable</td><td class="val">México (LIC · LGTOC)</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Eventos de Aceleración</td><td class="val">✓ Impago · ✓ Concurso · ✓ Impugnación · ✓ Cross/material<div class="note">Faltan en la lista: adeudo fiscal/IMSS/INFONAVIT, conflictos laborales, desvío de destino.</div></td><td class="st"><span class="badge warn">Parcial</span></td></tr>
+        <tr><td class="field">Lender(s)</td><td class="val">Individual (bilateral)</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Lender</td><td class="val raw">1 banco acreditante — razón social testada ("el Banco")</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+      </table>
+
+      <div class="step">Paso 4 — Covenants</div>
+      <table>
+        <tr><th>Campo del wizard</th><th>Valor del contrato</th><th>Estado</th></tr>
+        <tr><td class="field">Periodicidad</td><td class="val">Trimestral (cálculo) — entrega semestral/anual</td><td class="st"><span class="badge warn">Parcial</span></td></tr>
+        <tr><td class="field">Financieros</td><td class="val">
+          • Deuda total &lt; 60% (Activos + inmob. + colocaciones)<br>
+          • Deuda garantizada &lt; 40% (misma base)<br>
+          • DSCR ≥ 1.5x (ingreso disp. / servicio deuda 4T)<br>
+          • Activos no gravados &gt; 150% deuda no garantizada
+          <div class="note">Solo hay campo "Nombre de la métrica": no se captura operador, umbral, ni la fórmula/base.</div>
+        </td><td class="st"><span class="badge bad">Estructura insuficiente</span></td></tr>
+        <tr><td class="field">Informativos (Hacer)</td><td class="val">EEFF anuales auditados ≤180d · semestrales ≤45d · negocio en marcha</td><td class="st"><span class="badge warn">Sin SLA de entrega</span></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============ FACILITY B ============ -->
+  <div class="panel" id="b">
+    <div class="card">
+      <div class="cardhead">
+        <h2>Crédito Sindicado RCF + TL — Empresa Acreditada 2024</h2>
+        <span class="pill sin">SINDICADO · GARANTIZADO · 3 TRAMOS (A/B/C)</span>
+      </div>
+
+      <div class="step">Paso 1 — Borrower</div>
+      <table>
+        <tr><th>Campo del wizard</th><th>Valor del contrato</th><th>Estado</th></tr>
+        <tr><td class="field">Nombre del Facility</td><td class="val">Crédito Sindicado RCF+TL — Empresa Acreditada 2024</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Borrower Legal Name</td><td class="val">Empresa Acreditada, S.A. de C.V. <span class="raw">(razón social testada)</span></td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">— Obligadas Solidarias / Garantes</td><td class="val">Obligadas solidarias + garantes hipotecarias (Cláusula Tercera) — además puede adherir Subsidiarias<div class="note">El modelo solo admite 1 borrower; no hay obligados/garantes.</div></td><td class="st"><span class="badge bad">Sin campo</span></td></tr>
+        <tr><td class="field">Tipo de Persona</td><td class="val">Persona Moral (S.A. de C.V.)</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">País / Moneda</td><td class="val">México / MXN (Pesos)</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Fecha de Alta</td><td class="val">11-dic-2024 (firma) · refinancia crédito existente del 08-sep-2023</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Rating Int / Ext / Outlook</td><td class="val raw">Testados</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+      </table>
+
+      <div class="step">Paso 2 — Términos & Pricing <span style="color:var(--bad);text-transform:none;font-weight:700;letter-spacing:0">· bloqueante: 3 tramos en 1 sola pantalla</span></div>
+      <table>
+        <tr><th>Campo del wizard</th><th>Valor del contrato (¡3 tramos!)</th><th>Estado</th></tr>
+        <tr><td class="field">Instrumento Legal</td><td class="val">Crédito simple y en cuenta corriente</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">No. Contrato / ISIN</td><td class="val raw">No. de contrato testado · sindicado bilateral (no bursátil)</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Estructura / Tramos</td><td class="val">
+          <b>Tramo A</b> (TL) — crédito simple, 6 años, no revolvente<br>
+          <b>Tramo B</b> (TL) — crédito simple, 6 años, 2 subtramos (B-1, B-2), disposición hasta 360 días háb.<br>
+          <b>Tramo C</b> (RCF) — cuenta corriente revolvente, 3 años + hasta 2 extensiones de 12 meses
+          <div class="note">El wizard tiene UN Monto, UN Tipo de Amortización, UNA Tasa. Imposible cargar 3 tramos sin crear 3 facilities falsos.</div>
+        </td><td class="st"><span class="badge bad">No soportado</span></td></tr>
+        <tr><td class="field">Monto Total</td><td class="val">Σ tramos A+B+C <span class="raw">(montos testados)</span> — Compromisos por acreditante en Anexo B</td><td class="st"><span class="badge bad">Sin desglose</span></td></tr>
+        <tr><td class="field">Tipo de Amortización</td><td class="val">A/B: 24 amortizaciones trimestrales progresivas (0% T1-4 → 9% en T24; 1er trim 31-mar-2025) · C: bullet revolvente (90/180/360d, renovable)<div class="note">No hay forma de cargar un calendario de amortización por %.</div></td><td class="st"><span class="badge bad">Sin calendario</span></td></tr>
+        <tr><td class="field">Ranking de Deuda</td><td class="val">Senior secured (garantizado)</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Tipo de Tasa</td><td class="val"><b>Variable: TIIE 91d + Margen dinámico</b><div class="note">Margen cambia por Índice de Apalancamiento (grid): A 269–344 pb · B 274–349 pb · C 249–324 pb. + fallback CETE/CCP.</div></td><td class="st"><span class="badge bad">Sin grid de pricing</span></td></tr>
+        <tr><td class="field">Tasa Moratoria</td><td class="val">Ordinaria × 2</td><td class="st"><span class="badge warn">Parcial</span></td></tr>
+        <tr><td class="field">Comisiones</td><td class="val">Disponibilidad (35% del margen s/no dispuesto) · Extensión (25/50 pb)</td><td class="st"><span class="badge bad">Solo 1 fee</span></td></tr>
+        <tr><td class="field">— Ajuste ESG</td><td class="val">±5 pb (KPI sostenible, principios LMA)</td><td class="st"><span class="badge bad">Sin campo</span></td></tr>
+        <tr><td class="field">Fecha Vencimiento</td><td class="val">A/B 6a · C 3a (+2 extensiones)</td><td class="st"><span class="badge bad">1 sola fecha</span></td></tr>
+        <tr><td class="field">Frecuencia de Pago</td><td class="val">Trimestral</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">— Prepago obligatorio (cash sweep)</td><td class="val">100% de ventas/indemnización/emisión de deuda</td><td class="st"><span class="badge bad">Sin campo</span></td></tr>
+      </table>
+
+      <div class="step">Paso 3 — Cláusulas & Lender</div>
+      <table>
+        <tr><th>Campo del wizard</th><th>Valor del contrato</th><th>Estado</th></tr>
+        <tr><td class="field">Garantías</td><td class="val">Hipotecas + Prenda sobre acciones + Obligación solidaria<div class="note">Dropdown simple; no liga colateral → avalúo → aforo.</div></td><td class="st"><span class="badge warn">Parcial</span></td></tr>
+        <tr><td class="field">Jurisdicción / Ley</td><td class="val">CDMX / México</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Eventos de Aceleración</td><td class="val">✓ Impago · ✓ Concurso/quiebra · ✓ Cambio de control · ✓ Cross-default · ✓ Covenants sin cura<div class="note">Faltan: MAC/Efecto Significativo Adverso, sentencias &gt; umbral, OFAC/listas, expropiación, suspensión &gt;15d — y los <b>periodos de cura</b> por evento.</div></td><td class="st"><span class="badge warn">Parcial</span></td></tr>
+        <tr><td class="field">Lender(s)</td><td class="val"><b>Sindicado</b> — Agente + 3 Acreditantes</td><td class="st"><span class="badge warn">Sin estructura</span></td></tr>
+        <tr><td class="field">— Agente / Participaciones</td><td class="val">Banco Agente + Compromiso % por acreditante · regla "Acreditantes Requeridas" &gt;70%</td><td class="st"><span class="badge bad">Sin campo</span></td></tr>
+      </table>
+
+      <div class="step">Paso 4 — Covenants</div>
+      <table>
+        <tr><th>Campo del wizard</th><th>Valor del contrato</th><th>Estado</th></tr>
+        <tr><td class="field">Periodicidad / Fecha de Corte</td><td class="val">Trimestral · último día natural del trimestre</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Financieros</td><td class="val">
+          • ICR (Cobertura de Intereses) ≥ 2.0x<br>
+          • <b>Apalancamiento ≤ 3.75x → 3.50x → 3.25x → 3.00x</b> (escalonado por año)<br>
+          • Capital Contable ≥ 90% del cierre 2023<br>
+          • Aforo ≥ 0.5x (hipotecas / saldo)
+          <div class="note">El umbral de apalancamiento <b>cambia en el tiempo</b>: el campo "Nombre de la métrica" no captura operador, valor ni la curva temporal. El Aforo necesita ligarse a avalúos.</div>
+        </td><td class="st"><span class="badge bad">Estructura insuficiente</span></td></tr>
+        <tr><td class="field">Informativos / Operativos</td><td class="val">EEFF auditados ≤270d · Certificado de Cumplimiento trimestral · avalúos cada 3a</td><td class="st"><span class="badge warn">Sin SLA / disparador</span></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============ GAP ANALYSIS ============ -->
+  <div class="panel" id="gap">
+    <div class="summary">
+      <div class="kpi ok"><div class="n">0</div><div class="l">Gaps abiertos — todos construidos en el flujo (live)</div></div>
+      <div class="kpi ok"><div class="n">18 / 18</div><div class="l">Gaps resueltos (8 P0 · 6 P1 · 4 P2)</div></div>
+      <div class="kpi ok"><div class="n">SET&nbsp;UP</div><div class="l">Pilar 1 de 4 completo · faltan pilares 2-4 (ver Modelo operativo)</div></div>
+    </div>
+
+    <div class="gapsec">
+      <div style="background:var(--okbg);border:1px solid #bfe3cf;border-radius:10px;padding:13px 16px;margin-bottom:18px;font-size:13.5px;color:var(--ok);line-height:1.55;">
+        <b>✓ Diagnóstico cerrado.</b> Los 18 gaps del <b>set up</b> (pilar 1) están construidos y desplegados en el prototipo live: multi-tramo, tasa variable + pricing grid, covenant estructurado + escalonado, sindicado con %, garantes, aforo/colateral, multi-moneda, calendario de amortización, cura por evento, entregables con SLA, prepago, etc. <br><span style="color:#4a5060;">Lo de abajo se conserva como <b>registro histórico del diagnóstico</b>. El siguiente frente NO es el set up — son los pilares 2-4 del Modelo operativo (motor de monitoreo, data flow continuo, Workflow Orchestrator).</span>
+      </div>
+      <h2>Registro histórico — diagnóstico inicial del flujo de Add Facility</h2>
+      <div class="sub">Diagnóstico contra los 2 contratos. El patrón era: <b>el wizard modelaba un crédito bilateral simple de tasa fija; los contratos reales son multi-tramo, sindicados, garantizados y de tasa variable con grid.</b> <b style="color:var(--ok)">Todos los puntos de abajo ya están resueltos.</b></div>
+
+      <h3 style="color:var(--bad);margin-top:18px">P0 · Bloqueantes</h3>
+
+      <div class="gap p0"><div class="h"><span class="prio p0">P0</span>1. Estructura multi-tramo dentro de un Facility</div>
+        <div class="why">El Paso 2 asume 1 monto / 1 amortización / 1 tasa / 1 vencimiento. El Contrato B tiene Tramos A, B (con 2 subtramos) y C, cada uno con su monto, plazo, amortización y margen. Hoy tendrías que crear 3 facilities falsos y romper el reporting.</div>
+        <div class="ev">Necesario: entidad <b>Tranche</b> hija del Facility (monto, tipo, amortización, vencimiento, margen propios).</div>
+      </div>
+
+      <div class="gap p0"><div class="h"><span class="prio p0">P0</span>2. Tasa variable + referencia + pricing grid</div>
+        <div class="why">"Tipo de Tasa: Fija / Tasa Fija Anual" no cubre ninguno de los dos contratos. Ambos son variables: TIIEF/TIIE/SOFR + margen, y el Contrato B tiene <b>margen que cambia según el Índice de Apalancamiento</b>. Falta también la tasa sustituta (CETE/CCP fallback).</div>
+        <div class="ev">Necesario: tasa de referencia + plazo + margen, y una <b>tabla de pricing grid</b> (umbral → pb). Es core para el cálculo de intereses de LenderHub.</div>
+      </div>
+
+      <div class="gap p0"><div class="h"><span class="prio p0">P0</span>3. Covenant estructurado (no solo "Nombre de la métrica")</div>
+        <div class="why">El Paso 4 solo deja escribir el nombre. No captura <b>métrica · operador · valor umbral · unidad · base/fórmula</b>, y mucho menos un umbral que <b>evoluciona en el tiempo</b> (Apalancamiento 3.75x→3.00x). Sin estructura, no puedes evaluar breach automáticamente — que es la razón de ser del producto.</div>
+        <div class="ev">Necesario: covenant = {métrica, operador, valor, vigencia-desde/hasta} + schedule escalonado.</div>
+      </div>
+
+      <div class="gap p0"><div class="h"><span class="prio p0">P0</span>4. Sindicado: Agente + participaciones</div>
+        <div class="why">Eliges "Sindicado" pero no hay dónde capturar el Banco Agente, cada acreditante, su <b>Compromiso / % de participación</b>, ni la regla de "Acreditantes Requeridas" (&gt;70%) que gobierna waivers y aceleración.</div>
+        <div class="ev">Necesario: lista de lenders con rol (Agente/Acreditante) y % de compromiso por tramo.</div>
+      </div>
+
+      <div class="gap p0"><div class="h"><span class="prio p0">P0</span>5. Garantes / Obligados solidarios</div>
+        <div class="why">El Contrato B tiene obligadas solidarias y garantes hipotecarias. El modelo solo tiene 1 Borrower. Afecta la evaluación de riesgo y a quién se le exige.</div>
+        <div class="ev">Necesario: estructura de obligados (borrower + obligados solidarios + garantes).</div>
+      </div>
+
+      <div class="gap p0"><div class="h"><span class="prio p0">P0</span>6. Aforo / colateral / borrowing base</div>
+        <div class="why">"Garantías" es un dropdown plano. El Contrato B exige <b>Aforo ≥ 0.5x</b> ligado a avalúos con revaluación cada 3 años — es un covenant vivo, no una etiqueta. Sin modelar colateral no se monitorea.</div>
+        <div class="ev">Necesario: colateral (tipo, valor, avalúo, fecha) → cálculo de Aforo/LTV como covenant.</div>
+      </div>
+
+      <div class="gap p0"><div class="h"><span class="prio p0">P0</span>7. Multi-moneda / sublímites</div>
+        <div class="why">El Contrato A dispone en MXN y USD (SOFR). "Moneda" es un solo valor. Se pierde el sublímite en dólares y su tasa.</div>
+        <div class="ev">Necesario: moneda base + sublímites por moneda con su tasa.</div>
+      </div>
+
+      <div class="gap p0"><div class="h"><span class="prio p0">P0</span>8. Calendario de amortización por tabla</div>
+        <div class="why">El Contrato B amortiza por % por trimestre (0% los primeros 4T, creciente hasta 9% en el T24). "Tipo de Amortización" como dropdown no captura el schedule, y sin él no proyectas saldo ni servicio de deuda.</div>
+        <div class="ev">Necesario: tabla de amortización editable (periodo → % o monto).</div>
+      </div>
+
+      <h3 style="color:var(--warn);margin-top:22px">P1 · El dato entra pero degradado</h3>
+
+      <div class="gap p1"><div class="h"><span class="prio p1">P1</span>9. Ajuste de margen ESG / sostenibilidad</div>
+        <div class="why">Ambos contratos tienen pricing ligado a KPI sostenible (±pb). Es tendencia de mercado y ambos tus contratos ya lo traen — debería ser de primera clase.</div></div>
+
+      <div class="gap p1"><div class="h"><span class="prio p1">P1</span>10. Comisiones múltiples</div>
+        <div class="why">Solo tienes Commitment Fee. Faltan estructuración, apertura, agencia, extensión. Impacta el cálculo de costo all-in.</div></div>
+
+      <div class="gap p1"><div class="h"><span class="prio p1">P1</span>11. Periodos de cura por evento de aceleración</div>
+        <div class="why">La lista de eventos es booleana. En los contratos cada causal tiene su periodo de cura (5/10/15/60/90 días). Sin esto el monitoreo marca breach cuando aún hay gracia.</div></div>
+
+      <div class="gap p1"><div class="h"><span class="prio p1">P1</span>12. Calendario de entregables (Obligaciones de Hacer)</div>
+        <div class="why">El tab "Informativos" no captura SLAs: EEFF anuales (180d / 270d), semestrales (45d), Certificado de Cumplimiento. Estas fechas son el <b>disparador</b> del monitoreo de LenderHub — hoy no quedan registradas.</div></div>
+
+      <div class="gap p1"><div class="h"><span class="prio p1">P1</span>13. Day count y tasa moratoria como multiplicador</div>
+        <div class="why">Base 360 vs 365 no se captura. La moratoria suele ser "ordinaria × 2", no un % absoluto — el campo actual fuerza a teclear un número que se desactualiza.</div></div>
+
+      <div class="gap p1"><div class="h"><span class="prio p1">P1</span>14. Prepago (voluntario y cash sweep obligatorio)</div>
+        <div class="why">El Contrato B obliga prepago al 100% de ciertos ingresos. Afecta proyección de saldo y vencimiento efectivo.</div></div>
+
+      <h3 style="color:#566;margin-top:22px">P2 · Trazabilidad y refinamientos</h3>
+
+      <div class="gap p2"><div class="h"><span class="prio p2">P2</span>15. Adjuntar contrato + mapear dato → cláusula</div>
+        <div class="why">No hay vínculo entre cada valor cargado y la cláusula fuente. Para auditoría/disputa y para la confianza del lender, la trazabilidad importa.</div></div>
+
+      <div class="gap p2"><div class="h"><span class="prio p2">P2</span>16. Renovación / extensión de vigencia</div>
+        <div class="why">A: +1 año · C: 2×12 meses. Una sola "Fecha Vencimiento" no modela la opción de extensión.</div></div>
+
+      <div class="gap p2"><div class="h"><span class="prio p2">P2</span>17. Destino del crédito</div>
+        <div class="why">Campo ausente, aunque el desvío de destino es causal de vencimiento anticipado en ambos.</div></div>
+
+      <div class="gap p2"><div class="h"><span class="prio p2">P2</span>18. Tipo de persona = Fideicomiso</div>
+        <div class="why">El Contrato A el borrower es un fideicomiso (sin RFC de sociedad típico). "Persona Moral" genérico no lo distingue para reglas de KYC/riesgo.</div></div>
+
+      <div style="margin-top:24px;padding:16px 18px;background:#fbf7f9;border:1px solid #f0e3ea;border-radius:10px">
+        <b style="color:var(--wine)">Lente de PM (capa CPO + PM) — actualizado:</b> el wizard ya modela <b>multi-tramo, tasa variable + grid, covenant estructurado/escalonado, sindicado, garantes, aforo y multi-moneda</b> — los 2 contratos reales entran sin trucos. <b>El set up dejó de ser el cuello de botella.</b> El Discovery confirma que <b>el verdadero valor (y el moat) no está en cargar el facility, sino en monitorearlo</b>: recálculo independiente vs. Clan, evaluación de covenants y alertas en el momento (motor de monitoreo) + el Workflow Orchestrator con trazabilidad. Esa es la siguiente apuesta — ver el tab <b>Modelo operativo</b>.
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ VALORES TESTADOS ============ -->
+  <div class="panel" id="test">
+    <div class="summary">
+      <div class="kpi bad"><div class="n">Doc A</div><div class="l">Pricing 100% testado — protege márgenes y tasas</div></div>
+      <div class="kpi warn"><div class="n">Doc B</div><div class="l">Identidades + montos testados — pricing visible</div></div>
+      <div class="kpi ok"><div class="n">Patrón</div><div class="l">Placeholders <span class="raw">X / XXX</span> + roles genéricos</div></div>
+    </div>
+
+    <div class="gapsec" style="margin-bottom:20px">
+      <h2>Qué se testó en cada contrato</h2>
+      <div class="sub">Inventario de los valores ocultados (sustituidos por <span class="raw">X / XXX / XXXX</span> o por roles genéricos). La <b>estrategia de redacción es distinta</b> en cada documento — y eso mismo es señal de mercado.</div>
+    </div>
+
+    <!-- DOC A -->
+    <div class="card">
+      <div class="cardhead">
+        <h2>Doc A — RCF Bilateral · Fibra Acreditada</h2>
+        <span class="pill bil">REDACCIÓN AGRESIVA · TODO LO CUANTITATIVO</span>
+      </div>
+
+      <div class="step">Identidades / partes</div>
+      <table>
+        <tr><th>Valor en el contrato</th><th>Cómo quedó testado</th><th>Tipo</th></tr>
+        <tr><td class="field">Nombre del Banco</td><td class="val">"BANCO" / "Agente" · dominio <span class="raw">agente.mx</span></td><td class="st"><span class="badge bad">Identidad</span></td></tr>
+        <tr><td class="field">Apoderados del banco</td><td class="val">"BANQUERO 1", "BANQUERO 2"</td><td class="st"><span class="badge bad">Identidad</span></td></tr>
+        <tr><td class="field">Representante del cliente</td><td class="val">"FUNCIONARIO 1"</td><td class="st"><span class="badge bad">Identidad</span></td></tr>
+        <tr><td class="field">Notario / fedatario</td><td class="val">"Notario J.D." + nº notaría <span class="raw">XXX</span> / correduría <span class="raw">XXXX</span></td><td class="st"><span class="badge bad">Identidad</span></td></tr>
+        <tr><td class="field">Auditor / Consultor sustentable</td><td class="val">"AUDITOR México" · "Consultor Sustentable" (genéricos)</td><td class="st"><span class="badge bad">Identidad</span></td></tr>
+        <tr><td class="field">Banco corresponsal NY</td><td class="val">"XXXXX Bank"</td><td class="st"><span class="badge bad">Identidad</span></td></tr>
+        <tr><td class="field">Domicilios</td><td class="val">"Dirección" (Banco y Cliente)</td><td class="st"><span class="badge bad">Identidad</span></td></tr>
+      </table>
+
+      <div class="step">Números de identificación</div>
+      <table>
+        <tr><td class="field">Nº de Fideicomiso</td><td class="val raw">XXXXXXXX</td><td class="st"><span class="badge warn">ID cuenta</span></td></tr>
+        <tr><td class="field">Cuenta de cheques MXN y USD</td><td class="val raw">XXXXXXX</td><td class="st"><span class="badge warn">ID cuenta</span></td></tr>
+        <tr><td class="field">Cuenta liquidadora · CLABE · ABA · SWIFT</td><td class="val raw">XXXX</td><td class="st"><span class="badge warn">ID cuenta</span></td></tr>
+      </table>
+
+      <div class="step">Fechas — todas testadas</div>
+      <table>
+        <tr><td class="field">Constitución, convenios 1°–5°, contrato original, acta de comité, firma, reporte ESG</td><td class="val raw">XXX</td><td class="st"><span class="badge warn">Fecha</span></td></tr>
+      </table>
+
+      <div class="step">Montos</div>
+      <table>
+        <tr><td class="field">Monto del Contrato Original</td><td class="val raw">$X,XXXXX´XXX,XXX.00</td><td class="st"><span class="badge bad">Monto</span></td></tr>
+        <tr><td class="field">Importe del Crédito (línea)</td><td class="val raw">$XX'XXX,000,000.00</td><td class="st"><span class="badge bad">Monto</span></td></tr>
+        <tr><td class="field">Sublímite en dólares</td><td class="val raw">$XXX,000,000.00</td><td class="st"><span class="badge bad">Monto</span></td></tr>
+        <tr><td class="field">Tope de disposición sin Comité (+ adicional)</td><td class="val raw">$XXX´XXX,000,000.00 · $XXX,XXX,000.00</td><td class="st"><span class="badge bad">Monto</span></td></tr>
+        <tr><td class="field">Mínimo de pago anticipado</td><td class="val raw">$XXX,000,000.00</td><td class="st"><span class="badge bad">Monto</span></td></tr>
+      </table>
+
+      <div class="step">Tasas, márgenes y comisiones — lo más sensible</div>
+      <table>
+        <tr><td class="field">Margen Aplicable Pesos (base + ajuste TIIEF)</td><td class="val raw">X.XX%</td><td class="st"><span class="badge bad">Pricing</span></td></tr>
+        <tr><td class="field">Margen Aplicable Dólares (s/ SOFR)</td><td class="val raw">X.XX%</td><td class="st"><span class="badge bad">Pricing</span></td></tr>
+        <tr><td class="field">Beneficio sustentable año 1</td><td class="val raw">X.XX%</td><td class="st"><span class="badge bad">Pricing</span></td></tr>
+        <tr><td class="field">Prima/Descuento ESG (+/-) · penalidad · tope</td><td class="val raw">X.XX%</td><td class="st"><span class="badge bad">Pricing</span></td></tr>
+        <tr><td class="field">Comisión por ampliación de vigencia</td><td class="val raw">X.XX%</td><td class="st"><span class="badge bad">Pricing</span></td></tr>
+        <tr><td class="field">Comisión por saldo no dispuesto</td><td class="val raw">0.XX% anual</td><td class="st"><span class="badge bad">Pricing</span></td></tr>
+        <tr><td class="field">Tabla reducción GEI (Valor Base 2019, metas 2025–29) + fórmula</td><td class="val">Celdas vacías / sin valores</td><td class="st"><span class="badge bad">Pricing</span></td></tr>
+      </table>
+      <div style="padding:12px 20px 18px"><span class="note">✅ <b>Sobreviven sin testar:</b> covenants cualitativos — Deuda &lt;60% / garantizada &lt;40%, DSCR ≥1.5:1, activos no gravados ≥150%, plazos en días.</span></div>
+    </div>
+
+    <!-- DOC B -->
+    <div class="card">
+      <div class="cardhead">
+        <h2>Doc B — Sindicado RCF + TL (A/B/C)</h2>
+        <span class="pill sin">REDACCIÓN SELECTIVA · QUIÉN Y CUÁNTO</span>
+      </div>
+
+      <div class="step">Lo que SÍ se testó — identidades</div>
+      <table>
+        <tr><th>Valor en el contrato</th><th>Cómo quedó testado</th><th>Tipo</th></tr>
+        <tr><td class="field">Acreditada</td><td class="val">"EMPRESA ACREDITADA, S.A. de C.V."</td><td class="st"><span class="badge bad">Identidad</span></td></tr>
+        <tr><td class="field">Banco agente / estructurador</td><td class="val">"AGENTE"</td><td class="st"><span class="badge bad">Identidad</span></td></tr>
+        <tr><td class="field">Acreditantes</td><td class="val">"ACREDITANTE 1", "ACREDITANTE 2"</td><td class="st"><span class="badge bad">Identidad</span></td></tr>
+        <tr><td class="field">Bancos del crédito existente</td><td class="val">"Banco X / Y / Z", "Grupo Financiero X"</td><td class="st"><span class="badge bad">Identidad</span></td></tr>
+      </table>
+
+      <div class="step">Lo que SÍ se testó — montos y umbrales</div>
+      <table>
+        <tr><td class="field">Crédito Existente</td><td class="val raw">$X.XXX'000,000.00</td><td class="st"><span class="badge bad">Monto</span></td></tr>
+        <tr><td class="field">Tramo A</td><td class="val raw">$X,XXX'000,000.00</td><td class="st"><span class="badge bad">Monto</span></td></tr>
+        <tr><td class="field">Tramo B (B-1 / B-2)</td><td class="val raw">$X,XXX'000,000.00 · $XXX,000,000 · $XXX,000,000</td><td class="st"><span class="badge bad">Monto</span></td></tr>
+        <tr><td class="field">Tramo C</td><td class="val raw">$XXX'000,000.00</td><td class="st"><span class="badge bad">Monto</span></td></tr>
+        <tr><td class="field">Mínimo / múltiplos de pago anticipado</td><td class="val raw">MXN$XXX,000,000.00</td><td class="st"><span class="badge warn">Umbral</span></td></tr>
+        <tr><td class="field">Venta de activos fuera de curso normal</td><td class="val raw">$XXXX,000,000.00</td><td class="st"><span class="badge warn">Umbral</span></td></tr>
+        <tr><td class="field">Canasta de gravámenes permitidos</td><td class="val raw">$XXXX'000,000.00</td><td class="st"><span class="badge warn">Umbral</span></td></tr>
+        <tr><td class="field">Umbral de sentencias (cross-default judicial)</td><td class="val raw">$XXXXX,000,000.00</td><td class="st"><span class="badge warn">Umbral</span></td></tr>
+        <tr><td class="field">Umbral incumplimiento otras deudas / contratos</td><td class="val raw">$XXXXX,000,000 · $XXXX,000,000</td><td class="st"><span class="badge warn">Umbral</span></td></tr>
+      </table>
+
+      <div class="step">Lo que NO se testó — visible en este contrato</div>
+      <table>
+        <tr><td class="field">Grids de Margen Aplicable por apalancamiento</td><td class="val">A 344/319/294/269 pb · B 349/324/299/274 pb · C 324/299/274/249 pb</td><td class="st"><span class="badge ok">Visible</span></td></tr>
+        <tr><td class="field">Comisiones</td><td class="val">Disponibilidad 35% del margen · extensión 25/50 pb · cesión USD$3,500</td><td class="st"><span class="badge ok">Visible</span></td></tr>
+        <tr><td class="field">Beneficio sustentable</td><td class="val">5 pb sobre margen</td><td class="st"><span class="badge ok">Visible</span></td></tr>
+        <tr><td class="field">Aforo mínimo</td><td class="val">0.5x – 1.0x</td><td class="st"><span class="badge ok">Visible</span></td></tr>
+        <tr><td class="field">Fechas</td><td class="val">08-sep-2023 · 11-dic-2024</td><td class="st"><span class="badge ok">Visible</span></td></tr>
+      </table>
+    </div>
+
+    <!-- DIFERENCIA CLAVE -->
+    <div class="gapsec">
+      <h2>Diferencia clave entre los dos contratos</h2>
+      <table style="margin-top:10px">
+        <tr><th>Categoría</th><th>Doc A · Bilateral Fibra</th><th>Doc B · Sindicado A/B/C</th></tr>
+        <tr><td class="field">Tasas y márgenes</td><td class="val"><span class="badge bad">🔒 Testados</span></td><td class="val"><span class="badge ok">✅ Visibles</span></td></tr>
+        <tr><td class="field">Montos de línea</td><td class="val"><span class="badge bad">🔒 Testados</span></td><td class="val"><span class="badge bad">🔒 Testados</span></td></tr>
+        <tr><td class="field">Identidades</td><td class="val"><span class="badge bad">🔒 Testadas</span></td><td class="val"><span class="badge bad">🔒 Testadas</span></td></tr>
+        <tr><td class="field">Fechas</td><td class="val"><span class="badge bad">🔒 Testadas</span></td><td class="val"><span class="badge ok">✅ Visibles</span></td></tr>
+        <tr><td class="field">Aforo / covenants</td><td class="val"><span class="badge ok">✅ Visibles</span></td><td class="val"><span class="badge ok">✅ Visibles</span></td></tr>
+      </table>
+
+      <div style="margin-top:24px;padding:16px 18px;background:#fbf7f9;border:1px solid #f0e3ea;border-radius:10px">
+        <b style="color:var(--wine)">Lente de PM:</b> el Doc A protege el <b>pricing</b> (lo más competitivo); el Doc B protege <b>quién y cuánto</b> pero deja el pricing abierto — útil como <b>benchmark de márgenes de mercado</b> (TIIE + ~269–349 pb según apalancamiento) para el motor de monitoreo de LenderHub. Para el wizard de Add Facility, ambos confirman que los campos sensibles (pricing grid, montos por tramo, identidades de sindicato) deben capturarse como datos estructurados — no como texto libre.
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ¿SETUP POSIBLE? ============ -->
+  <div class="panel" id="setup">
+    <div class="gapsec" style="margin-bottom:18px">
+      <h2>¿Con esto testado se puede hacer un setup?</h2>
+      <div class="sub">Respuesta corta: <b>no para un setup funcional · sí para un esqueleto de prueba.</b> El producto de LenderHub es <b>monitoreo</b> — y justo lo que monitoreas (montos, tasas, umbrales de covenant) es lo que está testado. Un setup sin esos valores carga la estructura pero <b>no enciende el motor</b>.</div>
+    </div>
+
+    <div class="summary">
+      <div class="kpi ok"><div class="n">Estructura</div><div class="l">Cargable con lo testado — la "forma" del facility</div></div>
+      <div class="kpi bad"><div class="n">Operables</div><div class="l">Monto · tasa · umbral de covenant = testados</div></div>
+      <div class="kpi warn"><div class="n">Doc B &gt; Doc A</div><div class="l">El sindicado deja el pricing visible; el bilateral no</div></div>
+    </div>
+
+    <div class="card">
+      <div class="cardhead"><h2>✅ Qué SÍ puedes montar con lo testado</h2><span class="pill bil">CUALITATIVO / ESTRUCTURAL</span></div>
+      <table>
+        <tr><th>Campo</th><th>Por qué entra</th><th>Estado</th></tr>
+        <tr><td class="field">Instrumento · ranking · moneda(s) · revolvente vs. simple</td><td class="val">No dependen del número</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Estructura de tramos (A/B/C) y de sindicato</td><td class="val">Agente + nº de acreditantes, sin montos</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Tipo de garantía · jurisdicción · ley aplicable</td><td class="val">Texto, no testado</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+        <tr><td class="field">Lógica de covenants (operador + métrica)</td><td class="val">"Deuda &lt; X%", "DSCR ≥ X", "Aforo ≥ X" — sin el valor</td><td class="st"><span class="badge warn">Sin umbral</span></td></tr>
+        <tr><td class="field">Eventos de aceleración (causales)</td><td class="val">Las causales sí; los umbrales en $ no</td><td class="st"><span class="badge warn">Sin umbral</span></td></tr>
+        <tr><td class="field">Calendario / periodicidad</td><td class="val">Plazos en días están visibles</td><td class="st"><span class="badge ok">Cabe</span></td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="cardhead"><h2>🔒 Qué NO puedes montar — y es el corazón del setup</h2><span class="pill sin">OPERABLES TESTADOS</span></div>
+      <table>
+        <tr><th>Dato</th><th>Doc A · Bilateral</th><th>Doc B · Sindicado</th></tr>
+        <tr><td class="field">Monto de la línea / por tramo</td><td class="val"><span class="badge bad">🔒</span></td><td class="val"><span class="badge bad">🔒</span></td></tr>
+        <tr><td class="field">Tasa / margen / pricing grid</td><td class="val"><span class="badge bad">🔒</span></td><td class="val"><span class="badge ok">✅ visible</span></td></tr>
+        <tr><td class="field">Umbral del covenant (el número)</td><td class="val"><span class="badge warn">parcial</span></td><td class="val"><span class="badge warn">parcial</span></td></tr>
+        <tr><td class="field">Umbrales de cross-default ($)</td><td class="val"><span class="badge bad">🔒</span></td><td class="val"><span class="badge bad">🔒</span></td></tr>
+        <tr><td class="field">Identidad del borrower / lender</td><td class="val"><span class="badge bad">🔒</span></td><td class="val"><span class="badge bad">🔒</span></td></tr>
+      </table>
+      <div style="padding:12px 20px 18px"><span class="note">Sin <b>monto</b> no calculas saldo ni disposición. Sin <b>tasa/margen</b> no devengas intereses. Sin <b>valor umbral</b> no evalúas <i>breach</i> — el output que el lender paga por ver. Un covenant cargado como "Deuda &lt; XX%" nunca dispara alerta.</span></div>
+    </div>
+
+    <div class="gapsec" style="margin-bottom:18px">
+      <h2>Veredicto por documento</h2>
+      <div class="gap p1"><div class="h"><span class="prio p1">DOC B</span>Sindicado — más cargable</div>
+        <div class="why">El pricing grid (269–349 pb), comisiones, aforo y fechas son legibles. Falta sobre todo el <b>monto por tramo</b> y las identidades. Sirve como <b>benchmark de márgenes</b> y para un setup de demo casi completo.</div></div>
+      <div class="gap p0"><div class="h"><span class="prio p0">DOC A</span>Bilateral — prácticamente vacío de operables</div>
+        <div class="why">Tasas, márgenes, montos y fechas testados. Solo da para probar la <b>forma</b> del flujo, no para monitorear.</div></div>
+    </div>
+
+    <div class="gapsec">
+      <h2>Recomendación de PM</h2>
+      <div class="sub">Para qué te sirve <b>hoy</b>:</div>
+      <table style="margin-bottom:6px">
+        <tr><td class="field">1 · Validar el wizard</td><td class="val">Los testados no estorban para detectar gaps de estructura (justo lo de este archivo)</td></tr>
+        <tr><td class="field">2 · Setup en sandbox/demo</td><td class="val">Con montos y tasas <i>dummy</i> marcados como placeholder</td></tr>
+        <tr><td class="field">3 · Benchmark de pricing</td><td class="val">Con el Doc B (TIIE + ~269–349 pb según apalancamiento)</td></tr>
+      </table>
+      <div style="margin-top:18px;padding:16px 18px;background:#fbf7f9;border:1px solid #f0e3ea;border-radius:10px">
+        <b style="color:var(--wine)">Lente de PM (CPO + PM):</b> para un setup <b>real y monitorable</b> necesitas la versión sin testar (o que el lender capture esos campos en onboarding). Define en el intake los <b>"campos mínimos para activar monitoreo"</b> — monto, tasa/margen, umbral+operador de cada covenant, fechas de corte — y bloquea el estado <b>"Activo · monitoreando"</b> hasta tenerlos, separándolo de <b>"Cargado · estructura"</b>. Así un facility con datos testados queda en <i>draft</i> sin ensuciar tus KPIs de facilities monetizadas.
+      </div>
+    </div>
+  </div>
+
+  <footer>Generado para validación de setup · datos sensibles testados · LenderHub PM</footer>
+</div>
+
+<script>
+  function show(id, el){
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    el.classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+</script>
+</body>
+</html>
