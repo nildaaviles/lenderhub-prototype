@@ -588,17 +588,17 @@
 
       <!-- KPIs -->
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
-        <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:var(--radius);padding:14px 16px;">
-          <p style="font-size:1.75rem;font-weight:700;color:var(--red);line-height:1;">8</p>
-          <p style="font-size:0.78rem;color:var(--text-secondary);margin-top:4px;">Gaps P0 — bloquean cargar los contratos</p>
+        <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:var(--radius);padding:14px 16px;">
+          <p style="font-size:1.75rem;font-weight:700;color:var(--green);line-height:1;">0</p>
+          <p style="font-size:0.78rem;color:var(--text-secondary);margin-top:4px;">Gaps abiertos — todos construidos en el flujo</p>
         </div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--yellow);border-radius:var(--radius);padding:14px 16px;">
-          <p style="font-size:1.75rem;font-weight:700;color:var(--yellow);line-height:1;">6</p>
-          <p style="font-size:0.78rem;color:var(--text-secondary);margin-top:4px;">Gaps P1 — el dato entra degradado</p>
+        <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:var(--radius);padding:14px 16px;">
+          <p style="font-size:1.75rem;font-weight:700;color:var(--green);line-height:1;">18 / 18</p>
+          <p style="font-size:0.78rem;color:var(--text-secondary);margin-top:4px;">Gaps de set up resueltos (8 P0 · 6 P1 · 4 P2)</p>
         </div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--text-muted);border-radius:var(--radius);padding:14px 16px;">
-          <p style="font-size:1.75rem;font-weight:700;color:var(--text);line-height:1;">4</p>
-          <p style="font-size:0.78rem;color:var(--text-secondary);margin-top:4px;">Gaps P2 — trazabilidad</p>
+        <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--secondary);border-radius:var(--radius);padding:14px 16px;">
+          <p style="font-size:1.05rem;font-weight:700;color:var(--text);line-height:1.2;margin-top:4px;">Pilar 1 de 4</p>
+          <p style="font-size:0.78rem;color:var(--text-secondary);margin-top:4px;">Set up completo · faltan motor de monitoreo, data flow y torre de control</p>
         </div>
       </div>
 
@@ -620,19 +620,19 @@
           <tbody>
             <tr><td><b>Borrower</b></td><td>Fideicomiso F/XXXXXX "Fibra Acreditada" <i>(testado)</i></td><td><span class="an-b ok">Cabe</span></td></tr>
             <tr><td>Tipo de Persona</td><td>Fideicomiso / vehículo fiduciario</td><td><span class="an-b ok">Cabe ✔ agregado</span></td></tr>
-            <tr><td>Moneda</td><td>MXN <b>+ sublímite USD</b> (SOFR)</td><td><span class="an-b bad">Sin 2ª moneda</span></td></tr>
+            <tr><td>Moneda</td><td>MXN <b>+ sublímite USD</b> (SOFR)</td><td><span class="an-b ok">Cabe ✔ multi-divisa</span></td></tr>
             <tr><td>Instrumento / Tipo</td><td>Apertura en cuenta corriente · Revolvente</td><td><span class="an-b ok">Cabe</span></td></tr>
             <tr><td>Monto</td><td>$XX,XXX,000,000 MXN</td><td><span class="an-b ok">Cabe</span></td></tr>
             <tr><td>Ranking</td><td>Quirografario senior · pari passu</td><td><span class="an-b ok">Cabe</span></td></tr>
-            <tr><td>Tasa</td><td>Variable: TIIEF 28d (MXN) / SOFR (USD) + Margen</td><td><span class="an-b warn">Parcial · 2 tasas</span></td></tr>
+            <tr><td>Tasa</td><td>Variable: TIIEF 28d (MXN) / SOFR (USD) + Margen</td><td><span class="an-b ok">Cabe ✔ + sublímite</span></td></tr>
             <tr><td>Tasa moratoria</td><td>Ordinaria × 2</td><td><span class="an-b ok">Cabe</span></td></tr>
             <tr><td>Ajuste ESG</td><td>±X.XX% al margen s/ reducción emisiones GEI (base 2019)</td><td><span class="an-b ok">Cabe ✔ agregado</span></td></tr>
             <tr><td>Comisiones</td><td>Estructuración · Apertura · Ampliación · No dispuesto</td><td><span class="an-b ok">Cabe ✔ agregado</span></td></tr>
             <tr><td>Base de cálculo</td><td>360</td><td><span class="an-b ok">Cabe ✔ agregado</span></td></tr>
-            <tr><td>Vigencia</td><td>4 años + opción 1 año</td><td><span class="an-b warn">Parcial · sin extensión</span></td></tr>
-            <tr><td>Eventos de aceleración</td><td>Impago · concurso · cross-default · impugnación</td><td><span class="an-b warn">Faltan fiscal/laboral</span></td></tr>
+            <tr><td>Vigencia</td><td>4 años + opción 1 año</td><td><span class="an-b ok">Cabe ✔ renovación</span></td></tr>
+            <tr><td>Eventos de aceleración</td><td>Impago · concurso · cross-default · impugnación</td><td><span class="an-b ok">Cabe ✔ + cura</span></td></tr>
             <tr><td>Covenants</td><td>Deuda&lt;60% · Garantizada&lt;40% · DSCR≥1.5x · ATG&gt;150%</td><td><span class="an-b ok">Cabe (estructurado)</span></td></tr>
-            <tr><td>Reporting (Hacer)</td><td>EEFF anuales ≤180d · semestrales ≤45d</td><td><span class="an-b warn">Sin SLA de entrega</span></td></tr>
+            <tr><td>Reporting (Hacer)</td><td>EEFF anuales ≤180d · semestrales ≤45d</td><td><span class="an-b ok">Cabe ✔ SLA</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -647,52 +647,54 @@
           <thead><tr><th>Campo del wizard</th><th>Valor del contrato</th><th>Estado</th></tr></thead>
           <tbody>
             <tr><td><b>Borrower</b></td><td>Empresa Acreditada, S.A. de C.V.</td><td><span class="an-b ok">Cabe</span></td></tr>
-            <tr><td>Obligadas solidarias / garantes</td><td>Múltiples obligadas + garantes hipotecarias</td><td><span class="an-b bad">Sin campo</span></td></tr>
-            <tr><td><b>Estructura</b></td><td>Tramo A (6a) · Tramo B (6a, 2 subtramos) · Tramo C (revolvente 3a + 2×12m)</td><td><span class="an-b bad">No soportado (multi-tramo)</span></td></tr>
-            <tr><td>Amortización</td><td>A/B progresiva por tabla (% por trimestre) · C bullet</td><td><span class="an-b bad">Sin calendario por tabla</span></td></tr>
+            <tr><td>Obligadas solidarias / garantes</td><td>Múltiples obligadas + garantes hipotecarias</td><td><span class="an-b ok">Cabe ✔ construido</span></td></tr>
+            <tr><td><b>Estructura</b></td><td>Tramo A (6a) · Tramo B (6a, 2 subtramos) · Tramo C (revolvente 3a + 2×12m)</td><td><span class="an-b ok">Cabe ✔ multi-tramo</span></td></tr>
+            <tr><td>Amortización</td><td>A/B progresiva por tabla (% por trimestre) · C bullet</td><td><span class="an-b ok">Cabe ✔ calendario %</span></td></tr>
             <tr><td>Ranking</td><td>Senior secured (garantizado)</td><td><span class="an-b ok">Cabe</span></td></tr>
             <tr><td>Tasa</td><td>TIIE 91d + <b>margen dinámico por apalancamiento</b> (269–349 pb)</td><td><span class="an-b ok">Cabe ✔ pricing grid</span></td></tr>
-            <tr><td>Comisiones</td><td>Disponibilidad (35% margen) · Extensión (25/50 pb)</td><td><span class="an-b warn">Parcial</span></td></tr>
+            <tr><td>Comisiones</td><td>Disponibilidad (35% margen) · Extensión (25/50 pb)</td><td><span class="an-b ok">Cabe ✔</span></td></tr>
             <tr><td>Ajuste ESG</td><td>±5 pb (KPI sostenible, principios LMA)</td><td><span class="an-b ok">Cabe ✔ agregado</span></td></tr>
-            <tr><td>Garantías / Aforo</td><td>Hipotecas + prenda · Aforo ≥ 0.5x (avalúos)</td><td><span class="an-b warn">Parcial · sin aforo vivo</span></td></tr>
-            <tr><td>Lender</td><td>Agente + 3 Acreditantes · "Requeridas" &gt;70%</td><td><span class="an-b warn">Sindicado sin % participación</span></td></tr>
-            <tr><td>Covenants</td><td>ICR≥2.0x · <b>Leverage ≤3.75x→3.00x (escalonado)</b> · Capital≥90% · Aforo≥0.5x</td><td><span class="an-b warn">Sin umbral escalonado en tiempo</span></td></tr>
-            <tr><td>Prepago obligatorio</td><td>Cash sweep 100% de ventas / emisión</td><td><span class="an-b bad">Sin campo</span></td></tr>
-            <tr><td>Eventos de aceleración</td><td>Impago · concurso · cambio control · cross-default</td><td><span class="an-b warn">Faltan MAC/OFAC/cura</span></td></tr>
+            <tr><td>Garantías / Aforo</td><td>Hipotecas + prenda · Aforo ≥ 0.5x (avalúos)</td><td><span class="an-b ok">Cabe ✔ aforo vivo</span></td></tr>
+            <tr><td>Lender</td><td>Agente + 3 Acreditantes · "Requeridas" &gt;70%</td><td><span class="an-b ok">Cabe ✔ % + mayoría</span></td></tr>
+            <tr><td>Covenants</td><td>ICR≥2.0x · <b>Leverage ≤3.75x→3.00x (escalonado)</b> · Capital≥90% · Aforo≥0.5x</td><td><span class="an-b ok">Cabe ✔ escalonado</span></td></tr>
+            <tr><td>Prepago obligatorio</td><td>Cash sweep 100% de ventas / emisión</td><td><span class="an-b ok">Cabe ✔ cash sweep</span></td></tr>
+            <tr><td>Eventos de aceleración</td><td>Impago · concurso · cambio control · cross-default</td><td><span class="an-b ok">Cabe ✔ + cura</span></td></tr>
           </tbody>
         </table>
       </div>
 
       <!-- PANEL GAPS -->
       <div id="an-gaps" class="an-panel" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;">
-        <p style="font-size:0.9rem;color:var(--text-secondary);margin:0 0 14px;">Patrón: el wizard modelaba un <b>crédito bilateral simple</b>; los contratos reales son <b>multi-tramo, sindicados, garantizados y de tasa variable con grid</b>. Lo marcado <span style="color:var(--green);font-weight:700;">✔</span> ya se incorporó en esta versión del flujo.</p>
+        <div style="background:var(--green-bg);border:1px solid rgba(22,163,74,.25);border-radius:var(--radius);padding:12px 15px;margin:0 0 16px;font-size:0.85rem;color:var(--green);line-height:1.5;">
+          <b>✓ Diagnóstico cerrado.</b> Los 18 gaps del <b>set up</b> están construidos y desplegados. <span style="color:var(--text-secondary);">El wizard modelaba un crédito bilateral simple; ahora carga los 2 contratos reales (multi-tramo, sindicado, garantizado, tasa variable con grid) sin trucos. Se conserva como registro del diagnóstico.</span>
+        </div>
 
-        <p style="font-size:0.78rem;font-weight:800;color:var(--red);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px;">P0 · Bloqueantes</p>
-        <div class="an-gap p0"><b>1. Estructura multi-tramo</b> — un Facility con Tramos A/B/C, cada uno con monto, plazo, amortización y margen propios. <i>(pendiente — ya existe en el flujo ABS, portar a quiro)</i></div>
-        <div class="an-gap p0"><b>2. Tasa variable + pricing grid</b> <span class="an-done">✔ agregado</span> — margen que cambia según Índice de Apalancamiento, con tasa sustituta.</div>
-        <div class="an-gap p0"><b>3. Covenant con umbral escalonado en el tiempo</b> — Leverage 3.75x→3.00x por año. <i>(el motor de covenants existe; falta el schedule temporal)</i></div>
-        <div class="an-gap p0"><b>4. Sindicado: agente + % de participación</b> y regla "Acreditantes Requeridas &gt;70%". <i>(panel sindicado existe; falta % por lender)</i></div>
-        <div class="an-gap p0"><b>5. Garantes / obligados solidarios</b> — hoy solo 1 borrower.</div>
-        <div class="an-gap p0"><b>6. Aforo / colateral vivo</b> — Aforo ≥0.5x ligado a avalúos, no un dropdown.</div>
-        <div class="an-gap p0"><b>7. Multi-moneda / sublímites</b> — disposición en MXN y USD con su tasa.</div>
-        <div class="an-gap p0"><b>8. Calendario de amortización por tabla</b> — % por periodo (Tramo A/B).</div>
+        <p style="font-size:0.78rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px;">P0 · Bloqueantes — resueltos</p>
+        <div class="an-gap p0"><b>1. Estructura multi-tramo</b> <span class="an-done">✔ construido</span> — Tramos A/B/C con monto, amortización, vencimiento y margen propios.</div>
+        <div class="an-gap p0"><b>2. Tasa variable + pricing grid</b> <span class="an-done">✔ construido</span> — margen por Índice de Apalancamiento + tasa sustituta.</div>
+        <div class="an-gap p0"><b>3. Covenant con umbral escalonado en el tiempo</b> <span class="an-done">✔ construido</span> — Leverage 3.75x→3.00x por año.</div>
+        <div class="an-gap p0"><b>4. Sindicado: agente + % de participación</b> <span class="an-done">✔ construido</span> — mayoría "Acreditantes Requeridas" configurable.</div>
+        <div class="an-gap p0"><b>5. Garantes / obligados solidarios</b> <span class="an-done">✔ construido</span></div>
+        <div class="an-gap p0"><b>6. Aforo / colateral vivo</b> <span class="an-done">✔ construido</span> — colateral + aforo (LTV) calculado.</div>
+        <div class="an-gap p0"><b>7. Multi-moneda / sublímites</b> <span class="an-done">✔ construido</span></div>
+        <div class="an-gap p0"><b>8. Calendario de amortización por tabla</b> <span class="an-done">✔ construido</span> — % por periodo con validación 100%.</div>
 
-        <p style="font-size:0.78rem;font-weight:800;color:var(--yellow);text-transform:uppercase;letter-spacing:.05em;margin:18px 0 6px;">P1 · Entra degradado</p>
-        <div class="an-gap p1"><b>9. Ajuste de margen ESG / sostenibilidad</b> <span class="an-done">✔ agregado</span></div>
-        <div class="an-gap p1"><b>10. Comisiones múltiples</b> <span class="an-done">✔ agregado</span> (estructuración, apertura, extensión)</div>
-        <div class="an-gap p1"><b>11. Base de cálculo (day count 360/365)</b> <span class="an-done">✔ agregado</span></div>
-        <div class="an-gap p1"><b>12. Periodos de cura por evento de aceleración</b> — hoy son booleanos.</div>
-        <div class="an-gap p1"><b>13. Calendario de entregables (Obligaciones de Hacer con SLA)</b> — el disparador del monitoreo.</div>
-        <div class="an-gap p1"><b>14. Prepago voluntario y cash sweep obligatorio</b></div>
+        <p style="font-size:0.78rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.05em;margin:18px 0 6px;">P1 — resueltos</p>
+        <div class="an-gap p1"><b>9. Ajuste de margen ESG / sostenibilidad</b> <span class="an-done">✔ construido</span></div>
+        <div class="an-gap p1"><b>10. Comisiones múltiples</b> <span class="an-done">✔ construido</span></div>
+        <div class="an-gap p1"><b>11. Base de cálculo (day count 360/365)</b> <span class="an-done">✔ construido</span></div>
+        <div class="an-gap p1"><b>12. Periodos de cura por evento de aceleración</b> <span class="an-done">✔ construido</span></div>
+        <div class="an-gap p1"><b>13. Calendario de entregables (SLA)</b> <span class="an-done">✔ construido</span> — el disparador del monitoreo.</div>
+        <div class="an-gap p1"><b>14. Prepago voluntario y cash sweep obligatorio</b> <span class="an-done">✔ construido</span></div>
 
-        <p style="font-size:0.78rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin:18px 0 6px;">P2 · Trazabilidad</p>
-        <div class="an-gap p2"><b>15. Adjuntar contrato + mapear dato → cláusula</b></div>
-        <div class="an-gap p2"><b>16. Renovación / extensión de vigencia</b></div>
-        <div class="an-gap p2"><b>17. Destino del crédito</b> (causal de vencimiento si se desvía)</div>
-        <div class="an-gap p2"><b>18. Tipo de persona = Fideicomiso</b> <span class="an-done">✔ agregado</span></div>
+        <p style="font-size:0.78rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.05em;margin:18px 0 6px;">P2 — resueltos</p>
+        <div class="an-gap p2"><b>15. Adjuntar contrato + mapear dato → cláusula</b> <span class="an-done">✔ vía paso AI</span></div>
+        <div class="an-gap p2"><b>16. Renovación / extensión de vigencia</b> <span class="an-done">✔ construido</span></div>
+        <div class="an-gap p2"><b>17. Destino del crédito</b> <span class="an-done">✔ construido</span></div>
+        <div class="an-gap p2"><b>18. Tipo de persona = Fideicomiso</b> <span class="an-done">✔ construido</span></div>
 
-        <div style="margin-top:18px;padding:14px 16px;background:var(--blue-bg);border-radius:var(--radius);font-size:0.82rem;color:var(--text);">
-          <b style="color:var(--blue);">Secuencia sugerida (lente PM):</b> resolver <b>#1 Tranche</b> primero destraba pricing grid, amortización por tabla y vencimientos múltiples. Luego <b>covenant escalonado → sindicado con % → garantes/aforo</b>. Con eso ambos contratos cargan sin trucos y el motor de monitoreo —el verdadero valor de LenderHub— tiene de qué alimentarse.
+        <div style="margin-top:18px;padding:14px 16px;background:var(--blue-bg);border-radius:var(--radius);font-size:0.82rem;color:var(--text);line-height:1.55;">
+          <b style="color:var(--blue);">El set up es el pilar 1 de 4.</b> Cerrar estos 18 gaps era <i>table-stakes</i> — necesario, no el diferenciador. Según el Product Discovery (BBVA IB&amp;F), el dolor de negocio y el <b>moat</b> viven en: <b>(2) motor de monitoreo</b> (recálculo independiente vs. Clan + covenants + alertas en el momento), <b>(3) data flow continuo</b> del originador, y <b>(4) torre de control</b> con trazabilidad del contrato a la alerta. Riesgo a vigilar: no quedarse en "validador de Clan" (commodity). <b>Siguiente apuesta: pilar 2 sobre las 10 operaciones del piloto.</b>
         </div>
       </div>
     </div>
