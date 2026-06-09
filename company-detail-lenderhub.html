@@ -238,16 +238,19 @@
     .panel.visible { opacity: 1; max-height: 800px; }
 
     /* ─── Type selector cards ───────────────────────────────────── */
-    .type-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    .type-card { border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 22px; cursor: pointer; display: flex; flex-direction: column; gap: 14px; background: var(--surface); transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s; user-select: none; }
+    .type-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .type-card { border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px; cursor: pointer; display: flex; flex-direction: column; gap: 10px; background: var(--surface); transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s; user-select: none; }
     .type-card:hover { border-color: var(--border-strong); box-shadow: var(--shadow-md); transform: translateY(-2px); }
     .type-card.selected { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(145,0,87,0.12); transform: translateY(-2px); }
-    .card-icon-wrap { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .card-icon-wrap.abs { background: var(--blue-bg); color: var(--blue); }
+    .card-icon-wrap { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .card-icon-wrap.abs   { background: var(--blue-bg);   color: var(--blue); }
     .card-icon-wrap.quiro { background: var(--yellow-bg); color: var(--yellow); }
-    .card-icon-wrap i { font-size: 26px; }
-    .card-title { font-family: var(--font-primary); font-size: 1.1rem; font-weight: 700; color: var(--text); line-height: 1.2; }
-    .card-desc { font-family: var(--font-ui); font-size: 0.85rem; font-weight: 400; color: var(--text-secondary); line-height: 1.55; }
+    .card-icon-wrap.gar   { background: #F5F3FF;          color: #7C3AED; }   /* violeta */
+    .card-icon-wrap.lease { background: #ECFEFF;          color: #0891B2; }   /* cian */
+    .card-icon-wrap.fact  { background: #FEF3C7;          color: #B45309; }   /* ámbar oscuro */
+    .card-icon-wrap i { font-size: 22px; }
+    .card-title { font-family: var(--font-primary); font-size: 0.95rem; font-weight: 700; color: var(--text); line-height: 1.25; }
+    .card-desc { font-family: var(--font-ui); font-size: 0.78rem; font-weight: 400; color: var(--text-secondary); line-height: 1.45; }
 
     /* ─── Buttons shared — DS CXC §5 height 40px ────────────────── */
     .btn-cancel { display: inline-flex; align-items: center; gap: 6px; padding: 0 18px; height: 40px; background: transparent; color: var(--text); font-family: var(--font-ui); font-size: 0.9rem; font-weight: 500; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); cursor: pointer; white-space: nowrap; transition: background 0.15s, border-color 0.15s; }
@@ -325,6 +328,51 @@
     .inner-tab-btn.active { color: var(--secondary); border-bottom-color: var(--secondary); font-weight: 700; }
     .inner-tab-panel { display: none; }
     .inner-tab-panel.active { display: block; }
+    /* ── Análisis de Contratos tab ───────────────────────── */
+    .an-tab { padding: 8px 15px; border: 1px solid var(--border); background: var(--surface); border-radius: 8px; cursor: pointer; font-family: var(--font-ui); font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); transition: all .12s; }
+    .an-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .an-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .an-table th { text-align: left; padding: 8px 18px; background: var(--bg); color: var(--text-muted); font-size: 0.68rem; text-transform: uppercase; letter-spacing: .05em; font-weight: 700; border-bottom: 1px solid var(--border); }
+    .an-table td { text-align: left; padding: 8px 18px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+    .an-table td:first-child { width: 26%; font-weight: 600; }
+    .an-table td:nth-child(2) { width: 52%; color: var(--text-secondary); }
+    .an-table td i { color: var(--text-muted); }
+    .an-b { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
+    .an-b.ok { background: var(--green-bg); color: var(--green); }
+    .an-b.warn { background: var(--yellow-bg); color: var(--yellow); }
+    .an-b.bad { background: var(--red-bg); color: var(--red); }
+    .an-gap { border-left: 3px solid var(--border); padding: 9px 14px; margin: 7px 0; background: var(--bg); border-radius: 0 7px 7px 0; font-size: 0.84rem; color: var(--text); }
+    .an-gap.p0 { border-color: var(--red); }
+    .an-gap.p1 { border-color: var(--yellow); }
+    .an-gap.p2 { border-color: var(--text-muted); }
+    .an-gap i { color: var(--text-muted); }
+    .an-done { display: inline-block; font-size: 0.68rem; font-weight: 700; padding: 1px 7px; border-radius: 5px; background: var(--green-bg); color: var(--green); margin-left: 4px; }
+    /* ── AI Intake (paso previo) ──────────────────────────── */
+    .ai-dropzone { border: 2px dashed var(--border-strong); border-radius: 12px; padding: 28px 20px; text-align: center; cursor: pointer; transition: all .15s; background: var(--bg); }
+    .ai-dropzone:hover { border-color: var(--secondary); background: var(--surface); }
+    .ai-doc-chip { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); cursor: pointer; transition: all .12s; text-align: left; }
+    .ai-doc-chip:hover { border-color: var(--secondary); }
+    .ai-doc-chip.sel { border-color: var(--secondary); background: var(--blue-bg); }
+    .ai-conf { display: inline-flex; align-items: center; gap: 4px; font-size: 0.66rem; font-weight: 700; padding: 2px 7px; border-radius: 20px; white-space: nowrap; }
+    .ai-conf.alta { background: var(--green-bg); color: var(--green); }
+    .ai-conf.media { background: var(--yellow-bg); color: var(--yellow); }
+    .ai-conf.baja { background: var(--red-bg); color: var(--red); }
+    .ai-row { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); margin-bottom: 7px; }
+    .ai-row.dim { opacity: .5; }
+    .ai-row-label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .03em; }
+    .ai-row-val { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+    .ai-row-val input, .ai-row-val select { font-size: 0.88rem; padding: 4px 8px; width: 100%; }
+    .ai-src { font-size: 0.7rem; color: var(--blue); margin-top: 2px; cursor: help; }
+    .ai-src i { font-size: 11px; }
+    .ai-mini-btn { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 9px; font-size: 0.72rem; font-weight: 600; color: var(--text-secondary); cursor: pointer; font-family: var(--font-ui); }
+    .ai-mini-btn:hover { border-color: var(--secondary); color: var(--secondary); }
+    .ai-novel { border-left: 3px solid var(--purple, #7c3aed); }
+    .ai-toggle { position: relative; width: 38px; height: 22px; border-radius: 20px; background: var(--border-strong); cursor: pointer; transition: background .15s; flex-shrink: 0; }
+    .ai-toggle.on { background: var(--green); }
+    .ai-toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform .15s; }
+    .ai-toggle.on::after { transform: translateX(16px); }
+    .ai-spinner { width: 16px; height: 16px; border: 2px solid var(--border-strong); border-top-color: var(--secondary); border-radius: 50%; animation: aispin .7s linear infinite; display: inline-block; }
+    @keyframes aispin { to { transform: rotate(360deg); } }
 
     .covenant-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
     .covenant-table th { font-size: 0.72rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 6px; border-bottom: 1px solid var(--border); text-align: left; }
@@ -387,7 +435,7 @@
     .rate-calculated { font-size: 0.8rem; color: var(--blue); font-weight: 500; margin-top: 6px; }
 
     /* ─── Sindicado rows ────────────────────────────────────────── */
-    .synd-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: end; margin-bottom: 6px; }
+    .synd-row { display: grid; grid-template-columns: 1fr 120px 80px auto; gap: 8px; align-items: end; margin-bottom: 6px; }
     .synd-sum-row { font-size: 0.8rem; font-weight: 700; padding: 4px 8px; border-radius: var(--radius-sm); margin-top: 4px; }
     .synd-sum-row.ok  { background: var(--green-bg); color: var(--green); }
     .synd-sum-row.err { background: var(--red-bg); color: var(--red); }
@@ -476,6 +524,7 @@
   <div class="tabs-bar" role="tablist">
     <button class="tab-btn" id="tab-btn-overview" role="tab" aria-selected="false" aria-controls="tab-overview" onclick="switchTab('overview',this)">Overview</button>
     <button class="tab-btn active" id="tab-btn-facility" role="tab" aria-selected="true" aria-controls="tab-facility" onclick="switchTab('facility',this)">Facility</button>
+    <button class="tab-btn" id="tab-btn-analisis" role="tab" aria-selected="false" aria-controls="tab-analisis" onclick="switchTab('analisis',this)">Análisis de Contratos</button>
     <button class="tab-btn" id="tab-btn-documentation" role="tab" aria-selected="false" aria-controls="tab-documentation" onclick="switchTab('documentation',this)">Documentation</button>
     <button class="tab-btn" id="tab-btn-contacts" role="tab" aria-selected="false" aria-controls="tab-contacts" onclick="switchTab('contacts',this)">Contacts</button>
   </div>
@@ -522,6 +571,129 @@
         <i class="ph ph-cube empty-icon"></i>
         <p class="empty-label">Any facilities you add will be saved here.</p>
         <button class="btn-primary" onclick="openModal()"><i class="ph ph-plus"></i>Add Facility</button>
+      </div>
+    </div>
+    <div id="tab-analisis" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-analisis">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <div>
+          <h2 class="facility-heading" style="margin-bottom:2px;">Análisis de 2 contratos reales vs. el flujo de alta</h2>
+          <p style="font-size:0.82rem;color:var(--text-secondary);margin:0;">Cómo se llenaría el wizard con cada contrato — y qué le falta al setup. Datos sensibles testados.</p>
+        </div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:0.72rem;color:var(--text-muted);align-items:center;">
+          <span style="display:inline-flex;align-items:center;gap:5px;"><i style="width:10px;height:10px;border-radius:3px;background:var(--green);display:inline-block;"></i>Cabe</span>
+          <span style="display:inline-flex;align-items:center;gap:5px;"><i style="width:10px;height:10px;border-radius:3px;background:var(--yellow);display:inline-block;"></i>Parcial</span>
+          <span style="display:inline-flex;align-items:center;gap:5px;"><i style="width:10px;height:10px;border-radius:3px;background:var(--red);display:inline-block;"></i>Sin campo</span>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:var(--radius);padding:14px 16px;">
+          <p style="font-size:1.75rem;font-weight:700;color:var(--red);line-height:1;">8</p>
+          <p style="font-size:0.78rem;color:var(--text-secondary);margin-top:4px;">Gaps P0 — bloquean cargar los contratos</p>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--yellow);border-radius:var(--radius);padding:14px 16px;">
+          <p style="font-size:1.75rem;font-weight:700;color:var(--yellow);line-height:1;">6</p>
+          <p style="font-size:0.78rem;color:var(--text-secondary);margin-top:4px;">Gaps P1 — el dato entra degradado</p>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--text-muted);border-radius:var(--radius);padding:14px 16px;">
+          <p style="font-size:1.75rem;font-weight:700;color:var(--text);line-height:1;">4</p>
+          <p style="font-size:0.78rem;color:var(--text-secondary);margin-top:4px;">Gaps P2 — trazabilidad</p>
+        </div>
+      </div>
+
+      <!-- Sub-tabs -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="an-tab active" onclick="showAnalisis('a',this)">Facility A · RCF Bilateral (Fibra)</button>
+        <button class="an-tab" onclick="showAnalisis('b',this)">Facility B · Sindicado 3 tramos</button>
+        <button class="an-tab" onclick="showAnalisis('gaps',this)">⚠ Diagnóstico del setup</button>
+      </div>
+
+      <!-- PANEL A -->
+      <div id="an-a" class="an-panel" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+        <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <strong style="color:var(--text);">Crédito RCF Bilateral — Fibra Acreditada 2025</strong>
+          <span style="font-size:0.68rem;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:20px;background:var(--blue-bg);color:var(--blue);">BILATERAL · QUIROGRAFARIO · DUAL MXN/USD</span>
+        </div>
+        <table class="an-table">
+          <thead><tr><th>Campo del wizard</th><th>Valor del contrato</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr><td><b>Borrower</b></td><td>Fideicomiso F/XXXXXX "Fibra Acreditada" <i>(testado)</i></td><td><span class="an-b ok">Cabe</span></td></tr>
+            <tr><td>Tipo de Persona</td><td>Fideicomiso / vehículo fiduciario</td><td><span class="an-b ok">Cabe ✔ agregado</span></td></tr>
+            <tr><td>Moneda</td><td>MXN <b>+ sublímite USD</b> (SOFR)</td><td><span class="an-b bad">Sin 2ª moneda</span></td></tr>
+            <tr><td>Instrumento / Tipo</td><td>Apertura en cuenta corriente · Revolvente</td><td><span class="an-b ok">Cabe</span></td></tr>
+            <tr><td>Monto</td><td>$XX,XXX,000,000 MXN</td><td><span class="an-b ok">Cabe</span></td></tr>
+            <tr><td>Ranking</td><td>Quirografario senior · pari passu</td><td><span class="an-b ok">Cabe</span></td></tr>
+            <tr><td>Tasa</td><td>Variable: TIIEF 28d (MXN) / SOFR (USD) + Margen</td><td><span class="an-b warn">Parcial · 2 tasas</span></td></tr>
+            <tr><td>Tasa moratoria</td><td>Ordinaria × 2</td><td><span class="an-b ok">Cabe</span></td></tr>
+            <tr><td>Ajuste ESG</td><td>±X.XX% al margen s/ reducción emisiones GEI (base 2019)</td><td><span class="an-b ok">Cabe ✔ agregado</span></td></tr>
+            <tr><td>Comisiones</td><td>Estructuración · Apertura · Ampliación · No dispuesto</td><td><span class="an-b ok">Cabe ✔ agregado</span></td></tr>
+            <tr><td>Base de cálculo</td><td>360</td><td><span class="an-b ok">Cabe ✔ agregado</span></td></tr>
+            <tr><td>Vigencia</td><td>4 años + opción 1 año</td><td><span class="an-b warn">Parcial · sin extensión</span></td></tr>
+            <tr><td>Eventos de aceleración</td><td>Impago · concurso · cross-default · impugnación</td><td><span class="an-b warn">Faltan fiscal/laboral</span></td></tr>
+            <tr><td>Covenants</td><td>Deuda&lt;60% · Garantizada&lt;40% · DSCR≥1.5x · ATG&gt;150%</td><td><span class="an-b ok">Cabe (estructurado)</span></td></tr>
+            <tr><td>Reporting (Hacer)</td><td>EEFF anuales ≤180d · semestrales ≤45d</td><td><span class="an-b warn">Sin SLA de entrega</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PANEL B -->
+      <div id="an-b" class="an-panel" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+        <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <strong style="color:var(--text);">Crédito Sindicado RCF + TL — Empresa Acreditada 2024</strong>
+          <span style="font-size:0.68rem;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:20px;background:#f1e9f4;color:#6a2b6e;">SINDICADO · GARANTIZADO · 3 TRAMOS</span>
+        </div>
+        <table class="an-table">
+          <thead><tr><th>Campo del wizard</th><th>Valor del contrato</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr><td><b>Borrower</b></td><td>Empresa Acreditada, S.A. de C.V.</td><td><span class="an-b ok">Cabe</span></td></tr>
+            <tr><td>Obligadas solidarias / garantes</td><td>Múltiples obligadas + garantes hipotecarias</td><td><span class="an-b bad">Sin campo</span></td></tr>
+            <tr><td><b>Estructura</b></td><td>Tramo A (6a) · Tramo B (6a, 2 subtramos) · Tramo C (revolvente 3a + 2×12m)</td><td><span class="an-b bad">No soportado (multi-tramo)</span></td></tr>
+            <tr><td>Amortización</td><td>A/B progresiva por tabla (% por trimestre) · C bullet</td><td><span class="an-b bad">Sin calendario por tabla</span></td></tr>
+            <tr><td>Ranking</td><td>Senior secured (garantizado)</td><td><span class="an-b ok">Cabe</span></td></tr>
+            <tr><td>Tasa</td><td>TIIE 91d + <b>margen dinámico por apalancamiento</b> (269–349 pb)</td><td><span class="an-b ok">Cabe ✔ pricing grid</span></td></tr>
+            <tr><td>Comisiones</td><td>Disponibilidad (35% margen) · Extensión (25/50 pb)</td><td><span class="an-b warn">Parcial</span></td></tr>
+            <tr><td>Ajuste ESG</td><td>±5 pb (KPI sostenible, principios LMA)</td><td><span class="an-b ok">Cabe ✔ agregado</span></td></tr>
+            <tr><td>Garantías / Aforo</td><td>Hipotecas + prenda · Aforo ≥ 0.5x (avalúos)</td><td><span class="an-b warn">Parcial · sin aforo vivo</span></td></tr>
+            <tr><td>Lender</td><td>Agente + 3 Acreditantes · "Requeridas" &gt;70%</td><td><span class="an-b warn">Sindicado sin % participación</span></td></tr>
+            <tr><td>Covenants</td><td>ICR≥2.0x · <b>Leverage ≤3.75x→3.00x (escalonado)</b> · Capital≥90% · Aforo≥0.5x</td><td><span class="an-b warn">Sin umbral escalonado en tiempo</span></td></tr>
+            <tr><td>Prepago obligatorio</td><td>Cash sweep 100% de ventas / emisión</td><td><span class="an-b bad">Sin campo</span></td></tr>
+            <tr><td>Eventos de aceleración</td><td>Impago · concurso · cambio control · cross-default</td><td><span class="an-b warn">Faltan MAC/OFAC/cura</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PANEL GAPS -->
+      <div id="an-gaps" class="an-panel" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;">
+        <p style="font-size:0.9rem;color:var(--text-secondary);margin:0 0 14px;">Patrón: el wizard modelaba un <b>crédito bilateral simple</b>; los contratos reales son <b>multi-tramo, sindicados, garantizados y de tasa variable con grid</b>. Lo marcado <span style="color:var(--green);font-weight:700;">✔</span> ya se incorporó en esta versión del flujo.</p>
+
+        <p style="font-size:0.78rem;font-weight:800;color:var(--red);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px;">P0 · Bloqueantes</p>
+        <div class="an-gap p0"><b>1. Estructura multi-tramo</b> — un Facility con Tramos A/B/C, cada uno con monto, plazo, amortización y margen propios. <i>(pendiente — ya existe en el flujo ABS, portar a quiro)</i></div>
+        <div class="an-gap p0"><b>2. Tasa variable + pricing grid</b> <span class="an-done">✔ agregado</span> — margen que cambia según Índice de Apalancamiento, con tasa sustituta.</div>
+        <div class="an-gap p0"><b>3. Covenant con umbral escalonado en el tiempo</b> — Leverage 3.75x→3.00x por año. <i>(el motor de covenants existe; falta el schedule temporal)</i></div>
+        <div class="an-gap p0"><b>4. Sindicado: agente + % de participación</b> y regla "Acreditantes Requeridas &gt;70%". <i>(panel sindicado existe; falta % por lender)</i></div>
+        <div class="an-gap p0"><b>5. Garantes / obligados solidarios</b> — hoy solo 1 borrower.</div>
+        <div class="an-gap p0"><b>6. Aforo / colateral vivo</b> — Aforo ≥0.5x ligado a avalúos, no un dropdown.</div>
+        <div class="an-gap p0"><b>7. Multi-moneda / sublímites</b> — disposición en MXN y USD con su tasa.</div>
+        <div class="an-gap p0"><b>8. Calendario de amortización por tabla</b> — % por periodo (Tramo A/B).</div>
+
+        <p style="font-size:0.78rem;font-weight:800;color:var(--yellow);text-transform:uppercase;letter-spacing:.05em;margin:18px 0 6px;">P1 · Entra degradado</p>
+        <div class="an-gap p1"><b>9. Ajuste de margen ESG / sostenibilidad</b> <span class="an-done">✔ agregado</span></div>
+        <div class="an-gap p1"><b>10. Comisiones múltiples</b> <span class="an-done">✔ agregado</span> (estructuración, apertura, extensión)</div>
+        <div class="an-gap p1"><b>11. Base de cálculo (day count 360/365)</b> <span class="an-done">✔ agregado</span></div>
+        <div class="an-gap p1"><b>12. Periodos de cura por evento de aceleración</b> — hoy son booleanos.</div>
+        <div class="an-gap p1"><b>13. Calendario de entregables (Obligaciones de Hacer con SLA)</b> — el disparador del monitoreo.</div>
+        <div class="an-gap p1"><b>14. Prepago voluntario y cash sweep obligatorio</b></div>
+
+        <p style="font-size:0.78rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin:18px 0 6px;">P2 · Trazabilidad</p>
+        <div class="an-gap p2"><b>15. Adjuntar contrato + mapear dato → cláusula</b></div>
+        <div class="an-gap p2"><b>16. Renovación / extensión de vigencia</b></div>
+        <div class="an-gap p2"><b>17. Destino del crédito</b> (causal de vencimiento si se desvía)</div>
+        <div class="an-gap p2"><b>18. Tipo de persona = Fideicomiso</b> <span class="an-done">✔ agregado</span></div>
+
+        <div style="margin-top:18px;padding:14px 16px;background:var(--blue-bg);border-radius:var(--radius);font-size:0.82rem;color:var(--text);">
+          <b style="color:var(--blue);">Secuencia sugerida (lente PM):</b> resolver <b>#1 Tranche</b> primero destraba pricing grid, amortización por tabla y vencimientos múltiples. Luego <b>covenant escalonado → sindicado con % → garantes/aforo</b>. Con eso ambos contratos cargan sin trucos y el motor de monitoreo —el verdadero valor de LenderHub— tiene de qué alimentarse.
+        </div>
       </div>
     </div>
     <div id="tab-documentation" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-documentation">
@@ -581,7 +753,7 @@
               <div class="card-icon-wrap abs"><i class="ph ph-tree-structure"></i></div>
               <div>
                 <p class="card-title">ABS / Titulización</p>
-                <p class="card-desc">Estructura de titulización de activos. Configura tranches (Senior / Mezz / Sub) y/o sindicato de financiamiento según los casos de uso de tu operación.</p>
+                <p class="card-desc">Titulización con tranches Senior/Mezz/Sub o sindicato warehouse.</p>
               </div>
             </div>
             <div class="type-card" id="card-quiro" role="radio" aria-checked="false" tabindex="0"
@@ -589,10 +761,87 @@
               <div class="card-icon-wrap quiro"><i class="ph ph-handshake"></i></div>
               <div>
                 <p class="card-title">Quirografario</p>
-                <p class="card-desc">Crédito directo sin colateral de activos. Deuda corporativa sobre el balance del borrower. Soporta lender individual o sindicato pari passu.</p>
+                <p class="card-desc">Crédito corporativo sin colateral. Bilateral o sindicato pari passu.</p>
+              </div>
+            </div>
+            <div class="type-card" id="card-gar" role="radio" aria-checked="false" tabindex="0"
+                 onclick="selectCard('gar')" onkeydown="if(event.key==='Enter'||event.key===' ')selectCard('gar')">
+              <div class="card-icon-wrap gar"><i class="ph ph-shield-check"></i></div>
+              <div>
+                <p class="card-title">Garantizado / ABL</p>
+                <p class="card-desc">Crédito con colateral real (hipoteca, equipo, inventario, CxC) + garantía parcial NAFIN/FIRA.</p>
+              </div>
+            </div>
+            <div class="type-card" id="card-lease" role="radio" aria-checked="false" tabindex="0"
+                 onclick="selectCard('lease')" onkeydown="if(event.key==='Enter'||event.key===' ')selectCard('lease')">
+              <div class="card-icon-wrap lease"><i class="ph ph-truck"></i></div>
+              <div>
+                <p class="card-title">Leasing</p>
+                <p class="card-desc">Arrendamiento financiero u operativo. Activo subyacente, valor residual, opción de compra.</p>
+              </div>
+            </div>
+            <div class="type-card" id="card-fact" role="radio" aria-checked="false" tabindex="0"
+                 onclick="selectCard('fact')" onkeydown="if(event.key==='Enter'||event.key===' ')selectCard('fact')">
+              <div class="card-icon-wrap fact"><i class="ph ph-receipt"></i></div>
+              <div>
+                <p class="card-title">Factoring</p>
+                <p class="card-desc">Compra de cuentas por cobrar con o sin recurso. Pool de deudores y anticipo.</p>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Paso previo: AI Intake (quiro) -->
+      <div id="step-ai" class="modal-step" style="display:none;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="display:inline-flex;align-items:center;gap:5px;font-size:0.7rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--secondary);background:var(--blue-bg);padding:3px 9px;border-radius:20px;"><i class="ph ph-sparkle"></i> AI · Paso previo</span>
+          <span style="font-size:0.78rem;color:var(--text-muted);">Opcional — puedes saltarlo y llenar manualmente</span>
+        </div>
+        <p class="section-title" style="margin-top:8px;">Cargar contrato y extraer con AI</p>
+
+        <!-- Upload / pick demo -->
+        <div id="ai-upload-area">
+          <div class="ai-dropzone" onclick="document.getElementById('ai-file').click()">
+            <i class="ph ph-file-arrow-up" style="font-size:30px;color:var(--secondary);"></i>
+            <p style="font-size:0.9rem;font-weight:700;color:var(--text);margin:8px 0 2px;">Arrastra el contrato o haz click para subir</p>
+            <p style="font-size:0.76rem;color:var(--text-muted);">PDF o DOCX · El AI lee el clausulado y propone los valores</p>
+            <input type="file" id="ai-file" accept=".pdf,.docx,.doc" style="display:none;" onchange="onAiFilePicked(this)">
+          </div>
+          <p style="font-size:0.74rem;color:var(--text-muted);margin:12px 0 6px;text-transform:uppercase;letter-spacing:.04em;font-weight:700;">O prueba con un contrato de ejemplo</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div class="ai-doc-chip" id="ai-demo-bilateral" onclick="pickDemoContract('bilateral')">
+              <i class="ph ph-file-text" style="font-size:20px;color:var(--secondary);"></i>
+              <div><p style="font-size:0.82rem;font-weight:700;color:var(--text);margin:0;">RCF Bilateral — Fibra</p><p style="font-size:0.72rem;color:var(--text-muted);margin:0;">Quirografario · dual MXN/USD · ESG</p></div>
+            </div>
+            <div class="ai-doc-chip" id="ai-demo-sindicado" onclick="pickDemoContract('sindicado')">
+              <i class="ph ph-files" style="font-size:20px;color:var(--secondary);"></i>
+              <div><p style="font-size:0.82rem;font-weight:700;color:var(--text);margin:0;">Sindicado RCF + TL</p><p style="font-size:0.72rem;color:var(--text-muted);margin:0;">3 tramos · garantizado · pricing grid</p></div>
+            </div>
+          </div>
+          <div style="margin-top:16px;display:flex;justify-content:center;">
+            <button id="ai-extract-btn" class="btn-primary" disabled style="opacity:.5;" onclick="runExtraction()"><i class="ph ph-sparkle"></i> Extraer con AI</button>
+          </div>
+        </div>
+
+        <!-- Processing -->
+        <div id="ai-processing" style="display:none;text-align:center;padding:30px 0;">
+          <span class="ai-spinner" style="width:26px;height:26px;border-width:3px;"></span>
+          <p id="ai-proc-msg" style="font-size:0.85rem;color:var(--text-secondary);margin-top:12px;font-weight:600;">Leyendo el contrato…</p>
+        </div>
+
+        <!-- Extraction review (HITL) -->
+        <div id="ai-review" style="display:none;">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;background:var(--green-bg);border:1px solid rgba(22,163,74,.25);border-radius:9px;padding:10px 14px;margin-bottom:14px;">
+            <span style="font-size:0.84rem;font-weight:700;color:var(--green);"><i class="ph ph-check-circle"></i> Extracción lista — <span id="ai-summary"></span></span>
+            <span style="font-size:0.72rem;color:var(--text-secondary);">Revisa, edita o descarta cada valor antes de aplicar</span>
+          </div>
+
+          <p class="section-title" style="display:flex;align-items:center;gap:6px;"><i class="ph ph-check-square" style="color:var(--green);"></i> Campos mapeados al formulario</p>
+          <div id="ai-mapped-list"></div>
+
+          <p class="section-title" style="display:flex;align-items:center;gap:6px;margin-top:16px;"><i class="ph ph-sparkle" style="color:#7c3aed;"></i> Variables nuevas detectadas <span style="font-size:0.7rem;font-weight:500;color:var(--text-muted);text-transform:none;letter-spacing:0;">— no están en el template; el AI propone agregarlas</span></p>
+          <div id="ai-novel-list"></div>
         </div>
       </div>
 
@@ -643,7 +892,8 @@ const CATALOGS = {
   covenant_financiero: ['DSCR','Leverage (Deuda/EBITDA)','Current Ratio','Interest Coverage Ratio','Equity mínimo','Quick Ratio','Net Worth mínimo','Deuda Total / Activos','Otro'],
   covenant_operativo: ['Negative Pledge','Cross-Default','Sin pago de dividendos','Cambio de control (Put Option)','Restricción de deuda adicional','Cap de CAPEX','Restricción M&A','Venta de activos restringida','Rating Trigger','Mantenimiento de licencias','Otro'],
   covenant_informativo: ['EE.FF. auditados','EE.FF. internos','BBC — Borrowing Base Certificate','Compliance Certificate','Reporte de originación','Reporte de cartera mensual','Estado de cuenta fideicomiso','Certificado de no incumplimiento','Otro'],
-  tipo_persona: ['Persona Moral','Persona Física con Actividad Empresarial','Persona Física'],
+  tipo_persona: ['Persona Moral','Fideicomiso / Vehículo fiduciario','Persona Física con Actividad Empresarial','Persona Física'],
+  base_calculo: ['360 (Actual/360)','365 (Actual/365)','30/360'],
   fecha_corte_covenant: ['Último día del mes','Último día del trimestre','Cierre fiscal','Cierre semestral'],
   tipos_amortizacion: ['Bullet / Americano','Cuota Fija / Francés (PMT)','Capital Constante / Alemán','Pagos Programados (manual)'],
   benchmarks_tasa: ['TIIE 28d (SF43783)','TIIE de Fondeo (TIIE-F)','TIIE 91d (SF43784)','SOFR (USD)','UDI — Tasa Real','LIBOR (legado)'],
@@ -659,7 +909,18 @@ const CATALOGS = {
   leyes_aplicables: ['Legislación mercantil mexicana (LGTOC / LMV)','Ley del Estado de Nueva York','Ley de Inglaterra y Gales'],
   eventos_aceleracion: ['Incumplimiento de pago > 3 días hábiles','Cross-default + incumplimiento material','Cambio de control del acreditado','Incumplimiento de covenants financieros (sin cura en período)','Declaración de concurso mercantil','Quiebra o insolvencia del acreditado','Impugnación del contrato o documentos de la operación'],
   representantes_comunes_quiro: ['Monex Casa de Bolsa','CIBanco','Banco Actinver','Banco INVEX','CI Casa de Bolsa'],
-  calificadoras_quiro: ['HR Ratings México','Fitch Ratings México',"Moody's Local MX",'S&P Global Ratings','Verum Calificadora','DBRS Morningstar']
+  calificadoras_quiro: ['HR Ratings México','Fitch Ratings México',"Moody's Local MX",'S&P Global Ratings','Verum Calificadora','DBRS Morningstar'],
+
+  /* ── Catálogos para nuevos tipos (Covalto coverage) ──────────── */
+  // GARANTIZADO / ABL
+  tipos_colateral: ['Inmueble comercial','Inmueble industrial','Inmueble habitacional','Maquinaria y equipo','Vehículos','Inventario','Cuentas por cobrar','Activos intangibles','Garantía mixta'],
+  garantias_estatales: ['Sin garantía estatal','NAFIN — Garantía Selectiva','NAFIN — Garantía Automática PyME','FIRA — Garantía FONAGA','FIRA — Garantía SMASS','Bancomext — Garantía Selectiva','SHF — Crédito Puente'],
+  // LEASING (LeaseMD)
+  tipos_lease: ['Financiero','Operativo','Lease-back','Puro'],
+  tipos_activo_lease: ['Vehículos comerciales (camiones, tractocamiones)','Vehículos ligeros (autos, vans)','Maquinaria industrial','Equipo agrícola','Equipo médico','Equipo de cómputo / IT','Inmueble industrial','Inmueble comercial'],
+  // FACTORING
+  tipos_factoring: ['Con recurso','Sin recurso','Confirming / Reverse','Internacional Export','Internacional Import'],
+  industrias_deudor: ['Retail / Comercio minorista','Manufactura','Automotriz','Construcción','Salud','Educación','Gobierno','Energía','Logística','Agro','Consumo masivo','Tecnología']
 };
 
 /* ─── Session (rol del usuario logueado) ────────────────────────── */
@@ -693,10 +954,42 @@ let absData = {};             // snapshot of ABS fields captured per step
 
 const ABS_STEPS   = ['Identificación','Estructura','Pool & Roles','Covenants','Review'];
 const QUIRO_STEPS = ['Borrower','Términos & Pricing','Cláusulas & Lender','Covenants','Review'];
+// Wireframes lean — 2 steps cada uno: captura + review
+const GAR_STEPS   = ['Datos del Crédito Garantizado','Review'];
+const LEASE_STEPS = ['Datos del Leasing','Review'];
+const FACT_STEPS  = ['Datos del Factoring','Review'];
+
+let garData = {};     // Crédito Garantizado / ABL
+let leaseData = {};   // Leasing (LeaseMD)
+let factData = {};    // Factoring
+
+/* ─── Type registry — single source of truth para los 5 tipos ─── */
+const TYPE_REGISTRY = {
+  abs:   { label:'ABS / Titulización',          color:'var(--blue)',   bg:'var(--blue-bg)',     steps:ABS_STEPS,   saveLabel:'Guardar ABS' },
+  quiro: { label:'Quirografario',               color:'var(--yellow)', bg:'var(--yellow-bg)',   steps:QUIRO_STEPS, saveLabel:'Guardar Quirografario' },
+  gar:   { label:'Garantizado / ABL',           color:'#7C3AED',       bg:'#F5F3FF',            steps:GAR_STEPS,   saveLabel:'Guardar Garantizado' },
+  lease: { label:'Leasing',                     color:'#0891B2',       bg:'#ECFEFF',            steps:LEASE_STEPS, saveLabel:'Guardar Leasing' },
+  fact:  { label:'Factoring',                   color:'#B45309',       bg:'#FEF3C7',            steps:FACT_STEPS,  saveLabel:'Guardar Factoring' },
+};
+function getSteps(type)      { return (TYPE_REGISTRY[type]||TYPE_REGISTRY.abs).steps; }
+function captureCurrentStep(){
+  if (selectedType === 'abs')   captureAbsStep(currentStep);
+  if (selectedType === 'quiro') captureQuiroStep(currentStep);
+  if (selectedType === 'gar')   captureGarStep(currentStep);
+  if (selectedType === 'lease') captureLeaseStep(currentStep);
+  if (selectedType === 'fact')  captureFactStep(currentStep);
+}
 
 /* ─── Helpers ───────────────────────────────────────────────────── */
-function sel(items, placeholder='Selecciona', extra='') {
-  return `<select ${extra}><option value="">${placeholder}</option>${items.map(i=>`<option>${i}</option>`).join('')}</select>`;
+/* sel() — render select. El 2do arg sirve para dos cosas (auto-detección):
+   · Si coincide con un item del catálogo → se marca como selected y el placeholder pasa a "Selecciona"
+   · Si no coincide → se usa como texto del placeholder (comportamiento original)
+   Esto resuelve el bug de tranches donde t.tipo se mostraba como placeholder sin selected real. */
+function sel(items, placeholderOrSelected='Selecciona', extra='') {
+  const isPreSelected = placeholderOrSelected && items.includes(placeholderOrSelected);
+  const placeholder   = isPreSelected ? 'Selecciona' : (placeholderOrSelected || 'Selecciona');
+  const selectedVal   = isPreSelected ? placeholderOrSelected : '';
+  return `<select ${extra}><option value="">${placeholder}</option>${items.map(i=>`<option${i===selectedVal?' selected':''}>${i}</option>`).join('')}</select>`;
 }
 function makeField(label, inputHtml, required=false, tip='') {
   return `<div class="form-group">
@@ -712,6 +1005,14 @@ function switchTab(tabId, btn) {
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active'); btn.setAttribute('aria-selected','true');
   document.getElementById('tab-'+tabId).classList.add('active');
+}
+
+/* ─── Análisis de Contratos: sub-tab toggler ─────────────────────── */
+function showAnalisis(id, btn) {
+  document.querySelectorAll('.an-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.an-panel').forEach(p=>p.style.display='none');
+  btn.classList.add('active');
+  document.getElementById('an-'+id).style.display = (id==='gaps') ? 'block' : 'block';
 }
 
 /* ─── Toast ──────────────────────────────────────────────────────── */
@@ -757,8 +1058,9 @@ function resetModal() {
   quiroTasaMode = 'Fija';
   // Reset type selector cards
   document.querySelectorAll('.type-card').forEach(c=>{c.classList.remove('selected');c.setAttribute('aria-checked','false');});
-  // Remove any added steps
-  document.querySelectorAll('.modal-step:not(#step-0)').forEach(el=>el.remove());
+  // Remove any added steps (preservar step-0 y step-ai estáticos)
+  document.querySelectorAll('.modal-step:not(#step-0):not(#step-ai)').forEach(el=>el.remove());
+  document.getElementById('step-ai').style.display='none';
   document.getElementById('step-0').style.display='';
   document.getElementById('stepperWrap').style.display='none';
   document.getElementById('modalTitle').textContent = 'Add Facility';
@@ -792,7 +1094,7 @@ function openEditModal(id) {
 
   // UX FIX: en edit mode, ir directo al Review (last step) — el usuario ya conoce los datos
   // y puede saltar a la sección específica que quiere cambiar con un click
-  const steps = selectedType === 'abs' ? ABS_STEPS : QUIRO_STEPS;
+  const steps = getSteps(selectedType);
   currentStep = steps.length; // último step = Review
   document.getElementById('step-0').style.display = 'none';
   // Edit mode: ocultar stepper visualmente (el usuario no necesita progresión secuencial)
@@ -813,16 +1115,243 @@ function selectCard(type) {
 
 function startFlow() {
   if (!selectedType) return;
+  // Quirografario: paso previo de extracción con AI (HITL)
+  if (selectedType === 'quiro' && editingFacilityId === null) { enterAiIntake(); return; }
+  beginRealFlow();
+}
+function beginRealFlow() {
   currentStep = 1;
+  document.getElementById('step-ai').style.display = 'none';
   document.getElementById('step-0').style.display = 'none';
   document.getElementById('stepperWrap').style.display = '';
   renderStep();
   renderFooter();
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   AI INTAKE — paso previo: cargar contrato + extracción HITL
+══════════════════════════════════════════════════════════════════ */
+let aiPickedContract = null;     // 'bilateral' | 'sindicado' | 'upload'
+let aiExtraction = null;         // payload activo {mapped, novel}
+
+function enterAiIntake() {
+  document.getElementById('step-0').style.display = 'none';
+  document.getElementById('stepperWrap').style.display = 'none';
+  document.getElementById('step-ai').style.display = '';
+  // reset
+  aiPickedContract = null; aiExtraction = null;
+  document.getElementById('ai-upload-area').style.display = '';
+  document.getElementById('ai-processing').style.display = 'none';
+  document.getElementById('ai-review').style.display = 'none';
+  document.querySelectorAll('.ai-doc-chip').forEach(c=>c.classList.remove('sel'));
+  const btn = document.getElementById('ai-extract-btn'); btn.disabled = true; btn.style.opacity = '.5';
+  document.getElementById('modalSubtitle').textContent = 'Paso previo · Cargar contrato (AI)';
+  renderAiFooter('upload');
+}
+function renderAiFooter(stage) {
+  const left = document.getElementById('footerLeft');
+  const btns = document.getElementById('footerBtns');
+  left.innerHTML = `<span style="display:inline-flex;align-items:center;gap:6px;font-size:0.76rem;color:var(--text-muted);"><i class="ph ph-sparkle" style="color:var(--secondary);"></i> Human-in-the-loop · el AI propone, tú decides</span>`;
+  if (stage === 'review') {
+    btns.innerHTML = `
+      <button class="btn-back" onclick="enterAiIntake()"><i class="ph ph-arrow-left"></i>Otro contrato</button>
+      <button class="btn-draft" onclick="skipExtraction()">Llenar manual</button>
+      <button class="btn-next" onclick="applyExtraction()">Aplicar y continuar<i class="ph ph-arrow-right"></i></button>`;
+  } else {
+    btns.innerHTML = `
+      <button class="btn-back" onclick="backToTypeSelector()"><i class="ph ph-arrow-left"></i>Atrás</button>
+      <button class="btn-draft" onclick="skipExtraction()">Saltar — llenar manual</button>`;
+  }
+}
+function backToTypeSelector() {
+  document.getElementById('step-ai').style.display = 'none';
+  document.getElementById('step-0').style.display = '';
+  document.getElementById('modalSubtitle').textContent = 'Selecciona el tipo de facility';
+  document.getElementById('footerBtns').innerHTML = `
+    <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+    <button class="btn-continue enabled" onclick="startFlow()">Continuar <i class="ph ph-arrow-right"></i></button>`;
+  document.getElementById('footerLeft').innerHTML = '';
+}
+function onAiFilePicked(input) {
+  if (!input.files || !input.files.length) return;
+  aiPickedContract = 'upload';
+  document.querySelectorAll('.ai-doc-chip').forEach(c=>c.classList.remove('sel'));
+  const btn = document.getElementById('ai-extract-btn'); btn.disabled = false; btn.style.opacity = '1';
+  showToast('Contrato cargado: ' + input.files[0].name, 'success');
+}
+function pickDemoContract(which) {
+  aiPickedContract = which;
+  document.querySelectorAll('.ai-doc-chip').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('ai-demo-'+which).classList.add('sel');
+  const btn = document.getElementById('ai-extract-btn'); btn.disabled = false; btn.style.opacity = '1';
+}
+function runExtraction() {
+  if (!aiPickedContract) return;
+  document.getElementById('ai-upload-area').style.display = 'none';
+  document.getElementById('ai-processing').style.display = '';
+  const msgs = ['Leyendo el contrato…','Identificando cláusulas y definiciones…','Extrayendo términos económicos…','Detectando variables fuera del template…','Calculando confianza por campo…'];
+  let i = 0;
+  const msgEl = document.getElementById('ai-proc-msg');
+  const tick = setInterval(()=>{ i++; if (msgEl && msgs[i]) msgEl.textContent = msgs[i]; }, 520);
+  setTimeout(()=>{
+    clearInterval(tick);
+    // contrato subido por el usuario → usamos el payload bilateral como demo
+    const key = (aiPickedContract === 'sindicado') ? 'sindicado' : 'bilateral';
+    aiExtraction = JSON.parse(JSON.stringify(EXTRACTION_DEMOS[key]));
+    document.getElementById('ai-processing').style.display = 'none';
+    document.getElementById('ai-review').style.display = '';
+    renderExtractionReview();
+    renderAiFooter('review');
+  }, 2700);
+}
+function renderExtractionReview() {
+  const ex = aiExtraction; if (!ex) return;
+  const okN = ex.mapped.filter(m=>m.conf==='alta').length;
+  document.getElementById('ai-summary').textContent =
+    `${ex.mapped.length} campos mapeados (${okN} alta confianza) · ${ex.novel.length} variables nuevas`;
+  // Mapped
+  document.getElementById('ai-mapped-list').innerHTML = ex.mapped.map((m,idx)=>`
+    <div class="ai-row" id="ai-m-${idx}" ${m.dropped?'style="opacity:.45"':''}>
+      <div>
+        <div class="ai-row-label">${m.label}</div>
+        <div class="ai-row-val" id="ai-mval-${idx}">${m.value}</div>
+        <div class="ai-src" title="Fuente en el contrato"><i class="ph ph-link-simple"></i> ${m.source}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+        <span class="ai-conf ${m.conf}"><i class="ph ph-${m.conf==='alta'?'check-circle':m.conf==='media'?'warning-circle':'question'}"></i>${m.conf}</span>
+        <div style="display:flex;gap:5px;">
+          <button class="ai-mini-btn" onclick="editMapped(${idx})"><i class="ph ph-pencil-simple"></i></button>
+          <button class="ai-mini-btn" onclick="dropMapped(${idx})" title="Descartar"><i class="ph ph-x"></i></button>
+        </div>
+      </div>
+    </div>`).join('');
+  // Novel
+  document.getElementById('ai-novel-list').innerHTML = ex.novel.map((n,idx)=>`
+    <div class="ai-row ai-novel" id="ai-n-${idx}">
+      <div>
+        <div class="ai-row-label" style="color:#7c3aed;">${n.label}</div>
+        <div class="ai-row-val">${n.value}</div>
+        <div class="ai-src" title="Fuente en el contrato"><i class="ph ph-link-simple"></i> ${n.source}</div>
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:3px;"><i class="ph ph-arrow-bend-down-right"></i> ${n.note}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;justify-content:center;">
+        <div class="ai-toggle ${n.add?'on':''}" id="ai-ntg-${idx}" onclick="toggleNovel(${idx})" role="switch" aria-checked="${n.add?'true':'false'}"></div>
+        <span style="font-size:0.66rem;color:var(--text-muted);" id="ai-nlbl-${idx}">${n.add?'Agregar':'Ignorar'}</span>
+      </div>
+    </div>`).join('');
+}
+function editMapped(idx) {
+  const m = aiExtraction.mapped[idx];
+  const cell = document.getElementById('ai-mval-'+idx);
+  if (!cell) return;
+  if (cell.querySelector('input')) { // confirmar edición
+    m.value = cell.querySelector('input').value;
+    m.conf = 'alta'; m.edited = true;
+    renderExtractionReview();
+  } else {
+    cell.innerHTML = `<input type="text" value="${m.value.replace(/"/g,'&quot;')}">`;
+    cell.querySelector('input').focus();
+  }
+}
+function dropMapped(idx) { aiExtraction.mapped[idx].dropped = !aiExtraction.mapped[idx].dropped; renderExtractionReview(); }
+function toggleNovel(idx) { aiExtraction.novel[idx].add = !aiExtraction.novel[idx].add; renderExtractionReview(); }
+
+function skipExtraction() { aiExtraction = null; beginRealFlow(); }
+
+function applyExtraction() {
+  const ex = aiExtraction;
+  if (ex) {
+    // 1) Mapear campos al quiroData (renderQ1/Q2 prellenan desde aquí)
+    ex.mapped.filter(m=>!m.dropped && m.key).forEach(m=>{
+      if (m.key === 'pricingGrid') { quiroData.pricingGrid = m.grid || []; }
+      else quiroData[m.key] = m.value;
+    });
+    if (quiroData.tipoTasa) quiroTasaMode = quiroData.tipoTasa;
+    // 2) Covenants detectados → quiroData.covenants (se siembran en step 4 y se ven en Review)
+    quiroData.covenants = (ex.covenants||[]).map(name=>({name, cfg:null}));
+    // 3) Variables nuevas aceptadas → lista de seguimiento + las que el template sí soporta
+    quiroData.aiNovelVars = ex.novel.filter(n=>n.add).map(n=>({label:n.label, value:n.value, dest:n.dest}));
+    quiroData._aiSource = ex.docName;
+    showToast('Extracción aplicada · revisa cada paso', 'success');
+  }
+  beginRealFlow();
+}
+
+/* Siembra covenants en el step 4 a partir de la extracción AI */
+function seedQuiroCovenantsFromData() {
+  const covs = (quiroData.covenants||[]).map(c=>c.name).filter(Boolean);
+  if (!covs.length) return;
+  const list = document.getElementById('cov-list-quiro-tab1');
+  if (!list) return;
+  const first = list.querySelector('input[type="text"]');
+  if (first && first.value) return; // ya tiene datos
+  if (first && !first.value) { first.value = covs[0]; first.dispatchEvent(new Event('input')); }
+  for (let i=1;i<covs.length;i++){
+    addCovRow('quiro','tab1');
+    const inputs = list.querySelectorAll('input[type="text"]');
+    const last = inputs[inputs.length-1];
+    if (last && !last.value){ last.value = covs[i]; last.dispatchEvent(new Event('input')); }
+  }
+}
+
+/* Payloads de extracción simulada — aterrizados en los 2 contratos reales */
+const EXTRACTION_DEMOS = {
+  bilateral: {
+    docName: 'Crédito RCF Bilateral_Fibra Acreditada.docx',
+    mapped: [
+      {label:'Nombre del Facility', key:'facilityName', value:'Crédito RCF Bilateral — Fibra Acreditada 2025', conf:'alta', source:'Portada'},
+      {label:'Borrower Legal Name', key:'borrowerName', value:'Fideicomiso F/XXXXXX «Fibra Acreditada»', conf:'media', source:'Declaraciones II'},
+      {label:'Tipo de Persona', key:'tipoPersona', value:'Fideicomiso / Vehículo fiduciario', conf:'alta', source:'Declaraciones II.1'},
+      {label:'Moneda', key:'moneda', value:'MXN', conf:'alta', source:'Cláusula Primera'},
+      {label:'Instrumento Legal', key:'instrumento', value:'Crédito en Cuenta Corriente', conf:'alta', source:'Cláusula Primera'},
+      {label:'Tipo de Crédito', key:'tipoCredito', value:'Crédito en Cuenta Corriente (Revolvente)', conf:'alta', source:'Cláusula Cuarta'},
+      {label:'Ranking de Deuda', key:'rankingDeuda', value:'Senior No Garantizado', conf:'media', source:'Cláusula 11ª (pari passu)'},
+      {label:'Tipo de Tasa', key:'tipoTasa', value:'Variable — TIIE de Fondeo + spread', conf:'alta', source:'Cláusula Sexta'},
+      {label:'Benchmark', key:'benchmark', value:'TIIE de Fondeo (TIIE-F)', conf:'alta', source:'Cláusula Sexta'},
+      {label:'Tasa Moratoria (%)', key:'tasaMora', value:'2x ordinaria', conf:'media', source:'Cláusula Séptima'},
+      {label:'Base de Cálculo', key:'baseCalculo', value:'360 (Actual/360)', conf:'alta', source:'Cláusula Sexta'},
+      {label:'Frecuencia de Pago', key:'frecuencia', value:'Mensual', conf:'media', source:'Cláusula Sexta (Periodo de Intereses)'},
+    ],
+    covenants: ['Deuda total < 60% (activos+colocaciones)','Deuda garantizada < 40%','DSCR ≥ 1.5x','Activos no gravados > 150% deuda no garantizada'],
+    novel: [
+      {label:'Sublímite en USD (SOFR)', value:'$XXX MM disponibles en dólares', source:'Cláusula Primera', dest:'moneda', note:'El template es mono-moneda — requiere campo de sublímite por divisa.', add:true},
+      {label:'Ajuste de margen por sostenibilidad (ESG)', value:'± X.XX% s/ reducción emisiones GEI vs. 2019', source:'Cláusula Sexta-bis', dest:'pricing', note:'Mapeable al nuevo campo Ajuste ESG.', add:true},
+      {label:'Opción de extensión de vigencia (+1 año)', value:'Renovable hasta 60 días antes del 4º aniversario', source:'Cláusula Tercera', dest:'plazo', note:'El template tiene una sola Fecha Vencimiento.', add:true},
+      {label:'Certificación de Consultor Sustentable', value:'PwC/Deloitte/KPMG/EY · anual', source:'Cláusula Sexta-bis B', dest:'reporting', note:'Entregable que dispara el ajuste de tasa.', add:false},
+    ],
+  },
+  sindicado: {
+    docName: 'Crédito RCF y TL Lending_Contrato.doc',
+    mapped: [
+      {label:'Nombre del Facility', key:'facilityName', value:'Crédito Sindicado RCF + TL — Empresa Acreditada 2024', conf:'alta', source:'Portada'},
+      {label:'Borrower Legal Name', key:'borrowerName', value:'Empresa Acreditada, S.A. de C.V.', conf:'alta', source:'Proemio'},
+      {label:'Tipo de Persona', key:'tipoPersona', value:'Persona Moral', conf:'alta', source:'Proemio'},
+      {label:'Moneda', key:'moneda', value:'MXN', conf:'alta', source:'Sección 2.1'},
+      {label:'Instrumento Legal', key:'instrumento', value:'Crédito Simple', conf:'media', source:'Sección 2.1 (simple + cuenta corriente)'},
+      {label:'Ranking de Deuda', key:'rankingDeuda', value:'Senior Sindicado', conf:'alta', source:'Garantías / Cláusula Tercera'},
+      {label:'Tipo de Tasa', key:'tipoTasa', value:'Variable — TIIE 91d + spread', conf:'alta', source:'Sección 2.5'},
+      {label:'Benchmark', key:'benchmark', value:'TIIE 91d (SF43784)', conf:'alta', source:'Def. «Tasa TIIE»'},
+      {label:'Tasa Moratoria (%)', key:'tasaMora', value:'2x ordinaria', conf:'alta', source:'Sección 2.6'},
+      {label:'Pricing Grid (margen por apalancamiento)', key:'pricingGrid', value:'4 niveles · 344/319/294/269 pb (Tramo A)', conf:'alta', source:'Def. «Margen Aplicable»', grid:[{lvl:'≥ 3.5x',pb:'344'},{lvl:'3.0x – 3.5x',pb:'319'},{lvl:'2.5x – 3.0x',pb:'294'},{lvl:'< 2.5x',pb:'269'}]},
+      {label:'Ajuste ESG / Sostenibilidad (± pb)', key:'esgAjuste', value:'5', conf:'alta', source:'Cláusula Décima Primera (LMA)'},
+      {label:'Base de Cálculo', key:'baseCalculo', value:'360 (Actual/360)', conf:'alta', source:'Sección 2.5'},
+      {label:'Frecuencia de Pago', key:'frecuencia', value:'Trimestral', conf:'alta', source:'Sección 2.4'},
+    ],
+    covenants: ['Índice de Cobertura de Intereses ≥ 2.0x','Índice de Apalancamiento ≤ 3.75x→3.00x','Capital Contable ≥ 90% (cierre 2023)','Aforo ≥ 0.5x'],
+    novel: [
+      {label:'Estructura multi-tramo (A / B / C)', value:'TL A (6a) · TL B (6a, 2 subtramos) · RCF C (3a + 2×12m)', source:'Sección 2.1', dest:'estructura', note:'No soportado: el facility asume 1 tramo. Requiere entidad Tranche.', add:true},
+      {label:'Obligadas solidarias / garantes', value:'Múltiples obligadas + garantes hipotecarias', source:'Cláusula Tercera', dest:'partes', note:'El modelo solo tiene 1 borrower.', add:true},
+      {label:'Apalancamiento escalonado en el tiempo', value:'≤3.75x (a1) · 3.50x (a2-3) · 3.25x (a4) · 3.00x (a5+)', source:'Sección 5.17', dest:'covenant', note:'Covenant con umbral que cambia por año — falta schedule temporal.', add:true},
+      {label:'Prepago obligatorio (cash sweep)', value:'100% de ventas significativas / emisión de deuda', source:'Sección 2.4 (i)', dest:'prepago', note:'Sin campo — afecta proyección de saldo.', add:true},
+      {label:'Sindicato: % de participación por acreditante', value:'Agente + 3 acreditantes · «Requeridas» >70%', source:'Def. «Acreditantes Requeridas»', dest:'lender', note:'El panel sindicado existe; falta % por lender.', add:false},
+      {label:'Aforo ligado a avalúos (revaluación 3a)', value:'Aforo ≥ 0.5x · avalúos cada 3 años', source:'Secciones 5.15-5.16', dest:'colateral', note:'Covenant vivo, no etiqueta.', add:false},
+    ],
+  },
+};
+
 /* ─── Stepper render ────────────────────────────────────────────── */
 function renderStepper() {
-  const steps = selectedType === 'abs' ? ABS_STEPS : QUIRO_STEPS;
+  const steps = getSteps(selectedType);
   const total = steps.length;
   let html = '';
   for (let i=0; i<total; i++) {
@@ -849,7 +1378,7 @@ function renderStepper() {
     }
     pb.querySelector('.stepper-progress-fill').style.width = progressPct + '%';
   }
-  const steps2 = selectedType === 'abs' ? ABS_STEPS : QUIRO_STEPS;
+  const steps2 = getSteps(selectedType);
   const editPrefix = editingFacilityId !== null ? 'Editando · ' : '';
   document.getElementById('modalSubtitle').textContent = `${editPrefix}Paso ${currentStep} de ${steps2.length} — ${steps2[currentStep-1]}`;
 }
@@ -857,9 +1386,9 @@ function renderStepper() {
 /* ─── Footer render ─────────────────────────────────────────────── */
 function renderFooter() {
   renderStepper();
-  const steps = selectedType === 'abs' ? ABS_STEPS : QUIRO_STEPS;
+  const steps = getSteps(selectedType);
   const isLast = currentStep === steps.length;
-  const saveLabel = selectedType === 'abs' ? 'Guardar ABS' : 'Guardar Quirografario';
+  const saveLabel = (TYPE_REGISTRY[selectedType]||{}).saveLabel || 'Guardar';
   const leftDiv = document.getElementById('footerLeft');
 
   // ── "Edit from Review" mode ──────────────────────────────
@@ -899,10 +1428,15 @@ function renderFooter() {
   }
 }
 
-/* ── Demo Autofill ─────────────────────────────────────── */
+/* ── Demo Autofill — dispatcher por tipo ───────────────── */
 function autofillDemo() {
-  if (selectedType === 'quiro') _autofillQuiro();
-  else                          _autofillAbs();
+  switch (selectedType) {
+    case 'quiro': _autofillQuiro(); break;
+    case 'gar':   _autofillGar();   break;
+    case 'lease': _autofillLease(); break;
+    case 'fact':  _autofillFact();  break;
+    default:      _autofillAbs();
+  }
 }
 
 /* Quirografario: step-aware, datos reales de LenderHub
@@ -987,6 +1521,14 @@ function _autofillQuiro() {
     sv ('q-tiie-floor',    '8.50');
     sv ('q-tasa-mora',     '2.50');
     sv ('q-commitment-fee','0.50');
+    // Pricing grid (margen por apalancamiento) — grid real del sindicado
+    const gridTgl = document.getElementById('q-grid-toggle');
+    if (gridTgl && !gridTgl.checked) { gridTgl.checked = true; togglePricingGrid(); }
+    // Comisiones, ESG y base de cálculo
+    sv ('q-com-estructuracion','1.00');
+    sv ('q-com-apertura',      '0.75');
+    sv ('q-esg-ajuste',        '5');
+    sst('q-base-calculo',      '360 (Actual/360)');
     sv ('q-fecha-inicio', '2025-03-01');
     sv ('q-fecha-venc',   '2027-03-01');
     sst('q-frecuencia',   'Mensual');
@@ -1003,19 +1545,54 @@ function _autofillQuiro() {
     // Lender bloqueado por SESSION (BBVA) — nada que llenar
   }
 
-  /* ── STEP 4: Covenants ───────────────────────────────── */
+  /* ── STEP 4: Covenants — stack realista BBVA→Aplazo ──── */
   if (currentStep === 4) {
     ssel('Periodicidad de Covenant', 'Trimestral');
     ssel('Fecha de Corte',           'Último día del trimestre');
-    // Llenar nombre de covenant pre-existente en cada tab si está vacío
-    const covDefaults = [
-      { listId: 'cov-list-quiro-tab1', name: 'DSCR' },
-      { listId: 'cov-list-quiro-tab2', name: 'Sin pago de dividendos' },
-    ];
-    covDefaults.forEach(({ listId, name }) => {
-      const inp = document.getElementById(listId)?.querySelector('input[type="text"]');
-      if (inp && !inp.value) { inp.value = name; inp.dispatchEvent(new Event('input')); }
-    });
+
+    // Helper: llena la primera fila vacía + agrega filas adicionales con `addCovRow`
+    const fillCovTab = (flow, tab, names) => {
+      if (!names || !names.length) return;
+      const list = document.getElementById(`cov-list-${flow}-${tab}`);
+      if (!list) return;
+      // 1) Primera fila vacía → primer nombre
+      const firstInput = list.querySelector('input[type="text"]');
+      if (firstInput && !firstInput.value) {
+        firstInput.value = names[0];
+        firstInput.dispatchEvent(new Event('input'));
+      }
+      // 2) Agregar filas adicionales para el resto
+      for (let i = 1; i < names.length; i++) {
+        addCovRow(flow, tab);
+        const inputs = list.querySelectorAll('input[type="text"]');
+        const lastInput = inputs[inputs.length - 1];
+        if (lastInput && !lastInput.value) {
+          lastInput.value = names[i];
+          lastInput.dispatchEvent(new Event('input'));
+        }
+      }
+    };
+
+    // Tab1 = Financieros — los 3 más comunes en bilateral corporativo MX
+    fillCovTab('quiro', 'tab1', [
+      'DSCR ≥ 1.25x',
+      'Leverage (Deuda/EBITDA) ≤ 4.0x',
+      'Interest Coverage Ratio (ICR) ≥ 2.5x'
+    ]);
+
+    // Tab2 = Operativos — Negative Pledge + Cross-Default vienen pre-cargados como filas fijas
+    // Sólo agregamos el cambio de control (Put Option) que es estándar
+    fillCovTab('quiro', 'tab2', [
+      'Cambio de control (Put Option)'
+    ]);
+
+    // Tab3 = Informativos — paquete mínimo BBVA exige a cualquier acreditado corporativo
+    fillCovTab('quiro', 'tab3', [
+      'EE.FF. auditados anuales (KPMG / PwC / Deloitte / EY)',
+      'EE.FF. internos trimestrales',
+      'Compliance Certificate trimestral',
+      'Certificado de No Incumplimiento'
+    ]);
   }
 
   // Trigger plazo calculation tras autofill si estamos en Step 2
@@ -1023,56 +1600,217 @@ function _autofillQuiro() {
   showToast('Demo data cargado ✓', 'success');
 }
 
-/* ABS: fallback genérico — rellena cualquier campo visible vacío */
+/* ABS: step-aware demo fill con escenarios reales LATAM
+   ────────────────────────────────────────────────────────
+   Escenario base (Steps 1, 3, 4): Aplazo Serie A 2025-1
+     · Originador: Aplazo · Fiduciario: CIBanco
+     · Pool: Individual Consumer Credit BNPL · $625M saldo
+     · OC 125% · Aforo mín 110% · Master Servicer CXC
+
+   Step 2 adapta según absStructMode:
+     · tranches:  Term ABS multi-tranche $500M (Senior 75% / Mezz 15% / Sub 10% retenido)
+     · sindicado: Warehouse $500M sindicado 4 bancos (BBVA agente + Banorte/HSBC/Scotia)
+     · individual: Warehouse bilateral $300M con BBVA */
 function _autofillAbs() {
   const body = document.getElementById('modalBody');
-  const sv   = (el, v) => { if (el) { el.value = v; el.dispatchEvent(new Event('change')); el.dispatchEvent(new Event('input')); } };
-  const sst  = (el, t) => { if (!el) return; for (const o of el.options) { if (o.text === t) { el.value = o.value || o.text; el.dispatchEvent(new Event('change')); return; } } };
 
-  body.querySelectorAll('select:not([disabled])').forEach(s => {
-    if (!s.value) {
-      for (let i = 0; i < s.options.length; i++) {
-        if (s.options[i].value !== '' && s.options[i].text !== 'Selecciona') {
-          s.value = s.options[i].value || s.options[i].text;
-          s.dispatchEvent(new Event('change'));
-          break;
-        }
+  /* ── Helpers ─────────────────────────────────────────── */
+  const setSelByText = (selectEl, optText) => {
+    if (!selectEl) return false;
+    for (const o of selectEl.options) {
+      if (o.text === optText) {
+        selectEl.value = o.value || o.text;
+        selectEl.dispatchEvent(new Event('change'));
+        return true;
       }
     }
-  });
-  sv(body.querySelector('#tasaFijaVal'), '12.50');
-  sv(body.querySelector('#spreadVal'),   '3.50');
-  body.querySelectorAll('select').forEach(s => {
-    if ([...s.options].some(o => o.text === 'Mensual')) sst(s, 'Mensual');
-  });
-  body.querySelectorAll('input[type="number"]:not([disabled])').forEach(inp => {
-    if (inp.value) return;
-    const ph = inp.placeholder || '';
-    if      (/0\.00|monto|importe|principal/i.test(ph)) sv(inp, '50000000');
-    else if (/12\.50|tasa|rate/i.test(ph))              sv(inp, '12.50');
-    else if (/3\.50|spread/i.test(ph))                  sv(inp, '3.50');
-    else if (/15|día|day|pago/i.test(ph))               sv(inp, '15');
-    else if (/%|porcentaje/i.test(ph))                  sv(inp, '10');
-    else                                                sv(inp, '1');
-  });
-  [...body.querySelectorAll('input[type="date"]:not([disabled])')].forEach((d, i) => {
-    if (!d.value) sv(d, i === 0 ? '2025-01-15' : '2027-01-15');
-  });
-  body.querySelectorAll('input[type="text"]:not([readonly]):not([disabled])').forEach(inp => {
-    if (inp.value) return;
-    const ph = inp.placeholder || '';
-    if      (/nombre|facility|name/i.test(ph)) sv(inp, 'ABS-SERIES-A-2024');
-    else if (/rfc/i.test(ph))                   sv(inp, 'SBL200101ABC');
-    else if (/spv|issuer|trust/i.test(ph))      sv(inp, 'SPV / Issuer Trust');
-    else if (/serie|clave/i.test(ph))           sv(inp, 'SERIE A-1');
-    else if (/fideicomiso/i.test(ph))           sv(inp, '12345-CIBanco');
-    else if (/ej\./i.test(ph))                  sv(inp, '15');
-    else                                         sv(inp, 'Demo');
-  });
-  body.querySelectorAll('input[type="number"]').forEach(inp => {
-    if (!inp.value && inp.closest('td')) sv(inp, '25000000');
-  });
-  showToast('Demo data cargado ✓', 'success');
+    return false;
+  };
+  // Selecciona un select buscándolo por el texto del label de su .form-group
+  const ssel = (labelText, optText) => {
+    for (const g of body.querySelectorAll('.form-group')) {
+      const lbl = g.querySelector('label');
+      if (lbl && lbl.textContent.includes(labelText)) {
+        return setSelByText(g.querySelector('select'), optText);
+      }
+    }
+    return false;
+  };
+  // Llena el primer input no-readonly de un .form-group si está vacío
+  const stxt = (labelText, value) => {
+    for (const g of body.querySelectorAll('.form-group')) {
+      const lbl = g.querySelector('label');
+      if (lbl && lbl.textContent.includes(labelText)) {
+        const inp = g.querySelector('input:not([readonly])');
+        if (inp && !inp.value) {
+          inp.value = value;
+          inp.dispatchEvent(new Event('change'));
+          inp.dispatchEvent(new Event('input'));
+        }
+        return;
+      }
+    }
+  };
+  const svId = (id, v) => {
+    const el = document.getElementById(id);
+    if (el && !el.readOnly) {
+      el.value = v;
+      el.dispatchEvent(new Event('change'));
+      el.dispatchEvent(new Event('input'));
+    }
+  };
+
+  /* ══ STEP 1: Identificación ─────────────────────────── */
+  if (currentStep === 1) {
+    stxt('Nombre del Facility',     'Aplazo Serie A 2025-1');
+    ssel('Moneda',                  'MXN');
+    ssel('País',                    'México');
+    stxt('Fecha de Alta',           '2025-02-15');
+    ssel('Estado',                  'En estructuración');
+    ssel('Originador Principal',    'Aplazo');
+    stxt('Tipo de Vehículo',        'SPV / Issuer Trust');
+    ssel('Fiduciario',              'CIBanco');
+    stxt('Número de Fideicomiso',   'F/4521-CIBanco');
+    stxt('Serie / Clave',           'APLAZO 25-1');
+    ssel('Operation Type',          'Issuer — Public Operation');
+  }
+
+  /* ══ STEP 2: Estructura — depende de la modalidad ──── */
+  if (currentStep === 2) {
+
+    /* ─── Modalidad TRANCHES — Term ABS multi-tranche ──
+       Caso real: Aplazo Serie A 2025-1 · $500M MXN · cartera BNPL
+       Benchmarks de mercado MX 2025 (TIIE 28d ≈ 8.00%):
+         · Senior  75% · TIIE+200pbs ≈ 10.00% · HR AAA  · BBVA institucional
+         · Mezz    15% · TIIE+550pbs ≈ 13.50% · HR A    · PROMECAP (fondo mezz MX)
+         · Sub     10% · 14.00% fija         · NR       · Retenido por Aplazo
+       Risk retention horizontal 10% — modalidad más usada en MX y cumple holgadamente ≥5%
+       (CRR EU / Dodd-Frank US / análogo CNBV LFIC art. 31) */
+    if (absStructMode === 'tranches') {
+      totalEmision = 500000000;
+      const totalEl = document.getElementById('totalEmision');
+      if (totalEl) totalEl.value = totalEmision;
+      ssel('Agencia Calificadora', 'HR Ratings México');
+
+      tranches = [
+        { tipo:'Senior',      monto:375000000, pct:'', tasa:10.00, rating:'mxAAA / HR AAA',  lender:'BBVA',     retenido:false },
+        { tipo:'Mezzanine',   monto:75000000,  pct:'', tasa:13.50, rating:'mxA / HR A',      lender:'PROMECAP', retenido:false },
+        { tipo:'Subordinado', monto:50000000,  pct:'', tasa:14.00, rating:'NR — Sin rating', lender:'',         retenido:true  }
+      ];
+      refreshTranchesTable();
+      validateTranches();
+    }
+
+    /* ─── Modalidad SINDICATO — Warehouse 4 bancos ─────
+       Caso real: Aplazo Warehouse Facility 2025 · $500M MXN revolving
+       Sindicato pari passu (estructura más común en warehouses MX):
+         · BBVA   35% · $175M · Lead Arranger + Administrative Agent
+         · Banorte 25% · $125M · Co-Lead
+         · HSBC   20% · $100M · Participant
+         · Scotia 20% · $100M · Participant
+       Agency Fee $1.5M anual (≈30bps sobre commitment, benchmark MX 2025) */
+    else if (absStructMode === 'sindicado') {
+      syndRows = [
+        { lender:'BANORTE',    monto:'125000000', pct:'25.00' },
+        { lender:'HSBC',       monto:'100000000', pct:'20.00' },
+        { lender:'Scotiabank', monto:'100000000', pct:'20.00' }
+      ];
+      // Re-render para reflejar las nuevas filas — con sel() ya marca selected nativamente
+      const panel = document.getElementById('struct-panel-sindicado');
+      if (panel) panel.innerHTML = renderSyndicatedPanel('abs');
+      svId('commitTotal_abs', 500000000);
+      svId('agentMonto_abs',  175000000);
+      svId('agentPct_abs',    '35.00');
+      svId('agentFee_abs',    '1500000');
+      updateSyndSum('abs');
+    }
+
+    /* ─── Modalidad INDIVIDUAL — Warehouse bilateral ─── */
+    else if (absStructMode === 'individual') {
+      stxt('Monto Comprometido', '300000000');
+      stxt('Tasa de Interés',    '11.50');
+      ssel('Tipo de Tasa',       'Variable — TIIE 28d + spread');
+      stxt('Advance Rate',       '80');
+      stxt('Fecha Vencimiento',  '2028-02-15');
+    }
+  }
+
+  /* ══ STEP 3: Pool & Roles ───────────────────────────── */
+  if (currentStep === 3) {
+    if (!selectedActivos.includes('Individual Consumer Credit')) {
+      selectedActivos = ['Individual Consumer Credit'];
+      refreshActivoChips();
+      document.querySelectorAll('#activosMenu input[type="checkbox"]').forEach(cb => {
+        const label = cb.parentElement.textContent.trim();
+        cb.checked = (label === 'Individual Consumer Credit');
+      });
+    }
+    stxt('Saldo Vigente del Pool', '625000000');
+    stxt('Número de Créditos',     '52000');
+    stxt('OC Ratio',               '125');
+    stxt('Aforo Mínimo',           '110');
+    ssel('Distribuciones',         'Mensual');
+    stxt('Reserve Account',        '15000000');
+    stxt('Fecha de Emisión',       '2025-04-15');
+    stxt('Fecha de Vencimiento',   '2030-04-15');
+    stxt('Call Option',            '10%');
+    ssel('Master Servicer',        'CXC');
+    ssel('Back-up Servicer',       'Hilco');
+    ssel('Representante Común',    'Monexcb');
+    ssel('Custodio',               'Indeval');
+  }
+
+  /* ══ STEP 4: Covenants — stack típico Term ABS consumer ─ */
+  if (currentStep === 4) {
+    const fillCovTab = (flow, tab, names) => {
+      if (!names || !names.length) return;
+      const list = document.getElementById(`cov-list-${flow}-${tab}`);
+      if (!list) return;
+      const firstInput = list.querySelector('input[type="text"]');
+      if (firstInput && !firstInput.value) {
+        firstInput.value = names[0];
+        firstInput.dispatchEvent(new Event('input'));
+      }
+      for (let i = 1; i < names.length; i++) {
+        addCovRow(flow, tab);
+        const inputs = list.querySelectorAll('input[type="text"]');
+        const lastInput = inputs[inputs.length - 1];
+        if (lastInput && !lastInput.value) {
+          lastInput.value = names[i];
+          lastInput.dispatchEvent(new Event('input'));
+        }
+      }
+    };
+
+    // Tab1 = Cartera — covenants estándar de pool consumer BNPL
+    fillCovTab('abs', 'tab1', [
+      'Mora >30d ≤ 3% del pool',
+      'Mora >60d ≤ 1.5%',
+      'Mora >90d ≤ 0.8%',
+      'Concentración top obligor ≤ 0.5%',
+      'CPR (prepago) entre 8% y 18% anualizado'
+    ]);
+
+    // Tab2 = Financieros — métricas a nivel emisión
+    fillCovTab('abs', 'tab2', [
+      'OC Ratio ≥ 115%',
+      'Advance Rate ≤ 80%',
+      'Pérdida neta acumulada ≤ 2% del balance original'
+    ]);
+
+    // Tab4 = Triggers — eventos de amortización acelerada
+    fillCovTab('abs', 'tab4', [
+      'Mora >60d > 5% → Amortización Acelerada',
+      'OC Ratio < 105% → Bloqueo de Distribuciones',
+      'Reemplazo de Master Servicer por rating downgrade del servicer',
+      'Pérdida neta acumulada > 3% → Evento de Default'
+    ]);
+  }
+
+  const modeLabel = currentStep === 2
+    ? ({ tranches:'Tranches', sindicado:'Sindicato', individual:'Individual' }[absStructMode] || '')
+    : '';
+  showToast(`Demo data cargado ✓${modeLabel?` (${modeLabel})`:''}`, 'success');
 }
 
 function saveDraft() {
@@ -1080,18 +1818,24 @@ function saveDraft() {
 }
 function saveFacility() {
   // Capture last step data
-  if (selectedType === 'quiro') captureQuiroStep(currentStep);
-  if (selectedType === 'abs')   captureAbsStep(currentStep);
+  captureCurrentStep();
 
-  const label = selectedType === 'abs' ? 'ABS / Titulización' : 'Quirografario';
-  const color = selectedType === 'abs' ? 'var(--blue)' : 'var(--yellow)';
-  const bg    = selectedType === 'abs' ? 'var(--blue-bg)' : 'var(--yellow-bg)';
+  const meta  = TYPE_REGISTRY[selectedType] || TYPE_REGISTRY.abs;
+  const label = meta.label;
+  const color = meta.color;
+  const bg    = meta.bg;
   const date  = new Date().toLocaleDateString('es-MX', { day:'2-digit', month:'short', year:'numeric' });
 
-  // Derive display name
-  const displayName = selectedType === 'quiro'
-    ? (quiroData.facilityName || 'Facility sin nombre')
-    : (absData.nombre || absData.serie || 'Nueva Facility ABS');
+  // Derive display name por tipo
+  const displayName = (() => {
+    switch (selectedType) {
+      case 'quiro': return quiroData.facilityName || 'Nuevo Quirografario';
+      case 'gar':   return garData.facilityName   || 'Nuevo Crédito Garantizado';
+      case 'lease': return leaseData.facilityName || 'Nuevo Leasing';
+      case 'fact':  return factData.facilityName  || 'Nuevo Factoring';
+      default:      return absData.nombre || absData.serie || 'Nueva Facility ABS';
+    }
+  })();
 
   /* ── EDIT MODE: update existing row ─────────────────────────── */
   if (editingFacilityId !== null) {
@@ -1175,11 +1919,15 @@ function saveFacility() {
 
   if (tbody) tbody.appendChild(tr);
 
-  // Persist snapshot
+  // Persist snapshot — incluye data de todos los tipos
   savedFacilities.push({
     id:             newId,
     type:           selectedType,
     quiroData:      JSON.parse(JSON.stringify(quiroData)),
+    absData:        JSON.parse(JSON.stringify(absData)),
+    garData:        JSON.parse(JSON.stringify(garData)),
+    leaseData:      JSON.parse(JSON.stringify(leaseData)),
+    factData:       JSON.parse(JSON.stringify(factData)),
     quiroLenderMode: quiroLenderMode,
     quiroTasaMode:  quiroTasaMode,
     name:           displayName,
@@ -1192,9 +1940,19 @@ function saveFacility() {
 }
 
 function nextStep() {
-  const steps = selectedType === 'abs' ? ABS_STEPS : QUIRO_STEPS;
-  if (selectedType === 'quiro') captureQuiroStep(currentStep);
-  if (selectedType === 'abs')   captureAbsStep(currentStep);
+  const steps = getSteps(selectedType);
+  captureCurrentStep();
+
+  // Gate: ABS Step 2 con modalidad Tranches debe pasar validación dura
+  if (selectedType === 'abs' && currentStep === 2 && absStructMode === 'tranches') {
+    const { errors } = validateTranches();
+    if (errors.length > 0) {
+      showToast(`Corrige ${errors.length} error${errors.length>1?'es':''} antes de continuar`, 'warn');
+      document.getElementById('trancheValidation')?.scrollIntoView({ behavior:'smooth', block:'center' });
+      return;
+    }
+  }
+
   if (currentStep < steps.length) { currentStep++; renderStep(); renderFooter(); scrollModalTop(); }
 }
 function prevStep() {
@@ -1248,6 +2006,20 @@ function captureQuiroStep(step) {
       quiroData.tiieFloor       = gv('q-tiie-floor');
       quiroData.tasaMora        = gv('q-tasa-mora');
       quiroData.commitmentFee   = gv('q-commitment-fee');
+      // Pricing grid (margen por apalancamiento)
+      if (document.getElementById('q-grid-toggle')?.checked) {
+        const lvls = [...document.querySelectorAll('.q-grid-lvl')];
+        const pbs  = [...document.querySelectorAll('.q-grid-pb')];
+        quiroData.pricingGrid = lvls.map((el,i)=>({lvl:el.value.trim(), pb:(pbs[i]?.value||'').trim()}))
+                                    .filter(r=>r.lvl || r.pb);
+      } else {
+        quiroData.pricingGrid = [];
+      }
+      // Comisiones, ESG, base de cálculo
+      quiroData.comEstructuracion = gv('q-com-estructuracion');
+      quiroData.comApertura       = gv('q-com-apertura');
+      quiroData.esgAjuste         = gv('q-esg-ajuste');
+      quiroData.baseCalculo       = gt('q-base-calculo');
     }
     // Plazo
     if (document.getElementById('q-fecha-inicio')) {
@@ -1326,14 +2098,28 @@ function captureAbsStep(step) {
   if (step === 2) {
     absData.structMode   = absStructMode;
     absData.totalEmision = totalEmision;
-    absData.tranches     = JSON.parse(JSON.stringify(tranches));
-    absData.syndRows     = JSON.parse(JSON.stringify(syndRows));
-    const agentPct = document.getElementById('agentPct_abs');
-    absData.agentPct     = agentPct?.value || '';
-    // Lender individual fields
-    absData.montoComprometido = gqt('Monto Comprometido');
-    absData.tasaInteres       = gqt('Tasa de Interés');
-    absData.advanceRate       = gqt('Advance Rate (%)');
+
+    // Limpiar fields de modalidades no activas — evita state leak al cambiar de modalidad
+    delete absData.tranches;
+    delete absData.syndRows;
+    delete absData.agentPct;
+    delete absData.montoComprometido;
+    delete absData.tasaInteres;
+    delete absData.advanceRate;
+
+    if (absStructMode === 'tranches') {
+      absData.tranches = JSON.parse(JSON.stringify(tranches));
+    } else if (absStructMode === 'sindicado') {
+      absData.syndRows       = JSON.parse(JSON.stringify(syndRows));
+      absData.agentPct       = document.getElementById('agentPct_abs')?.value || '';
+      absData.agentMonto     = document.getElementById('agentMonto_abs')?.value || '';
+      absData.agentFee       = document.getElementById('agentFee_abs')?.value || '';
+      absData.commitmentTotal = document.getElementById('commitTotal_abs')?.value || '';
+    } else if (absStructMode === 'individual') {
+      absData.montoComprometido = gqt('Monto Comprometido');
+      absData.tasaInteres       = gqt('Tasa de Interés');
+      absData.advanceRate       = gqt('Advance Rate (%)');
+    }
   }
   if (step === 3) {
     absData.activosPool  = [...selectedActivos];
@@ -1349,7 +2135,7 @@ function captureAbsStep(step) {
 
 /* ── Edit from Review ───────────────────────────────────────── */
 function editReviewSection(step) {
-  if (selectedType === 'abs') captureAbsStep(currentStep); else captureQuiroStep(currentStep); // save current state first (noop on step 4)
+  captureCurrentStep(); // save current state first (noop on step 4)
   reviewReturnMode = true;
   currentStep = step;
   // Mostrar el stepper cuando se entra a una sección específica
@@ -1360,9 +2146,9 @@ function editReviewSection(step) {
 }
 
 function saveAndReturnToReview() {
-  if (selectedType === 'abs') captureAbsStep(currentStep); else captureQuiroStep(currentStep);
+  captureCurrentStep();
   reviewReturnMode = false;
-  currentStep = selectedType === 'abs' ? ABS_STEPS.length : QUIRO_STEPS.length; // step 4 = Review
+  currentStep = getSteps(selectedType).length; // último step = Review
   // En edit mode, ocultar stepper al volver al Review (no es navegación secuencial)
   if (editingFacilityId !== null) {
     document.getElementById('stepperWrap').style.display = 'none';
@@ -1376,8 +2162,8 @@ function scrollModalTop() { document.getElementById('modalBody').scrollTop = 0; 
 
 /* ─── Step render dispatch ──────────────────────────────────────── */
 function renderStep() {
-  // Remove previous dynamic step
-  document.querySelectorAll('.modal-step:not(#step-0)').forEach(el=>el.remove());
+  // Remove previous dynamic step (preservar step-0 y step-ai estáticos)
+  document.querySelectorAll('.modal-step:not(#step-0):not(#step-ai)').forEach(el=>el.remove());
   const div = document.createElement('div');
   div.className = 'modal-step';
   if (selectedType === 'abs') {
@@ -1388,7 +2174,7 @@ function renderStep() {
       case 4: div.innerHTML = renderABS4('abs'); break;
       case 5: div.innerHTML = renderABS5(); break;
     }
-  } else {
+  } else if (selectedType === 'quiro') {
     switch(currentStep) {
       case 1: div.innerHTML = renderQ1(); break;
       case 2: div.innerHTML = renderQ2(); break;
@@ -1396,6 +2182,12 @@ function renderStep() {
       case 4: div.innerHTML = renderQ4('quiro'); break;
       case 5: div.innerHTML = renderQ5(); break;
     }
+  } else if (selectedType === 'gar') {
+    div.innerHTML = currentStep === 1 ? renderGar1() : renderGarReview();
+  } else if (selectedType === 'lease') {
+    div.innerHTML = currentStep === 1 ? renderLease1() : renderLeaseReview();
+  } else if (selectedType === 'fact') {
+    div.innerHTML = currentStep === 1 ? renderFact1() : renderFactReview();
   }
   document.getElementById('modalBody').appendChild(div);
   postRenderHooks();
@@ -1411,6 +2203,10 @@ function renderStep() {
       });
       updateAccelCount();
     }, 0);
+  }
+  // Sembrar covenants detectados por AI al entrar al Step 4 (quiro)
+  if (selectedType === 'quiro' && currentStep === 4) {
+    setTimeout(seedQuiroCovenantsFromData, 0);
   }
 }
 
@@ -1468,7 +2264,19 @@ let tranches = [
   { tipo:'Subordinado', monto:'',pct:'',tasa:'',rating:'NR — Sin rating', lender:'', retenido:true }
 ];
 let totalEmision = 0;
-let syndRows = [{ lender:'', pct:'' }];
+let syndRows = [{ lender:'', pct:'', monto:'' }];
+
+/* Seniority ranking — menor número = mayor prelación (paga primero) */
+const TRANCHE_SENIORITY = {
+  'Senior': 1,
+  'Junior Senior': 2,
+  'Mezzanine': 3,
+  'Subordinado': 4,
+  'Preferred Equity': 5,
+  'Equity': 6,
+  'Certificados de Participación': 6
+};
+const RISK_RETENTION_MIN_PCT = 5; // CRR EU / Dodd-Frank US / análogo CNBV
 
 function renderABS2() {
   return `
@@ -1513,33 +2321,89 @@ function renderIndividualPanel() {
 function renderSyndicatedPanel(flow) {
   let rowsHtml = syndRows.map((r,i)=>`
     <div class="synd-row" id="synd-row-${i}">
-      ${sel(CATALOGS.lenders,'Lender participante',`onchange="syndRows[${i}].lender=this.value;"`)}
-      <input type="number" placeholder="%" style="width:70px;" value="${r.pct}" onchange="syndRows[${i}].pct=this.value;updateSyndSum('${flow}')">
+      ${sel(CATALOGS.lenders, r.lender || 'Lender participante', `onchange="syndRows[${i}].lender=this.value;"`)}
+      <input type="number" placeholder="Monto" value="${r.monto||''}" onchange="syndRows[${i}].monto=this.value;syndAutoCalc('${flow}','partMonto',${i})">
+      <input type="number" placeholder="%" value="${r.pct||''}" step="0.01" onchange="syndRows[${i}].pct=this.value;syndAutoCalc('${flow}','partPct',${i})">
       <button class="btn-outline-sm" onclick="removeSyndRow(${i},'${flow}')"><i class="ph ph-trash"></i></button>
     </div>`).join('');
-  return `<p class="section-title">Sindicado <span class="badge-pari">Pari Passu</span></p>
+  return `<p class="section-title">Sindicato <span class="badge-pari">Pari Passu</span></p>
+  <p style="font-size:0.78rem;color:var(--text-secondary);margin:-8px 0 12px;">Captura el rol del agente como <strong>lender</strong> (participante con dinero), no la fee operativa. El Agency Fee va aparte.</p>
   <div class="form-grid">
     ${lenderField('Banco Agente')}
-    ${makeField('% del Agente','<input type="number" id="agentPct_${flow}" placeholder="0.00" onchange="updateSyndSum(\'${flow}\')" step="0.01">',false)}
-    ${makeField('Monto del Agente','<input type="number" placeholder="0.00">',false)}
-    ${makeField('Commitment Total','<input type="number" placeholder="0.00">',false)}
+    ${makeField('Commitment Total',`<input type="number" id="commitTotal_${flow}" placeholder="0.00" onchange="syndAutoCalc('${flow}','total')">`,true,'Monto total de la facility sindicada')}
+    ${makeField('Monto del Agente como Lender',`<input type="number" id="agentMonto_${flow}" placeholder="0.00" onchange="syndAutoCalc('${flow}','agentMonto')">`,false,'Aporte del banco agente como participante del sindicato')}
+    ${makeField('% del Agente',`<input type="number" id="agentPct_${flow}" placeholder="0.00" step="0.01" onchange="syndAutoCalc('${flow}','agentPct')">`,false,'Se autocalcula si llenas Monto del Agente + Commitment Total')}
+    ${makeField('Agency Fee anual',`<input type="number" id="agentFee_${flow}" placeholder="0.00" step="0.01">`,false,'Fee operativa que cobra el agente por administrar el sindicato (rol operativo, no como lender)')}
   </div>
   <p class="field-label" style="margin-top:10px;">Otros participantes</p>
+  <div style="display:grid;grid-template-columns:1fr 120px 80px auto;gap:8px;padding:0 4px 4px;font-size:0.7rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;">
+    <span>Lender</span><span>Monto</span><span>%</span><span></span>
+  </div>
   <div id="synd-rows-${flow}">${rowsHtml}</div>
   <div id="synd-sum-${flow}" class="synd-sum-row"></div>
   <button class="btn-outline-sm" style="margin-top:8px;" onclick="addSyndRow('${flow}')"><i class="ph ph-plus"></i>Agregar participante</button>`;
 }
 
+/* ── Autocálculo cruzado entre Commitment Total / % Agente / Monto Agente
+   y entre Monto/% en cada fila de participante ─────────────────── */
+function syndAutoCalc(flow, source, rowIdx) {
+  const totalEl = document.getElementById(`commitTotal_${flow}`);
+  const agMontoEl = document.getElementById(`agentMonto_${flow}`);
+  const agPctEl   = document.getElementById(`agentPct_${flow}`);
+  const total   = +totalEl?.value || 0;
+  const agMonto = +agMontoEl?.value || 0;
+  const agPct   = +agPctEl?.value || 0;
+
+  // Bloque Agente: derivar el campo faltante
+  if (source === 'agentMonto' && total > 0 && agMonto > 0) {
+    agPctEl.value = ((agMonto/total)*100).toFixed(2);
+  } else if (source === 'agentPct' && total > 0 && agPct > 0) {
+    agMontoEl.value = ((agPct/100)*total).toFixed(2);
+  } else if (source === 'total' && total > 0) {
+    // Recalcular % de agente y participantes a partir de sus montos
+    if (agMonto > 0) agPctEl.value = ((agMonto/total)*100).toFixed(2);
+    syndRows.forEach((r,i) => {
+      if (+r.monto > 0) {
+        r.pct = ((+r.monto/total)*100).toFixed(2);
+        const rowEl = document.getElementById(`synd-row-${i}`);
+        const pctInput = rowEl?.querySelectorAll('input[type="number"]')[1];
+        if (pctInput) pctInput.value = r.pct;
+      }
+    });
+  }
+
+  // Filas: derivar monto↔% por fila
+  if (source === 'partMonto' && total > 0 && rowIdx != null) {
+    const r = syndRows[rowIdx];
+    if (+r.monto > 0) {
+      r.pct = ((+r.monto/total)*100).toFixed(2);
+      const rowEl = document.getElementById(`synd-row-${rowIdx}`);
+      const pctInput = rowEl?.querySelectorAll('input[type="number"]')[1];
+      if (pctInput) pctInput.value = r.pct;
+    }
+  } else if (source === 'partPct' && total > 0 && rowIdx != null) {
+    const r = syndRows[rowIdx];
+    if (+r.pct > 0) {
+      r.monto = ((+r.pct/100)*total).toFixed(2);
+      const rowEl = document.getElementById(`synd-row-${rowIdx}`);
+      const montoInput = rowEl?.querySelectorAll('input[type="number"]')[0];
+      if (montoInput) montoInput.value = r.monto;
+    }
+  }
+
+  updateSyndSum(flow);
+}
+
 function renderTranchesPanel() {
   const rows = tranches.map((t,i)=>`
     <tr>
-      <td>${sel(CATALOGS.tipos_tranche, t.tipo, `onchange="tranches[${i}].tipo=this.value"`)}</td>
+      <td>${sel(CATALOGS.tipos_tranche, t.tipo, `onchange="tranches[${i}].tipo=this.value;calcTranchePcts()"`)}</td>
       <td><input type="number" value="${t.monto}" placeholder="0" style="width:110px" onchange="tranches[${i}].monto=+this.value;calcTranchePcts()"></td>
       <td><input type="number" id="tpct${i}" value="${t.pct||''}" placeholder="—" style="width:55px" readonly></td>
-      <td><input type="number" value="${t.tasa}" placeholder="0.00" step="0.01" style="width:70px" onchange="tranches[${i}].tasa=+this.value"></td>
+      <td><input type="number" value="${t.tasa}" placeholder="0.00" step="0.01" style="width:95px" onchange="tranches[${i}].tasa=+this.value"></td>
       <td>${sel(CATALOGS.ratings, t.rating, `onchange="tranches[${i}].rating=this.value"`)}</td>
       <td>${sel(CATALOGS.lenders, t.lender||'', `onchange="tranches[${i}].lender=this.value"`)}</td>
-      <td style="text-align:center"><input type="checkbox" ${t.retenido?'checked':''} style="width:16px;height:16px;accent-color:var(--secondary);" onchange="tranches[${i}].retenido=this.checked"></td>
+      <td style="text-align:center"><input type="checkbox" ${t.retenido?'checked':''} style="width:16px;height:16px;accent-color:var(--secondary);" onchange="tranches[${i}].retenido=this.checked;validateTranches()"></td>
       <td><button class="del-btn" onclick="removeTranche(${i})"><i class="ph ph-trash"></i></button></td>
     </tr>`).join('');
   return `
@@ -1604,16 +2468,90 @@ function updateWaterfall() {
 
 function validateTranches() {
   const el = document.getElementById('trancheValidation');
-  if (!el) return;
-  const total = totalEmision || 0;
-  const sum = tranches.reduce((s,t)=>s+(t.monto||0),0);
-  el.style.display = '';
-  if (total === 0 || sum === 0) { el.style.display='none'; return; }
-  const diff = Math.abs(sum-total);
-  const pct = diff/total*100;
-  if (pct < 0.1) { el.className='validation-msg ok'; el.textContent=`Suma de tranches = ${sum.toLocaleString()} — coincide con total de emisión.`; }
-  else if (pct < 5)  { el.className='validation-msg warn'; el.textContent=`Advertencia: suma de tranches (${sum.toLocaleString()}) difiere del total (${total.toLocaleString()}).`; }
-  else               { el.className='validation-msg err'; el.textContent=`Error: suma de tranches (${sum.toLocaleString()}) no cuadra con total de emisión (${total.toLocaleString()}).`; }
+  const errors = [];
+  const warnings = [];
+  const oks = [];
+
+  const total = +totalEmision || 0;
+  const sum   = tranches.reduce((s,t)=>s+(+t.monto||0),0);
+  const tipos = tranches.map(t=>t.tipo).filter(Boolean);
+
+  /* ── 1. Suma vs total de emisión ─────────────────────────── */
+  if (total === 0) {
+    errors.push('Falta capturar el Monto Total de Emisión.');
+  } else if (sum === 0) {
+    errors.push('Falta capturar el monto de al menos una tranche.');
+  } else {
+    const diff = Math.abs(sum-total);
+    const diffPct = diff/total*100;
+    if (diffPct < 0.1) {
+      oks.push(`Suma de tranches cuadra con total de emisión ($${sum.toLocaleString()}).`);
+    } else {
+      errors.push(`Suma de tranches ($${sum.toLocaleString()}) no cuadra con total ($${total.toLocaleString()}). Diferencia: $${diff.toLocaleString()} (${diffPct.toFixed(1)}%).`);
+    }
+  }
+
+  /* ── 2. Prelación / orden de waterfall ───────────────────── */
+  const hasSenior       = tipos.includes('Senior');
+  const hasJuniorSenior = tipos.includes('Junior Senior');
+  const hasMezz         = tipos.includes('Mezzanine');
+  const hasSub          = tipos.includes('Subordinado');
+  const hasPrefEq       = tipos.includes('Preferred Equity');
+  const hasEquity       = tipos.includes('Equity') || tipos.includes('Certificados de Participación');
+  const hasAnchorAbove  = hasSenior || hasJuniorSenior;
+
+  if ((hasMezz || hasSub || hasPrefEq || hasEquity) && !hasAnchorAbove) {
+    errors.push('Prelación inválida: si hay Mezzanine, Subordinado o Equity, debe existir una tranche Senior (o Junior Senior) arriba.');
+  }
+  if (hasEquity && !hasSub && !hasMezz && !hasPrefEq) {
+    warnings.push('Estructura inusual: hay Equity sin Subordinado/Mezzanine/Preferred Equity como amortiguador intermedio.');
+  }
+
+  // Orden en la tabla — debe ir de mayor a menor seniority (de arriba hacia abajo)
+  let lastRank = 0;
+  let outOfOrder = false;
+  for (const t of tranches) {
+    if (!t.tipo) continue;
+    const rank = TRANCHE_SENIORITY[t.tipo] ?? 99;
+    if (rank < lastRank) { outOfOrder = true; break; }
+    lastRank = rank;
+  }
+  if (outOfOrder) {
+    errors.push('Orden inválido en la tabla: las tranches deben listarse de mayor a menor prelación (Senior arriba, Equity abajo).');
+  }
+
+  /* ── 3. Risk Retention ≥ 5% (CRR / Dodd-Frank / CNBV) ────── */
+  if (sum > 0 || total > 0) {
+    const base = total > 0 ? total : sum;
+    const retainedAmount = tranches.filter(t=>t.retenido).reduce((s,t)=>s+(+t.monto||0),0);
+    const retainedPct = base > 0 ? (retainedAmount/base*100) : 0;
+    if (retainedAmount === 0) {
+      errors.push(`Risk Retention: ninguna tranche con monto está marcada como "Retenido". Mínimo regulatorio: ${RISK_RETENTION_MIN_PCT}%.`);
+    } else if (retainedPct < RISK_RETENTION_MIN_PCT) {
+      errors.push(`Risk Retention insuficiente: ${retainedPct.toFixed(2)}% retenido. Mínimo regulatorio: ${RISK_RETENTION_MIN_PCT}% (CRR EU / Dodd-Frank US / análogo CNBV).`);
+    } else {
+      oks.push(`Risk Retention: ${retainedPct.toFixed(2)}% retenido — cumple ≥ ${RISK_RETENTION_MIN_PCT}% regulatorio.`);
+    }
+  }
+
+  /* ── Render ──────────────────────────────────────────────── */
+  if (el) {
+    if (errors.length === 0 && warnings.length === 0 && oks.length === 0) {
+      el.style.display = 'none';
+      el.innerHTML = '';
+    } else {
+      el.style.cssText = 'display:flex;flex-direction:column;gap:6px;margin-top:8px;';
+      el.className = '';
+      const row = (cls, icon, msg) => `<div class="validation-msg ${cls}" style="display:flex;align-items:center;gap:6px;margin:0;"><i class="ph ${icon}" style="font-size:14px;flex-shrink:0;"></i><span>${msg}</span></div>`;
+      el.innerHTML = [
+        ...errors.map(m => row('err','ph-x-circle', m)),
+        ...warnings.map(m => row('warn','ph-warning-circle', m)),
+        ...oks.map(m => row('ok','ph-check-circle', m))
+      ].join('');
+    }
+  }
+
+  return { errors, warnings, oks };
 }
 
 function addTranche() {
@@ -1630,43 +2568,69 @@ function refreshTranchesTable() {
   if (!tbody) return;
   tbody.innerHTML = tranches.map((t,i)=>`
     <tr>
-      <td>${sel(CATALOGS.tipos_tranche, t.tipo, `onchange="tranches[${i}].tipo=this.value;updateWaterfall()"`)}</td>
+      <td>${sel(CATALOGS.tipos_tranche, t.tipo, `onchange="tranches[${i}].tipo=this.value;calcTranchePcts()"`)}</td>
       <td><input type="number" value="${t.monto}" placeholder="0" style="width:110px" onchange="tranches[${i}].monto=+this.value;calcTranchePcts()"></td>
       <td><input type="number" id="tpct${i}" value="${t.pct||''}" placeholder="—" style="width:55px" readonly></td>
-      <td><input type="number" value="${t.tasa}" placeholder="0.00" step="0.01" style="width:70px" onchange="tranches[${i}].tasa=+this.value"></td>
+      <td><input type="number" value="${t.tasa}" placeholder="0.00" step="0.01" style="width:95px" onchange="tranches[${i}].tasa=+this.value"></td>
       <td>${sel(CATALOGS.ratings, t.rating, `onchange="tranches[${i}].rating=this.value"`)}</td>
       <td>${sel(CATALOGS.lenders, t.lender||'', `onchange="tranches[${i}].lender=this.value"`)}</td>
-      <td style="text-align:center"><input type="checkbox" ${t.retenido?'checked':''} style="width:16px;height:16px;accent-color:var(--secondary);" onchange="tranches[${i}].retenido=this.checked"></td>
+      <td style="text-align:center"><input type="checkbox" ${t.retenido?'checked':''} style="width:16px;height:16px;accent-color:var(--secondary);" onchange="tranches[${i}].retenido=this.checked;validateTranches()"></td>
       <td><button class="del-btn" onclick="removeTranche(${i})"><i class="ph ph-trash"></i></button></td>
     </tr>`).join('');
+  calcTranchePcts();
 }
 
 function addSyndRow(flow) {
-  syndRows.push({lender:'',pct:''});
+  syndRows.push({lender:'',pct:'',monto:''});
   const container = document.getElementById(`synd-rows-${flow}`);
   if (!container) return;
   const i = syndRows.length-1;
   const div = document.createElement('div');
   div.className='synd-row'; div.id=`synd-row-${i}`;
-  div.innerHTML=`${sel(CATALOGS.lenders,'Lender participante',`onchange="syndRows[${i}].lender=this.value;"`)}<input type="number" placeholder="%" style="width:70px;" onchange="syndRows[${i}].pct=this.value;updateSyndSum('${flow}')"><button class="btn-outline-sm" onclick="this.parentElement.remove();updateSyndSum('${flow}')"><i class="ph ph-trash"></i></button>`;
+  div.innerHTML=`${sel(CATALOGS.lenders,'Lender participante',`onchange="syndRows[${i}].lender=this.value;"`)}<input type="number" placeholder="Monto" onchange="syndRows[${i}].monto=this.value;syndAutoCalc('${flow}','partMonto',${i})"><input type="number" placeholder="%" step="0.01" onchange="syndRows[${i}].pct=this.value;syndAutoCalc('${flow}','partPct',${i})"><button class="btn-outline-sm" onclick="removeSyndRow(${i},'${flow}')"><i class="ph ph-trash"></i></button>`;
   container.appendChild(div);
 }
 function removeSyndRow(i, flow) {
   // Capture current step state before re-rendering to avoid data loss
-  if (selectedType === 'quiro') captureQuiroStep(currentStep);
-  if (selectedType === 'abs')   captureAbsStep(currentStep);
+  captureCurrentStep();
   syndRows.splice(i,1);
   renderStep(); renderFooter();
 }
 function updateSyndSum(flow) {
   const el = document.getElementById(`synd-sum-${flow}`);
   if (!el) return;
-  let sum = 0;
-  syndRows.forEach(r=>sum+=(+r.pct||0));
-  const agentEl = document.getElementById(`agentPct_${flow}`);
-  if (agentEl) sum += (+agentEl.value||0);
-  el.className='synd-sum-row '+(Math.abs(sum-100)<0.1?'ok':'err');
-  el.textContent=`Total participación: ${sum.toFixed(1)}% ${Math.abs(sum-100)<0.1?'— cuadra al 100%':'— no suma 100%'}`;
+  const total     = +document.getElementById(`commitTotal_${flow}`)?.value || 0;
+  const agMonto   = +document.getElementById(`agentMonto_${flow}`)?.value || 0;
+  const agPct     = +document.getElementById(`agentPct_${flow}`)?.value || 0;
+  const sumPct    = syndRows.reduce((s,r)=>s+(+r.pct||0), 0) + agPct;
+  const sumMonto  = syndRows.reduce((s,r)=>s+(+r.monto||0), 0) + agMonto;
+
+  const pctOk    = Math.abs(sumPct-100) < 0.1;
+  const montoOk  = total > 0 && Math.abs(sumMonto-total) < (total*0.001);
+
+  let cls, msg;
+  if (total === 0) {
+    cls = 'err';
+    msg = `Falta capturar Commitment Total · Σ% actual: ${sumPct.toFixed(1)}%`;
+  } else if (pctOk && montoOk) {
+    cls = 'ok';
+    msg = `✓ Σ Monto $${sumMonto.toLocaleString()} = Commitment Total · Σ% = 100%`;
+  } else {
+    cls = 'err';
+    const parts = [];
+    if (!montoOk) parts.push(`Σ Monto $${sumMonto.toLocaleString()} vs Commitment $${total.toLocaleString()} (Δ $${Math.abs(sumMonto-total).toLocaleString()})`);
+    if (!pctOk)   parts.push(`Σ% = ${sumPct.toFixed(1)}% (≠100%)`);
+    msg = parts.join(' · ');
+  }
+  el.className = 'synd-sum-row ' + cls;
+  el.textContent = msg;
+
+  // Detectar lender duplicado entre agente y participantes
+  const agentLender = SESSION.lender || '';
+  const dupes = syndRows.filter(r => r.lender && r.lender === agentLender);
+  if (dupes.length > 0) {
+    el.textContent += ` · ⚠ ${agentLender} aparece como agente y participante`;
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -2065,11 +3029,35 @@ function renderQ2() {
         ${makeField('Floor de Referencia (%)',`<input type="number" id="q-tiie-floor" placeholder="Ej. 8.50" step="0.01" value="${d.tiieFloor||''}">`,false,'Tasa mínima de referencia aunque TIIE baje')}
       </div>
       <p class="rate-calculated" id="activeRateDisplay">Tasa activa estimada: —</p>
+      <label style="display:flex;align-items:center;gap:7px;margin-top:8px;font-size:0.8rem;font-weight:600;color:var(--text);cursor:pointer;">
+        <input type="checkbox" id="q-grid-toggle" ${d.pricingGrid?.length?'checked':''} onchange="togglePricingGrid()">
+        Margen escalonado por apalancamiento (pricing grid)
+        <span class="tooltip-trigger" data-tip="El margen cambia según el Índice de Apalancamiento reportado en el Certificado de Cumplimiento. Visto en el contrato sindicado.">?</span>
+      </label>
+      <div id="q-grid-panel" style="display:${d.pricingGrid?.length?'block':'none'};margin-top:8px;">
+        <table id="q-grid-table" style="width:100%;border-collapse:collapse;font-size:0.8rem;">
+          <thead><tr>
+            <th style="text-align:left;padding:5px 8px;color:var(--text-muted);font-size:0.68rem;text-transform:uppercase;letter-spacing:.04em;">Índice de Apalancamiento</th>
+            <th style="text-align:left;padding:5px 8px;color:var(--text-muted);font-size:0.68rem;text-transform:uppercase;letter-spacing:.04em;">Margen (pb)</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="q-grid-body">${(d.pricingGrid||[]).map(r=>gridRowHtml(r.lvl,r.pb)).join('')}</tbody>
+        </table>
+        <button type="button" onclick="addGridRow()" style="margin-top:6px;padding:4px 10px;font-size:0.74rem;font-weight:600;background:transparent;border:1px dashed var(--border-strong);border-radius:6px;color:var(--text-muted);cursor:pointer;font-family:var(--font-ui);"><i class="ph ph-plus" style="font-size:11px;"></i> Agregar nivel</button>
+      </div>
     </div>
   </div>
   <div class="form-grid">
     ${makeField('Tasa Moratoria (%)',`<input id="q-tasa-mora" type="number" placeholder="Ej. 2.50" step="0.01" value="${d.tasaMora||''}">`,false,'Sobretasa aplicable en caso de mora')}
     ${makeField('Commitment Fee (%)',`<input id="q-commitment-fee" type="number" placeholder="Ej. 0.50" step="0.01" value="${d.commitmentFee||''}">`,false,'Fee sobre monto no dispuesto (revolventes)')}
+  </div>
+  <hr class="section-divider" style="margin:8px 0 12px">
+  <p class="section-title">Comisiones, Sostenibilidad & Base</p>
+  <div class="form-grid">
+    ${makeField('Comisión de Estructuración (%)',`<input id="q-com-estructuracion" type="number" placeholder="Ej. 1.00" step="0.01" value="${d.comEstructuracion||''}">`,false,'One-time sobre el monto de la línea')}
+    ${makeField('Comisión de Apertura (%)',`<input id="q-com-apertura" type="number" placeholder="Ej. 0.75" step="0.01" value="${d.comApertura||''}">`,false)}
+    ${makeField('Ajuste ESG / Sostenibilidad (± pb)',`<input id="q-esg-ajuste" type="number" placeholder="Ej. 5" step="1" value="${d.esgAjuste||''}">`,false,'Descuento/prima al margen ligado a KPI sostenible. Presente en ambos contratos analizados.')}
+    ${makeField('Base de Cálculo',qSelOpt('q-base-calculo',CATALOGS.base_calculo,d.baseCalculo),false,'Convención de conteo de días (day count)')}
   </div>
   <hr class="section-divider" style="margin:8px 0 12px">
   <p class="section-title">Plazo & Pagos</p>
@@ -2250,6 +3238,28 @@ function calcActiveTasa() {
   const el = document.getElementById('activeRateDisplay');
   if (el) el.textContent = `Tasa activa estimada: Benchmark + ${spread.toFixed(2)}%`;
 }
+/* ── Pricing grid: margen escalonado por apalancamiento ───────────── */
+function gridRowHtml(lvl='', pb='') {
+  return `<tr>
+    <td style="padding:3px 8px;"><input type="text" class="q-grid-lvl" placeholder="Ej. ≥ 3.5x" value="${lvl}" style="width:100%;"></td>
+    <td style="padding:3px 8px;"><input type="number" class="q-grid-pb" placeholder="Ej. 344" value="${pb}" style="width:100%;"></td>
+    <td style="padding:3px 8px;width:34px;"><button type="button" onclick="this.closest('tr').remove()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:14px;" title="Eliminar"><i class="ph ph-trash"></i></button></td>
+  </tr>`;
+}
+function addGridRow(lvl='', pb='') {
+  const body = document.getElementById('q-grid-body');
+  if (body) body.insertAdjacentHTML('beforeend', gridRowHtml(lvl, pb));
+}
+function togglePricingGrid() {
+  const on = document.getElementById('q-grid-toggle')?.checked;
+  const panel = document.getElementById('q-grid-panel');
+  if (panel) panel.style.display = on ? 'block' : 'none';
+  const body = document.getElementById('q-grid-body');
+  if (on && body && !body.children.length) {
+    // semilla con el grid real del contrato sindicado (Tramo A)
+    [['≥ 3.5x','344'],['3.0x – 3.5x','319'],['2.5x – 3.0x','294'],['< 2.5x','269']].forEach(r=>addGridRow(r[0],r[1]));
+  }
+}
 function setQuiroLender(mode, el) {
   quiroLenderMode = mode;
   document.querySelectorAll('.lender-cards .struct-card').forEach(c=>c.classList.remove('active-amber','active-green'));
@@ -2422,7 +3432,12 @@ function renderQ5() {
           </div>
           ${d.tiieFloor ? `<div class="review-item"><span class="review-label">Floor de Referencia</span>${rv(d.tiieFloor+'%', 'mono')}</div>` : ''}
           ${d.tasaMora ? `<div class="review-item"><span class="review-label">Tasa Moratoria</span>${rv('+'+d.tasaMora+'%', 'mono')}</div>` : ''}
+          ${d.pricingGrid?.length ? `<div class="review-item"><span class="review-label">Pricing Grid</span>${rv(d.pricingGrid.length+' niveles · '+d.pricingGrid.map(r=>r.pb+'pb').join(' / '), 'mono')}</div>` : ''}
           ${d.commitmentFee ? `<div class="review-item"><span class="review-label">Commitment Fee</span>${rv(d.commitmentFee+'%', 'mono')}</div>` : ''}
+          ${d.comEstructuracion ? `<div class="review-item"><span class="review-label">Com. Estructuración</span>${rv(d.comEstructuracion+'%', 'mono')}</div>` : ''}
+          ${d.comApertura ? `<div class="review-item"><span class="review-label">Com. Apertura</span>${rv(d.comApertura+'%', 'mono')}</div>` : ''}
+          ${d.esgAjuste ? `<div class="review-item"><span class="review-label">Ajuste ESG</span>${rv('± '+d.esgAjuste+' pb', 'mono')}</div>` : ''}
+          ${d.baseCalculo ? `<div class="review-item"><span class="review-label">Base de Cálculo</span>${rv(d.baseCalculo, 'mono')}</div>` : ''}
           <div class="review-item">
             <span class="review-label">Vigencia</span>
             ${rv(vigencia, 'mono')}
@@ -2484,6 +3499,23 @@ function renderQ5() {
       </div>
     </div>
 
+    ${d.aiNovelVars?.length ? `
+    <!-- AI NOVEL VARS -->
+    <div class="review-section">
+      <div class="review-section-header">
+        <span class="review-section-title"><i class="ph ph-sparkle" style="color:#7c3aed;"></i>Variables nuevas detectadas por AI</span>
+        <span style="font-size:0.68rem;font-weight:700;color:#7c3aed;background:#f3edfd;padding:3px 9px;border-radius:20px;">${d.aiNovelVars.length} fuera del template</span>
+      </div>
+      <div class="review-body">
+        <p style="font-size:0.76rem;color:var(--text-secondary);margin:0 0 8px;">El AI las extrajo y tú las aceptaste. Quedan registradas como variables del facility; las que el formulario aún no modela se marcan para configuración.</p>
+        ${d.aiNovelVars.map(v=>`<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-left:3px solid #7c3aed;border-radius:8px;margin-bottom:6px;">
+          <i class="ph ph-dot-outline" style="color:#7c3aed;font-size:18px;margin-top:1px;"></i>
+          <div style="flex:1;"><span style="font-size:0.82rem;font-weight:700;color:var(--text);">${v.label}</span><div style="font-size:0.76rem;color:var(--text-secondary);">${v.value}</div></div>
+          <span style="font-size:0.66rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;align-self:center;">${v.dest}</span>
+        </div>`).join('')}
+      </div>
+    </div>` : ''}
+
   </div>`;
 }
 
@@ -2524,6 +3556,431 @@ document.addEventListener('keydown', function(e) {
     else if (document.getElementById('addFacilityModal').classList.contains('open')) closeModal();
   }
 });
+
+/* ══════════════════════════════════════════════════════════════════
+   NUEVOS TIPOS DE FACILITY — Garantizado / Leasing / Factoring
+   Wireframes lean: Step 1 (captura) + Review.
+   Casos de uso reales Covalto 2025-2026.
+══════════════════════════════════════════════════════════════════ */
+
+/* ─── Helpers compartidos ──────────────────────────────────────── */
+function gvId(id) { return document.getElementById(id)?.value?.trim() || ''; }
+function gtId(id) {
+  const el = document.getElementById(id);
+  const t = el?.options?.[el.selectedIndex]?.text || '';
+  return t === 'Selecciona' ? '' : t;
+}
+function fmtMoney(v) {
+  if (!v) return '—';
+  const n = +String(v).replace(/[$,]/g,'');
+  return isNaN(n) ? v : '$' + n.toLocaleString('es-MX');
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   1) GARANTIZADO / ABL — Crédito con colateral real + garantía estatal
+   Caso Covalto real: SME inmobiliaria con hipoteca + NAFIN 50%
+══════════════════════════════════════════════════════════════════ */
+function renderGar1() {
+  const d = garData;
+  return `
+  <p class="section-title">Borrower & Crédito</p>
+  <div class="form-grid">
+    ${makeField('Nombre del Facility',`<input id="g-facility-name" type="text" placeholder="Ej. Crédito Hipotecario SME-2025-01" value="${d.facilityName||''}">`,true)}
+    ${makeField('Borrower Legal Name',`<input id="g-borrower" type="text" placeholder="Razón social" value="${d.borrower||''}">`,true)}
+    ${makeField('RFC',`<input id="g-rfc" type="text" placeholder="RFC del acreditado" value="${d.rfc||''}">`,false)}
+    ${makeField('Sector',qSelOpt('g-sector',CATALOGS.sectores,d.sector),false)}
+    ${makeField('Monto del Crédito',`<input id="g-monto" type="number" placeholder="0.00" value="${d.monto||''}">`,true)}
+    ${makeField('Moneda',qSelOpt('g-moneda',CATALOGS.monedas,d.moneda||'MXN'),true)}
+    ${makeField('Tipo de Crédito',qSelOpt('g-tipo-credito',CATALOGS.tipos_credito,d.tipoCredito),true)}
+    ${makeField('Modalidad',qSelOpt('g-modalidad',['Term Loan','Revolving / Línea'],d.modalidad),true)}
+    ${makeField('Tasa de Interés (%)',`<input id="g-tasa" type="number" step="0.01" placeholder="Ej. 14.50" value="${d.tasa||''}">`,true)}
+    ${makeField('Tipo de Tasa',qSelOpt('g-tipo-tasa',CATALOGS.tipos_tasa,d.tipoTasa),false)}
+    ${makeField('Fecha Inicio',`<input id="g-fecha-inicio" type="date" value="${d.fechaInicio||''}">`,true)}
+    ${makeField('Fecha Vencimiento',`<input id="g-fecha-venc" type="date" value="${d.fechaVenc||''}">`,true)}
+  </div>
+  <hr class="section-divider" style="margin:14px 0 10px">
+  <p class="section-title">Colateral Real</p>
+  <div class="form-grid">
+    ${makeField('Tipo de Colateral',qSelOpt('g-colateral',CATALOGS.tipos_colateral,d.colateral),true)}
+    ${makeField('Descripción del Activo',`<input id="g-colateral-desc" type="text" placeholder="Ej. Inmueble en Polanco · 850m²" value="${d.colateralDesc||''}">`,false)}
+    ${makeField('Valor del Colateral (avalúo)',`<input id="g-colateral-valor" type="number" placeholder="0.00" value="${d.colateralValor||''}" oninput="updateGarLTV()">`,true)}
+    ${makeField('LTV (%)',`<input id="g-ltv" type="number" placeholder="auto" value="${d.ltv||''}" readonly style="background:var(--bg);">`,false,'Se autocalcula: Monto / Valor del Colateral')}
+    ${makeField('Aforo Mínimo (%)',`<input id="g-aforo" type="number" placeholder="Ej. 125" value="${d.aforo||''}">`,false,'Valor mínimo del colateral vs saldo del crédito')}
+  </div>
+  <hr class="section-divider" style="margin:14px 0 10px">
+  <p class="section-title">Garantía Parcial Estatal <span style="font-size:0.7rem;color:var(--text-muted);font-weight:500;text-transform:none;letter-spacing:0;">(opcional — NAFIN / FIRA / FONAGA)</span></p>
+  <div class="form-grid">
+    ${makeField('Tipo de Garantía Estatal',qSelOpt('g-gar-estatal',CATALOGS.garantias_estatales,d.garEstatal),false,'Garantía parcial de banca de fomento — reduce RWA y EAD')}
+    ${makeField('% de Cobertura',`<input id="g-gar-pct" type="number" step="0.01" placeholder="Ej. 50.00" value="${d.garPct||''}">`,false,'Porcentaje del monto cubierto por la garantía estatal')}
+    ${makeField('Programa / Trámite ID',`<input id="g-gar-id" type="text" placeholder="Ej. NAFIN-PYME-2025-04532" value="${d.garId||''}">`,false)}
+  </div>
+  <hr class="section-divider" style="margin:14px 0 10px">
+  <p class="section-title">Lender</p>
+  <div class="form-grid">
+    ${lenderField('Lender')}
+  </div>`;
+}
+function updateGarLTV() {
+  const monto  = +gvId('g-monto')||0;
+  const valor  = +gvId('g-colateral-valor')||0;
+  const ltvEl  = document.getElementById('g-ltv');
+  if (ltvEl && monto > 0 && valor > 0) ltvEl.value = ((monto/valor)*100).toFixed(2);
+}
+function captureGarStep(step) {
+  if (step !== 1) return;
+  garData.facilityName  = gvId('g-facility-name');
+  garData.borrower      = gvId('g-borrower');
+  garData.rfc           = gvId('g-rfc');
+  garData.sector        = gtId('g-sector');
+  garData.monto         = gvId('g-monto');
+  garData.moneda        = gtId('g-moneda');
+  garData.tipoCredito   = gtId('g-tipo-credito');
+  garData.modalidad     = gtId('g-modalidad');
+  garData.tasa          = gvId('g-tasa');
+  garData.tipoTasa      = gtId('g-tipo-tasa');
+  garData.fechaInicio   = gvId('g-fecha-inicio');
+  garData.fechaVenc     = gvId('g-fecha-venc');
+  garData.colateral     = gtId('g-colateral');
+  garData.colateralDesc = gvId('g-colateral-desc');
+  garData.colateralValor= gvId('g-colateral-valor');
+  garData.ltv           = gvId('g-ltv');
+  garData.aforo         = gvId('g-aforo');
+  garData.garEstatal    = gtId('g-gar-estatal');
+  garData.garPct        = gvId('g-gar-pct');
+  garData.garId         = gvId('g-gar-id');
+}
+function renderGarReview() {
+  const d = garData;
+  const rv = v => v ? `<span class="review-value">${v}</span>` : `<span class="review-value empty">—</span>`;
+  return `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <div>
+      <p style="font-size:1rem;font-weight:700;color:var(--primary);margin:0 0 2px;">Resumen del Facility</p>
+      <p style="font-size:0.82rem;color:var(--text-secondary);margin:0;">Revisa antes de guardar.</p>
+    </div>
+    <span style="font-size:0.72rem;font-weight:700;padding:4px 10px;background:#F5F3FF;color:#7C3AED;border-radius:20px;text-transform:uppercase;letter-spacing:.05em;">Garantizado / ABL</span>
+  </div>
+  <div class="review-section"><div class="review-section-header"><span class="review-section-title"><i class="ph ph-handshake"></i>Borrower & Crédito</span></div><div class="review-body"><div class="review-grid">
+    <div class="review-item"><span class="review-label">Facility</span>${rv(d.facilityName)}</div>
+    <div class="review-item"><span class="review-label">Borrower</span>${rv(d.borrower)}</div>
+    <div class="review-item"><span class="review-label">Monto</span>${rv(fmtMoney(d.monto))}</div>
+    <div class="review-item"><span class="review-label">Moneda</span>${rv(d.moneda)}</div>
+    <div class="review-item"><span class="review-label">Tipo / Modalidad</span>${rv(d.tipoCredito && d.modalidad ? `${d.tipoCredito} · ${d.modalidad}` : (d.tipoCredito||d.modalidad))}</div>
+    <div class="review-item"><span class="review-label">Tasa</span>${rv(d.tasa ? d.tasa+'%' + (d.tipoTasa?' · '+d.tipoTasa:'') : '')}</div>
+    <div class="review-item"><span class="review-label">Plazo</span>${rv(d.fechaInicio && d.fechaVenc ? `${d.fechaInicio} → ${d.fechaVenc}` : '')}</div>
+  </div></div></div>
+  <div class="review-section" style="margin-top:10px;"><div class="review-section-header"><span class="review-section-title"><i class="ph ph-shield-check"></i>Colateral</span></div><div class="review-body"><div class="review-grid">
+    <div class="review-item"><span class="review-label">Tipo de Colateral</span>${rv(d.colateral)}</div>
+    <div class="review-item"><span class="review-label">Descripción</span>${rv(d.colateralDesc)}</div>
+    <div class="review-item"><span class="review-label">Valor (avalúo)</span>${rv(fmtMoney(d.colateralValor))}</div>
+    <div class="review-item"><span class="review-label">LTV</span>${rv(d.ltv ? d.ltv+'%' : '')}</div>
+    <div class="review-item"><span class="review-label">Aforo Mínimo</span>${rv(d.aforo ? d.aforo+'%' : '')}</div>
+  </div></div></div>
+  <div class="review-section" style="margin-top:10px;"><div class="review-section-header"><span class="review-section-title"><i class="ph ph-bank"></i>Garantía Estatal</span></div><div class="review-body"><div class="review-grid">
+    <div class="review-item"><span class="review-label">Programa</span>${rv(d.garEstatal)}</div>
+    <div class="review-item"><span class="review-label">% Cobertura</span>${rv(d.garPct ? d.garPct+'%' : '')}</div>
+    <div class="review-item" style="grid-column:1/-1;"><span class="review-label">Trámite ID</span>${rv(d.garId)}</div>
+  </div></div></div>`;
+}
+function _autofillGar() {
+  // Caso real Covalto: SME inmobiliaria — Crédito Hipotecario $30M con NAFIN 50%
+  if (currentStep !== 1) return;
+  const sv  = (id,v) => { const el=document.getElementById(id); if(el && !el.value){el.value=v;el.dispatchEvent(new Event('change'));el.dispatchEvent(new Event('input'));} };
+  const ssel= (id,t) => { const el=document.getElementById(id); if(!el) return; for(const o of el.options){ if(o.text===t){el.value=o.value||o.text;el.dispatchEvent(new Event('change'));return;} } };
+  sv('g-facility-name','Crédito Hipotecario SME-2025-01');
+  sv('g-borrower','Inmobiliaria del Bajío, S.A. de C.V.');
+  sv('g-rfc','IDB180501ABC');
+  ssel('g-sector','Bienes Raíces');
+  sv('g-monto','30000000');
+  ssel('g-moneda','MXN');
+  ssel('g-tipo-credito','Crédito Simple');
+  ssel('g-modalidad','Term Loan');
+  sv('g-tasa','14.50');
+  ssel('g-tipo-tasa','Variable — TIIE 28d + spread');
+  sv('g-fecha-inicio','2025-03-15');
+  sv('g-fecha-venc','2030-03-15');
+  ssel('g-colateral','Inmueble comercial');
+  sv('g-colateral-desc','Plaza comercial en Querétaro · 2,400 m² · 16 locales');
+  sv('g-colateral-valor','48000000');
+  updateGarLTV(); // 30M/48M = 62.5%
+  sv('g-aforo','140');
+  ssel('g-gar-estatal','NAFIN — Garantía Automática PyME');
+  sv('g-gar-pct','50.00');
+  sv('g-gar-id','NAFIN-PYME-2025-04532');
+  showToast('Demo data cargado ✓ (Garantizado)', 'success');
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   2) LEASING — Arrendamiento financiero / operativo
+   Caso Covalto real: LeaseMD → Transportes XYZ, 5 camiones Volvo
+══════════════════════════════════════════════════════════════════ */
+function renderLease1() {
+  const d = leaseData;
+  return `
+  <p class="section-title">Lessee (Arrendatario)</p>
+  <div class="form-grid">
+    ${makeField('Nombre del Facility',`<input id="l-facility-name" type="text" placeholder="Ej. Lease Transportes XYZ-2025-01" value="${d.facilityName||''}">`,true)}
+    ${makeField('Lessee Legal Name',`<input id="l-lessee" type="text" placeholder="Razón social del arrendatario" value="${d.lessee||''}">`,true)}
+    ${makeField('RFC',`<input id="l-rfc" type="text" placeholder="RFC del lessee" value="${d.rfc||''}">`,false)}
+    ${makeField('Sector',qSelOpt('l-sector',CATALOGS.sectores,d.sector),false)}
+  </div>
+  <hr class="section-divider" style="margin:14px 0 10px">
+  <p class="section-title">Activo Subyacente</p>
+  <div class="form-grid">
+    ${makeField('Tipo de Lease',qSelOpt('l-tipo-lease',CATALOGS.tipos_lease,d.tipoLease),true,'Financiero: transfiere riesgos y beneficios · Operativo: lessor mantiene')}
+    ${makeField('Tipo de Activo',qSelOpt('l-activo',CATALOGS.tipos_activo_lease,d.activo),true)}
+    ${makeField('Descripción del Activo',`<input id="l-activo-desc" type="text" placeholder="Ej. 5 camiones Volvo FH540 2025" value="${d.activoDesc||''}">`,true)}
+    ${makeField('Valor del Activo (precio)',`<input id="l-valor" type="number" placeholder="0.00" value="${d.valor||''}" oninput="updateLeaseCalc()">`,true)}
+    ${makeField('Moneda',qSelOpt('l-moneda',CATALOGS.monedas,d.moneda||'MXN'),true)}
+    ${makeField('Proveedor',`<input id="l-proveedor" type="text" placeholder="Ej. Volvo Trucks México" value="${d.proveedor||''}">`,false)}
+  </div>
+  <hr class="section-divider" style="margin:14px 0 10px">
+  <p class="section-title">Términos del Lease</p>
+  <div class="form-grid">
+    ${makeField('Plazo (meses)',`<input id="l-plazo" type="number" placeholder="Ej. 48" value="${d.plazo||''}" oninput="updateLeaseCalc()">`,true)}
+    ${makeField('Renta Mensual',`<input id="l-renta" type="number" step="0.01" placeholder="0.00" value="${d.renta||''}">`,true)}
+    ${makeField('Valor Residual (%)',`<input id="l-residual-pct" type="number" step="0.01" placeholder="Ej. 15" value="${d.residualPct||''}" oninput="updateLeaseCalc()">`,true,'% del valor original al final del plazo')}
+    ${makeField('Valor Residual (monto)',`<input id="l-residual-monto" type="number" placeholder="auto" value="${d.residualMonto||''}" readonly style="background:var(--bg);">`,false)}
+    ${makeField('Tasa Implícita (%)',`<input id="l-tasa" type="number" step="0.01" placeholder="Ej. 13.50" value="${d.tasa||''}">`,false,'Tasa efectiva del leasing — IRR del schedule de rentas + residual')}
+    ${makeField('Opción de Compra',qSelOpt('l-opcion-compra',['Sí — al valor residual','Sí — a valor de mercado','No — devolución al lessor','Renovación automática'],d.opcionCompra),true)}
+    ${makeField('Fecha Inicio',`<input id="l-fecha-inicio" type="date" value="${d.fechaInicio||''}">`,true)}
+    ${makeField('Fecha Vencimiento',`<input id="l-fecha-venc" type="date" value="${d.fechaVenc||''}">`,true)}
+  </div>
+  <hr class="section-divider" style="margin:14px 0 10px">
+  <p class="section-title">Lessor</p>
+  <div class="form-grid">
+    ${lenderField('Lessor / Arrendador')}
+  </div>`;
+}
+function updateLeaseCalc() {
+  const valor   = +gvId('l-valor')||0;
+  const pct     = +gvId('l-residual-pct')||0;
+  const montoEl = document.getElementById('l-residual-monto');
+  if (montoEl && valor > 0 && pct > 0) montoEl.value = (valor*pct/100).toFixed(2);
+}
+function captureLeaseStep(step) {
+  if (step !== 1) return;
+  leaseData.facilityName  = gvId('l-facility-name');
+  leaseData.lessee        = gvId('l-lessee');
+  leaseData.rfc           = gvId('l-rfc');
+  leaseData.sector        = gtId('l-sector');
+  leaseData.tipoLease     = gtId('l-tipo-lease');
+  leaseData.activo        = gtId('l-activo');
+  leaseData.activoDesc    = gvId('l-activo-desc');
+  leaseData.valor         = gvId('l-valor');
+  leaseData.moneda        = gtId('l-moneda');
+  leaseData.proveedor     = gvId('l-proveedor');
+  leaseData.plazo         = gvId('l-plazo');
+  leaseData.renta         = gvId('l-renta');
+  leaseData.residualPct   = gvId('l-residual-pct');
+  leaseData.residualMonto = gvId('l-residual-monto');
+  leaseData.tasa          = gvId('l-tasa');
+  leaseData.opcionCompra  = gtId('l-opcion-compra');
+  leaseData.fechaInicio   = gvId('l-fecha-inicio');
+  leaseData.fechaVenc     = gvId('l-fecha-venc');
+}
+function renderLeaseReview() {
+  const d = leaseData;
+  const rv = v => v ? `<span class="review-value">${v}</span>` : `<span class="review-value empty">—</span>`;
+  return `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <div>
+      <p style="font-size:1rem;font-weight:700;color:var(--primary);margin:0 0 2px;">Resumen del Leasing</p>
+      <p style="font-size:0.82rem;color:var(--text-secondary);margin:0;">Revisa antes de guardar.</p>
+    </div>
+    <span style="font-size:0.72rem;font-weight:700;padding:4px 10px;background:#ECFEFF;color:#0891B2;border-radius:20px;text-transform:uppercase;letter-spacing:.05em;">Leasing</span>
+  </div>
+  <div class="review-section"><div class="review-section-header"><span class="review-section-title"><i class="ph ph-buildings"></i>Lessee</span></div><div class="review-body"><div class="review-grid">
+    <div class="review-item"><span class="review-label">Facility</span>${rv(d.facilityName)}</div>
+    <div class="review-item"><span class="review-label">Lessee</span>${rv(d.lessee)}</div>
+    <div class="review-item"><span class="review-label">RFC</span>${rv(d.rfc)}</div>
+    <div class="review-item"><span class="review-label">Sector</span>${rv(d.sector)}</div>
+  </div></div></div>
+  <div class="review-section" style="margin-top:10px;"><div class="review-section-header"><span class="review-section-title"><i class="ph ph-truck"></i>Activo</span></div><div class="review-body"><div class="review-grid">
+    <div class="review-item"><span class="review-label">Tipo de Lease</span>${rv(d.tipoLease)}</div>
+    <div class="review-item"><span class="review-label">Tipo de Activo</span>${rv(d.activo)}</div>
+    <div class="review-item" style="grid-column:1/-1;"><span class="review-label">Descripción</span>${rv(d.activoDesc)}</div>
+    <div class="review-item"><span class="review-label">Valor Original</span>${rv(fmtMoney(d.valor))}</div>
+    <div class="review-item"><span class="review-label">Proveedor</span>${rv(d.proveedor)}</div>
+  </div></div></div>
+  <div class="review-section" style="margin-top:10px;"><div class="review-section-header"><span class="review-section-title"><i class="ph ph-calculator"></i>Términos</span></div><div class="review-body"><div class="review-grid">
+    <div class="review-item"><span class="review-label">Plazo</span>${rv(d.plazo ? d.plazo+' meses' : '')}</div>
+    <div class="review-item"><span class="review-label">Renta Mensual</span>${rv(fmtMoney(d.renta))}</div>
+    <div class="review-item"><span class="review-label">Valor Residual</span>${rv(d.residualPct && d.residualMonto ? `${d.residualPct}% · ${fmtMoney(d.residualMonto)}` : '')}</div>
+    <div class="review-item"><span class="review-label">Tasa Implícita</span>${rv(d.tasa ? d.tasa+'%' : '')}</div>
+    <div class="review-item"><span class="review-label">Opción de Compra</span>${rv(d.opcionCompra)}</div>
+    <div class="review-item"><span class="review-label">Plazo</span>${rv(d.fechaInicio && d.fechaVenc ? `${d.fechaInicio} → ${d.fechaVenc}` : '')}</div>
+  </div></div></div>`;
+}
+function _autofillLease() {
+  // Caso real LeaseMD/Covalto: Transportes XYZ — 5 camiones Volvo $25M · 48 meses · RV 15%
+  if (currentStep !== 1) return;
+  const sv  = (id,v) => { const el=document.getElementById(id); if(el && !el.value){el.value=v;el.dispatchEvent(new Event('change'));el.dispatchEvent(new Event('input'));} };
+  const ssel= (id,t) => { const el=document.getElementById(id); if(!el) return; for(const o of el.options){ if(o.text===t){el.value=o.value||o.text;el.dispatchEvent(new Event('change'));return;} } };
+  sv('l-facility-name','Lease Transportes XYZ-2025-01');
+  sv('l-lessee','Transportes XYZ del Norte, S.A. de C.V.');
+  sv('l-rfc','TXN150301ABC');
+  ssel('l-sector','Logística');
+  ssel('l-tipo-lease','Financiero');
+  ssel('l-activo','Vehículos comerciales (camiones, tractocamiones)');
+  sv('l-activo-desc','5 tractocamiones Volvo FH540 2025 · placas MX');
+  sv('l-valor','25000000');
+  ssel('l-moneda','MXN');
+  sv('l-proveedor','Volvo Trucks México');
+  sv('l-plazo','48');
+  sv('l-renta','580000');
+  sv('l-residual-pct','15');
+  updateLeaseCalc(); // 25M * 15% = 3.75M
+  sv('l-tasa','13.50');
+  ssel('l-opcion-compra','Sí — al valor residual');
+  sv('l-fecha-inicio','2025-05-01');
+  sv('l-fecha-venc','2029-05-01');
+  showToast('Demo data cargado ✓ (Leasing)', 'success');
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   3) FACTORING — Compra de cuentas por cobrar
+   Caso Covalto Factoraje real: cliente con top deudores retail
+══════════════════════════════════════════════════════════════════ */
+function renderFact1() {
+  const d = factData;
+  return `
+  <p class="section-title">Cliente (Originador de Facturas)</p>
+  <div class="form-grid">
+    ${makeField('Nombre del Facility',`<input id="f-facility-name" type="text" placeholder="Ej. Factoraje Comercial-2025-01" value="${d.facilityName||''}">`,true)}
+    ${makeField('Cliente Legal Name',`<input id="f-cliente" type="text" placeholder="Razón social del cliente" value="${d.cliente||''}">`,true)}
+    ${makeField('RFC',`<input id="f-rfc" type="text" placeholder="RFC del cliente" value="${d.rfc||''}">`,false)}
+    ${makeField('Sector',qSelOpt('f-sector',CATALOGS.sectores,d.sector),false)}
+  </div>
+  <hr class="section-divider" style="margin:14px 0 10px">
+  <p class="section-title">Programa de Factoring</p>
+  <div class="form-grid">
+    ${makeField('Tipo de Factoring',qSelOpt('f-tipo',CATALOGS.tipos_factoring,d.tipo),true,'Con recurso: riesgo en el cliente · Sin recurso: riesgo en el deudor')}
+    ${makeField('Línea Total Comprometida',`<input id="f-linea" type="number" placeholder="0.00" value="${d.linea||''}">`,true)}
+    ${makeField('Moneda',qSelOpt('f-moneda',CATALOGS.monedas,d.moneda||'MXN'),true)}
+    ${makeField('Anticipo (%)',`<input id="f-anticipo" type="number" step="0.01" placeholder="Ej. 85.00" value="${d.anticipo||''}">`,true,'% que se adelanta del valor de la factura')}
+    ${makeField('Tasa de Descuento (%)',`<input id="f-tasa-desc" type="number" step="0.01" placeholder="Ej. 18.00" value="${d.tasaDesc||''}">`,true,'Tasa anualizada aplicada al monto anticipado')}
+    ${makeField('Comisión (%)',`<input id="f-comision" type="number" step="0.01" placeholder="Ej. 1.50" value="${d.comision||''}">`,false)}
+    ${makeField('Plazo Promedio Facturas (días)',`<input id="f-plazo-facturas" type="number" placeholder="Ej. 60" value="${d.plazoFacturas||''}">`,true)}
+    ${makeField('Vencimiento del Programa',`<input id="f-fecha-venc" type="date" value="${d.fechaVenc||''}">`,true)}
+  </div>
+  <hr class="section-divider" style="margin:14px 0 10px">
+  <p class="section-title">Top Deudores (concentración de pool)</p>
+  <p style="font-size:0.78rem;color:var(--text-secondary);margin:-6px 0 10px;">Los principales deudores cuyas facturas se compran. La concentración por deudor determina el riesgo del pool.</p>
+  <div id="fact-deudores-list">
+    <div class="synd-row" style="grid-template-columns:1.5fr 1fr 80px auto;">
+      <input type="text" placeholder="Razón social del deudor" id="f-deudor-0">
+      ${sel(CATALOGS.industrias_deudor,'Industria',`id="f-deudor-ind-0"`)}
+      <input type="number" placeholder="%" id="f-deudor-pct-0" step="0.01">
+      <button class="btn-outline-sm" onclick="this.parentElement.remove()"><i class="ph ph-trash"></i></button>
+    </div>
+  </div>
+  <button class="btn-outline-sm" style="margin-top:8px;" onclick="addFactDeudor()"><i class="ph ph-plus"></i>Agregar deudor</button>
+  <div class="form-grid" style="margin-top:14px;">
+    ${makeField('Concentración Máxima por Deudor (%)',`<input id="f-conc-max" type="number" step="0.01" placeholder="Ej. 30" value="${d.concMax||''}">`,false,'Límite contractual de % del pool en un solo deudor')}
+    ${lenderField('Factor (Lender)')}
+  </div>`;
+}
+function addFactDeudor() {
+  const list = document.getElementById('fact-deudores-list');
+  if (!list) return;
+  const i = list.children.length;
+  const row = document.createElement('div');
+  row.className = 'synd-row';
+  row.style.gridTemplateColumns = '1.5fr 1fr 80px auto';
+  row.innerHTML = `<input type="text" placeholder="Razón social del deudor" id="f-deudor-${i}">
+    ${sel(CATALOGS.industrias_deudor,'Industria',`id="f-deudor-ind-${i}"`)}
+    <input type="number" placeholder="%" id="f-deudor-pct-${i}" step="0.01">
+    <button class="btn-outline-sm" onclick="this.parentElement.remove()"><i class="ph ph-trash"></i></button>`;
+  list.appendChild(row);
+}
+function captureFactStep(step) {
+  if (step !== 1) return;
+  factData.facilityName  = gvId('f-facility-name');
+  factData.cliente       = gvId('f-cliente');
+  factData.rfc           = gvId('f-rfc');
+  factData.sector        = gtId('f-sector');
+  factData.tipo          = gtId('f-tipo');
+  factData.linea         = gvId('f-linea');
+  factData.moneda        = gtId('f-moneda');
+  factData.anticipo      = gvId('f-anticipo');
+  factData.tasaDesc      = gvId('f-tasa-desc');
+  factData.comision      = gvId('f-comision');
+  factData.plazoFacturas = gvId('f-plazo-facturas');
+  factData.fechaVenc     = gvId('f-fecha-venc');
+  factData.concMax       = gvId('f-conc-max');
+  factData.deudores = [];
+  const list = document.getElementById('fact-deudores-list');
+  if (list) [...list.children].forEach((row, i) => {
+    const nombre  = gvId(`f-deudor-${i}`);
+    const ind     = gtId(`f-deudor-ind-${i}`);
+    const pct     = gvId(`f-deudor-pct-${i}`);
+    if (nombre || pct) factData.deudores.push({ nombre, industria:ind, pct });
+  });
+}
+function renderFactReview() {
+  const d = factData;
+  const rv = v => v ? `<span class="review-value">${v}</span>` : `<span class="review-value empty">—</span>`;
+  const deudoresHtml = (d.deudores||[]).length
+    ? (d.deudores).map(x=>`<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;background:var(--bg);border:1px solid var(--border);border-radius:12px;font-size:0.78rem;font-weight:600;">${x.nombre||'—'}${x.pct?' · '+x.pct+'%':''}${x.industria?' · '+x.industria:''}</span>`).join(' ')
+    : '<span class="review-value empty">Sin deudores capturados</span>';
+  const sumDeudores = (d.deudores||[]).reduce((s,x)=>s+(+x.pct||0),0);
+  return `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <div>
+      <p style="font-size:1rem;font-weight:700;color:var(--primary);margin:0 0 2px;">Resumen del Factoring</p>
+      <p style="font-size:0.82rem;color:var(--text-secondary);margin:0;">Revisa antes de guardar.</p>
+    </div>
+    <span style="font-size:0.72rem;font-weight:700;padding:4px 10px;background:#FEF3C7;color:#B45309;border-radius:20px;text-transform:uppercase;letter-spacing:.05em;">Factoring</span>
+  </div>
+  <div class="review-section"><div class="review-section-header"><span class="review-section-title"><i class="ph ph-user"></i>Cliente</span></div><div class="review-body"><div class="review-grid">
+    <div class="review-item"><span class="review-label">Facility</span>${rv(d.facilityName)}</div>
+    <div class="review-item"><span class="review-label">Cliente</span>${rv(d.cliente)}</div>
+    <div class="review-item"><span class="review-label">RFC</span>${rv(d.rfc)}</div>
+    <div class="review-item"><span class="review-label">Sector</span>${rv(d.sector)}</div>
+  </div></div></div>
+  <div class="review-section" style="margin-top:10px;"><div class="review-section-header"><span class="review-section-title"><i class="ph ph-receipt"></i>Programa</span></div><div class="review-body"><div class="review-grid">
+    <div class="review-item"><span class="review-label">Tipo</span>${rv(d.tipo)}</div>
+    <div class="review-item"><span class="review-label">Línea Total</span>${rv(fmtMoney(d.linea))}</div>
+    <div class="review-item"><span class="review-label">Anticipo</span>${rv(d.anticipo ? d.anticipo+'%' : '')}</div>
+    <div class="review-item"><span class="review-label">Tasa Descuento</span>${rv(d.tasaDesc ? d.tasaDesc+'%' : '')}</div>
+    <div class="review-item"><span class="review-label">Comisión</span>${rv(d.comision ? d.comision+'%' : '')}</div>
+    <div class="review-item"><span class="review-label">Plazo Facturas</span>${rv(d.plazoFacturas ? d.plazoFacturas+' días' : '')}</div>
+  </div></div></div>
+  <div class="review-section" style="margin-top:10px;"><div class="review-section-header"><span class="review-section-title"><i class="ph ph-users-three"></i>Pool de Deudores</span></div><div class="review-body">
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">${deudoresHtml}</div>
+    <div style="display:flex;gap:10px;font-size:0.78rem;color:var(--text-secondary);">
+      <span><strong>Σ% capturado:</strong> ${sumDeudores.toFixed(1)}%</span>
+      ${d.concMax ? `<span><strong>Concentración máxima permitida:</strong> ${d.concMax}%</span>` : ''}
+    </div>
+  </div></div>`;
+}
+function _autofillFact() {
+  // Caso real Covalto Factoraje: cliente proveedor de retail con top deudores Walmart/Soriana/Liverpool
+  if (currentStep !== 1) return;
+  const sv  = (id,v) => { const el=document.getElementById(id); if(el && !el.value){el.value=v;el.dispatchEvent(new Event('change'));el.dispatchEvent(new Event('input'));} };
+  const ssel= (id,t) => { const el=document.getElementById(id); if(!el) return; for(const o of el.options){ if(o.text===t){el.value=o.value||o.text;el.dispatchEvent(new Event('change'));return;} } };
+  sv('f-facility-name','Factoraje Comercial-2025-01');
+  sv('f-cliente','Proveedora Mexicana de Consumo, S.A. de C.V.');
+  sv('f-rfc','PMC120815XYZ');
+  ssel('f-sector','Consumo');
+  ssel('f-tipo','Sin recurso');
+  sv('f-linea','80000000');
+  ssel('f-moneda','MXN');
+  sv('f-anticipo','85.00');
+  sv('f-tasa-desc','18.00');
+  sv('f-comision','1.50');
+  sv('f-plazo-facturas','60');
+  sv('f-fecha-venc','2026-03-31');
+  sv('f-conc-max','30');
+  // Top deudores
+  sv('f-deudor-0','Walmart de México');     ssel('f-deudor-ind-0','Retail / Comercio minorista'); sv('f-deudor-pct-0','25.00');
+  addFactDeudor(); sv('f-deudor-1','Soriana'); ssel('f-deudor-ind-1','Retail / Comercio minorista'); sv('f-deudor-pct-1','20.00');
+  addFactDeudor(); sv('f-deudor-2','Liverpool'); ssel('f-deudor-ind-2','Retail / Comercio minorista'); sv('f-deudor-pct-2','18.00');
+  addFactDeudor(); sv('f-deudor-3','Chedraui'); ssel('f-deudor-ind-3','Retail / Comercio minorista'); sv('f-deudor-pct-3','15.00');
+  showToast('Demo data cargado ✓ (Factoring)', 'success');
+}
+
 </script>
 
 <!-- ══════════════════════════════════════════════════════════════
@@ -3041,6 +4498,547 @@ window.covRowHtml = function(flow, tab) {
     <button onclick="this.closest('[style]').remove()" title="Eliminar" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:6px;background:transparent;cursor:pointer;color:var(--text-muted);flex-shrink:0;" onmouseover="this.style.background='var(--red-bg)';this.style.color='var(--red)';this.style.borderColor='var(--red)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'"><i class="ph ph-trash" style="font-size:15px;"></i></button>
   </div>`;
 };
+
+/* ══════════════════════════════════════════════════════════════════
+   MONITORING LAYER — adds on top of capture flow:
+   · Document Tracker (entregables + cadencia + status)
+   · Covenant Monitoring (valor actual vs riskLevels → traffic light)
+   · Step-up temporal (riskLevels con effectiveFrom)
+   · Demo seed: facility Salud Fácil F/1631 con datos Covalto reales
+══════════════════════════════════════════════════════════════════ */
+
+/* ---------- CSS adicional para monitoring ---------- */
+(function injectMonitoringCSS(){
+  const css = `
+    .badge-status { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:10px; font-size:0.72rem; font-weight:700; white-space:nowrap; }
+    .badge-green  { background:var(--green-bg);  color:var(--green); }
+    .badge-yellow { background:var(--yellow-bg); color:var(--yellow); }
+    .badge-red    { background:var(--red-bg);    color:var(--red); }
+    .badge-gray   { background:#EEF1F5;          color:#65748B; }
+    .mon-drawer-overlay { position:fixed; inset:0; background:rgba(11,46,79,0.42); z-index:990; display:none; }
+    .mon-drawer-overlay.open { display:block; }
+    .mon-drawer { position:fixed; top:0; right:0; height:100vh; width:min(960px, 92vw); background:var(--surface); box-shadow:-12px 0 32px rgba(0,0,0,0.18); z-index:991; transform:translateX(100%); transition:transform .25s ease; overflow-y:auto; }
+    .mon-drawer.open { transform:translateX(0); }
+    .mon-drawer-header { position:sticky; top:0; background:var(--surface); border-bottom:1px solid var(--border); padding:18px 24px; display:flex; align-items:center; justify-content:space-between; z-index:2; }
+    .mon-drawer-tabs { display:flex; gap:6px; border-bottom:1px solid var(--border); padding:0 24px; background:var(--bg); position:sticky; top:73px; z-index:2; }
+    .mon-tab-btn { background:none; border:none; padding:12px 14px; font-size:0.85rem; font-weight:600; color:var(--text-secondary); cursor:pointer; border-bottom:2px solid transparent; }
+    .mon-tab-btn.active { color:var(--secondary); border-bottom-color:var(--secondary); }
+    .mon-section { padding:20px 24px; }
+    .mon-table { width:100%; border-collapse:collapse; font-size:0.85rem; background:var(--surface); }
+    .mon-table th { background:var(--bg); padding:9px 10px; text-align:left; font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.04em; border-bottom:1px solid var(--border); }
+    .mon-table td { padding:10px; border-bottom:1px solid var(--border); vertical-align:middle; }
+    .mon-table tr:hover { background:#FAFBFC; }
+    .mon-input { font-size:0.85rem; padding:5px 8px; border:1px solid var(--border-strong); border-radius:5px; width:110px; }
+    .stepup-row { display:flex; align-items:center; gap:8px; padding:6px 8px; background:var(--bg); border:1px solid var(--border); border-radius:6px; margin-top:6px; font-size:0.8rem; }
+    .stepup-row input[type="date"] { font-size:0.78rem; padding:3px 6px; border:1px solid var(--border-strong); border-radius:4px; }
+    .doc-status-pill { font-size:0.7rem; font-weight:700; padding:2px 7px; border-radius:9px; }
+  `;
+  const s = document.createElement('style'); s.textContent = css; document.head.appendChild(s);
+})();
+
+/* ---------- ENTREGABLES catalog (basado en contratos Covalto) ---------- */
+const ENTREGABLES_TEMPLATE = [
+  { id:'eeff_m',   nombre:'EEFF Mensuales',                cadencia:'Mensual',     plazoDias:20, tipo:'financiero' },
+  { id:'eeff_a',   nombre:'EEFF Anuales Auditados',        cadencia:'Anual',       plazoDias:180,tipo:'financiero' },
+  { id:'cartera',  nombre:'Estado de Cartera',             cadencia:'Mensual',     plazoDias:9,  tipo:'cartera' },
+  { id:'aforo',    nombre:'Certificación de Aforo',        cadencia:'Mensual',     plazoDias:5,  tipo:'cartera' },
+  { id:'compl',    nombre:'Certificado de Cumplimiento',   cadencia:'Mensual',     plazoDias:15, tipo:'covenant' },
+  { id:'sat',      nombre:'Constancias SAT',               cadencia:'Mensual',     plazoDias:21, tipo:'fiscal' },
+  { id:'proy',     nombre:'Proyecciones Financieras',      cadencia:'Anual (dic)', plazoDias:20, tipo:'financiero' },
+  { id:'litigios', nombre:'Avisos de Litigios',            cadencia:'On-event',    plazoDias:5,  tipo:'evento' },
+  { id:'ema',      nombre:'Aviso Incumplimiento / EMA',    cadencia:'On-event',    plazoDias:3,  tipo:'evento' },
+];
+
+/* ---------- Status calc engine ---------- */
+function fmtPct(v){ return (v*100).toFixed(2) + '%'; }
+function parseNum(v){ if(v==null||v==='')return NaN; const n=parseFloat(String(v).replace(/[^\d.\-]/g,'')); return n; }
+
+function getActiveRiskLevels(cfg, asOfDate) {
+  if (!cfg || !cfg.riskLevels) return [];
+  // Step-up: si hay sets temporales, escoger el activo a la fecha
+  if (cfg.stepUps && cfg.stepUps.length) {
+    const today = asOfDate ? new Date(asOfDate) : new Date();
+    const active = cfg.stepUps
+      .filter(s => !s.from || new Date(s.from) <= today)
+      .sort((a,b) => new Date(b.from||0) - new Date(a.from||0))[0];
+    return active ? active.levels : cfg.riskLevels;
+  }
+  return cfg.riskLevels;
+}
+
+function evalStatus(cfg, currentValue, asOfDate) {
+  const v = parseNum(currentValue);
+  if (isNaN(v)) return { label:'Sin dato', cls:'badge-gray', icon:'ph-circle' };
+  const levels = getActiveRiskLevels(cfg, asOfDate);
+  if (!levels || !levels.length) return { label:'Sin umbral', cls:'badge-gray', icon:'ph-circle' };
+
+  const colorMap = { green:'verde', yellow:'amarillo', red:'rojo', amber:'amarillo' };
+  const cssMap = { verde:'badge-green', amarillo:'badge-yellow', rojo:'badge-red' };
+
+  // Encuentra el peor nivel cumplido (red > yellow > green)
+  let worst = null;
+  for (const lvl of levels) {
+    const thr = parseNum(lvl.value);
+    if (isNaN(thr)) continue;
+    const op = lvl.op || '>=';
+    let breach = false;
+    switch(op){
+      case '>=': breach = v <  thr; break;
+      case '>':  breach = v <= thr; break;
+      case '<=': breach = v >  thr; break;
+      case '<':  breach = v >= thr; break;
+      case '==': breach = v !== thr; break;
+    }
+    const color = colorMap[(lvl.color||lvl.id||'').toLowerCase()] || 'amarillo';
+    if (breach) {
+      // breach del verde → al menos amarillo
+      // si breach del amarillo → rojo
+      if (color === 'verde' && !worst) worst = 'amarillo';
+      else if (color === 'amarillo') worst = 'rojo';
+      else if (color === 'rojo') worst = 'rojo';
+    }
+  }
+  const final = worst || 'verde';
+  return {
+    label: final === 'verde' ? 'En cumplimiento' : final === 'amarillo' ? 'En riesgo' : 'Breach',
+    cls: cssMap[final],
+    icon: final === 'verde' ? 'ph-check-circle' : final === 'amarillo' ? 'ph-warning' : 'ph-x-circle'
+  };
+}
+
+function nextDueDate(cadencia, plazoDias, refDate) {
+  const d = refDate ? new Date(refDate) : new Date();
+  if (cadencia === 'Mensual') {
+    const due = new Date(d.getFullYear(), d.getMonth(), plazoDias);
+    if (due < d) due.setMonth(due.getMonth()+1);
+    return due;
+  }
+  if (cadencia === 'Anual') {
+    return new Date(d.getFullYear()+1, 0, plazoDias);
+  }
+  if (cadencia === 'Anual (dic)') {
+    return new Date(d.getFullYear(), 11, plazoDias);
+  }
+  return null; // on-event
+}
+
+function docStatus(due, lastDelivered) {
+  if (!due) return { label:'On-event', cls:'badge-gray' };
+  const today = new Date();
+  const diff = Math.ceil((due - today) / (1000*60*60*24));
+  if (lastDelivered && new Date(lastDelivered) >= new Date(due.getFullYear(), due.getMonth(), 1)) {
+    return { label:'Entregado', cls:'badge-green' };
+  }
+  if (diff < 0)  return { label:`Vencido ${-diff}d`, cls:'badge-red' };
+  if (diff <= 3) return { label:`Vence en ${diff}d`, cls:'badge-yellow' };
+  return { label:`Vence en ${diff}d`, cls:'badge-gray' };
+}
+
+/* ---------- Monitoring data store (paralelo a savedFacilities) ---------- */
+const monitoringStore = {};  // { facilityId: { covenantValues: {covId: '0.78'}, deliverables: [...]  } }
+
+function ensureMonitoring(fid) {
+  if (!monitoringStore[fid]) {
+    monitoringStore[fid] = {
+      covenantValues: {},
+      deliverables: ENTREGABLES_TEMPLATE.map(e => ({
+        ...e,
+        nextDue: nextDueDate(e.cadencia, e.plazoDias),
+        lastDelivered: null,
+        evidencia: null
+      }))
+    };
+  }
+  return monitoringStore[fid];
+}
+
+/* ---------- Demo seed: Salud Fácil F/1631 ---------- */
+function seedDemoFacility() {
+  // Si ya hay facility con este nombre, abrirla
+  const existing = savedFacilities.find(f => f.name && f.name.includes('Salud Fácil'));
+  if (existing) { openMonitoring(existing.id); return; }
+
+  const newId = 'demo_sfacil_' + Date.now();
+  const fid = newId;
+
+  // Fabricar el snapshot mínimo
+  const demoCovenants = [
+    { id:'c1', categoria:'Financiero', nombre:'Apalancamiento',          op:'<=', umbral:'4.00x',  actual:'3.85x',  stepUps:null },
+    { id:'c2', categoria:'Financiero', nombre:'Cobertura de Intereses',  op:'>=', umbral:'1.75x',  actual:'1.92x',  stepUps:null },
+    { id:'c3', categoria:'Financiero', nombre:'Capitalización',          op:'>=', umbral:'20.00%', actual:'19.40%', stepUps:null },
+    { id:'c4', categoria:'Financiero', nombre:'Rentabilidad',            op:'>=', umbral:'10.00%', actual:'11.20%', stepUps:null },
+    { id:'c5', categoria:'Cartera',    nombre:'Morosidad Cartera',       op:'<=', umbral:'5.00%',  actual:'4.10%',  stepUps:null },
+    { id:'c6', categoria:'Cartera',    nombre:'Morosidad Cartera Aportada', op:'<=', umbral:'4.00%',  actual:'4.85%',  stepUps:null },
+    { id:'c7', categoria:'Financiero', nombre:'Razón de Cobertura (step-up)', op:'>=', umbral:'0.65x', actual:'0.78x',
+      stepUps: [
+        { from:'2025-12-01', levels:[ { color:'green', op:'>=', value:'0.65' }, { color:'yellow', op:'>=', value:'0.55' } ] },
+        { from:'2026-07-01', levels:[ { color:'green', op:'>=', value:'1.00' }, { color:'yellow', op:'>=', value:'0.85' } ] }
+      ]
+    },
+  ];
+
+  savedFacilities.push({
+    id: fid,
+    type: 'leasing',
+    name: 'Salud Fácil · Fideicomiso F/1631',
+    date: new Date().toLocaleDateString('es-MX'),
+    demoCovenants,
+    isDemo: true
+  });
+  ensureMonitoring(fid);
+
+  // Render row en tabla de facilities
+  appendDemoFacilityRow(fid);
+  showToast('Facility demo "Salud Fácil F/1631" cargada · Click para monitorear', 'success');
+  setTimeout(()=>openMonitoring(fid), 300);
+}
+
+function appendDemoFacilityRow(fid) {
+  const f = savedFacilities.find(x => x.id === fid);
+  if (!f) return;
+  let tbody = document.getElementById('facilityRows');
+  const emptyArea = document.querySelector('.facility-empty-area');
+  if (emptyArea && !tbody) {
+    const parent = emptyArea.parentElement;
+    emptyArea.remove();
+    const tableWrap = document.createElement('div');
+    tableWrap.style.cssText = 'border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;';
+    tableWrap.innerHTML = `
+      <table style="width:100%;border-collapse:collapse;">
+        <thead style="background:var(--surface);border-bottom:1px solid var(--border);">
+          <tr>
+            <th style="padding:10px 16px;font-size:0.85rem;font-weight:700;text-align:left;">Name</th>
+            <th style="padding:10px 16px;font-size:0.85rem;font-weight:700;text-align:left;">Type</th>
+            <th style="padding:10px 16px;font-size:0.85rem;font-weight:700;text-align:left;">Status</th>
+            <th style="padding:10px 16px;font-size:0.85rem;font-weight:700;text-align:left;">Created</th>
+            <th style="padding:10px 16px;"></th>
+          </tr>
+        </thead>
+        <tbody id="facilityRows"></tbody>
+      </table>`;
+    parent.appendChild(tableWrap);
+    tbody = document.getElementById('facilityRows');
+  }
+  if (!tbody) return;
+
+  const tr = document.createElement('tr');
+  tr.id = 'row_' + fid;
+  tr.style.cssText = 'border-bottom:1px solid var(--border); cursor:pointer;';
+  tr.onclick = () => openMonitoring(fid);
+  tr.innerHTML = `
+    <td style="padding:12px 16px;font-size:0.9rem;font-weight:600;color:var(--secondary);">
+      <i class="ph ph-medical-thermometer" style="margin-right:6px;"></i>${f.name}
+    </td>
+    <td style="padding:12px 16px;">
+      <span style="display:inline-flex;align-items:center;padding:3px 10px;background:var(--blue-bg);color:var(--blue);border-radius:20px;font-size:0.78rem;font-weight:600;">Leasing</span>
+    </td>
+    <td style="padding:12px 16px;">
+      <span class="badge-status badge-yellow"><i class="ph ph-warning"></i>1 covenant en riesgo</span>
+    </td>
+    <td style="padding:12px 16px;font-size:0.875rem;color:var(--text-secondary);">${f.date}</td>
+    <td style="padding:12px 16px;text-align:right;">
+      <button onclick="event.stopPropagation();openMonitoring('${fid}')" style="background:var(--secondary);color:white;border:none;padding:6px 12px;border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;">
+        <i class="ph ph-chart-line-up"></i> Monitorear
+      </button>
+    </td>`;
+  tbody.appendChild(tr);
+}
+
+/* ---------- Drawer de monitoreo ---------- */
+function ensureDrawer() {
+  if (document.getElementById('monDrawerOverlay')) return;
+  const overlay = document.createElement('div');
+  overlay.id = 'monDrawerOverlay';
+  overlay.className = 'mon-drawer-overlay';
+  overlay.onclick = closeMonitoring;
+  document.body.appendChild(overlay);
+
+  const drawer = document.createElement('div');
+  drawer.id = 'monDrawer';
+  drawer.className = 'mon-drawer';
+  drawer.innerHTML = `
+    <div class="mon-drawer-header">
+      <div>
+        <p style="font-size:0.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin:0;">Facility Monitoring</p>
+        <h2 id="monDrawerTitle" style="font-size:1.15rem;font-weight:700;color:var(--primary);margin:4px 0 0;">—</h2>
+      </div>
+      <button onclick="closeMonitoring()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-muted);"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="mon-drawer-tabs">
+      <button class="mon-tab-btn active" data-mtab="covenants" onclick="switchMonTab('covenants',this)"><i class="ph ph-list-checks"></i> Covenants</button>
+      <button class="mon-tab-btn" data-mtab="entregables" onclick="switchMonTab('entregables',this)"><i class="ph ph-files"></i> Entregables</button>
+      <button class="mon-tab-btn" data-mtab="resumen" onclick="switchMonTab('resumen',this)"><i class="ph ph-gauge"></i> Resumen</button>
+    </div>
+    <div id="monDrawerBody"></div>
+  `;
+  document.body.appendChild(drawer);
+}
+
+let currentMonFid = null;
+let currentMonTab = 'covenants';
+
+function openMonitoring(fid) {
+  ensureDrawer();
+  currentMonFid = fid;
+  currentMonTab = 'covenants';
+  const f = savedFacilities.find(x => x.id === fid);
+  if (!f) return;
+  ensureMonitoring(fid);
+  document.getElementById('monDrawerTitle').textContent = f.name;
+  document.getElementById('monDrawerOverlay').classList.add('open');
+  document.getElementById('monDrawer').classList.add('open');
+  renderMonBody();
+}
+
+function closeMonitoring() {
+  document.getElementById('monDrawerOverlay')?.classList.remove('open');
+  document.getElementById('monDrawer')?.classList.remove('open');
+}
+
+function switchMonTab(tab, btn) {
+  currentMonTab = tab;
+  document.querySelectorAll('.mon-tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMonBody();
+}
+
+function renderMonBody() {
+  const body = document.getElementById('monDrawerBody');
+  if (!body || !currentMonFid) return;
+  if (currentMonTab === 'covenants')   body.innerHTML = renderCovenantsMonitoring(currentMonFid);
+  if (currentMonTab === 'entregables') body.innerHTML = renderEntregables(currentMonFid);
+  if (currentMonTab === 'resumen')     body.innerHTML = renderResumen(currentMonFid);
+}
+
+function renderCovenantsMonitoring(fid) {
+  const f = savedFacilities.find(x => x.id === fid);
+  const covs = (f && f.demoCovenants) ? f.demoCovenants : [];
+  const today = new Date().toISOString().slice(0,10);
+
+  const rows = covs.map(c => {
+    const cfg = c.stepUps
+      ? { stepUps: c.stepUps, riskLevels: c.stepUps[0].levels }
+      : { riskLevels: [
+          { color:'green',  op:c.op, value: parseNum(c.umbral) }
+        ]};
+    const status = evalStatus(cfg, parseNum(c.actual), today);
+    const stepBadge = c.stepUps
+      ? `<span class="badge-status badge-gray" title="Tiene rampa step-up"><i class="ph ph-stairs"></i> step-up</span>`
+      : '';
+    return `
+    <tr>
+      <td><span style="font-size:0.7rem;font-weight:700;padding:2px 7px;background:${c.categoria==='Cartera'?'#FFF7E5':'#E8F2FF'};color:${c.categoria==='Cartera'?'#B97500':'#1F77B4'};border-radius:9px;">${c.categoria}</span></td>
+      <td style="font-weight:600;">${c.nombre} ${stepBadge}</td>
+      <td style="font-family:'JetBrains Mono',monospace;color:var(--text-secondary);">${c.op} ${c.umbral}</td>
+      <td><input class="mon-input" value="${c.actual}" onchange="updateCovActual('${fid}','${c.id}',this.value)"></td>
+      <td><span class="badge-status ${status.cls}"><i class="ph ${status.icon}"></i> ${status.label}</span></td>
+    </tr>`;
+  }).join('');
+
+  const stepUpDetail = covs.filter(c=>c.stepUps).map(c => `
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:8px;">
+      <p style="font-size:0.8rem;font-weight:700;color:var(--secondary);margin:0 0 6px;"><i class="ph ph-stairs"></i> Step-up · ${c.nombre}</p>
+      ${c.stepUps.map(s => {
+        const isActive = new Date(s.from) <= new Date();
+        return `<div class="stepup-row">
+          <span style="font-weight:700;color:${isActive?'var(--green)':'var(--text-muted)'};min-width:80px;">${isActive?'● ACTIVO':'○ futuro'}</span>
+          <span>Desde <strong>${s.from}</strong></span>
+          <span style="color:var(--text-muted);">·</span>
+          <span style="font-family:monospace;">${s.levels.map(l => `${l.color}: ${l.op} ${l.value}`).join(' · ')}</span>
+        </div>`;
+      }).join('')}
+      <p style="font-size:0.72rem;color:var(--text-muted);margin:8px 0 0;font-style:italic;">El umbral cambia automáticamente según la fecha. Hoy: ${today}</p>
+    </div>
+  `).join('');
+
+  return `
+    <div class="mon-section">
+      <p style="font-size:0.8rem;color:var(--text-secondary);margin:0 0 12px;">Captura el <strong>valor actual</strong> de cada métrica. El sistema evalúa contra el umbral pactado (y la rampa step-up si aplica).</p>
+      <table class="mon-table">
+        <thead>
+          <tr><th>Categoría</th><th>Métrica</th><th>Umbral</th><th>Valor actual</th><th>Status</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      ${stepUpDetail}
+    </div>
+  `;
+}
+
+function updateCovActual(fid, cid, val) {
+  const f = savedFacilities.find(x => x.id === fid);
+  if (!f) return;
+  const c = (f.demoCovenants||[]).find(x => x.id === cid);
+  if (!c) return;
+  c.actual = val;
+  renderMonBody();
+}
+
+function renderEntregables(fid) {
+  const m = ensureMonitoring(fid);
+  const rows = m.deliverables.map((d,i) => {
+    const due = d.nextDue ? new Date(d.nextDue) : null;
+    const st = docStatus(due, d.lastDelivered);
+    return `
+    <tr>
+      <td><span style="font-size:0.72rem;font-weight:600;padding:2px 7px;background:#EEF1F5;color:#4A5568;border-radius:9px;text-transform:uppercase;">${d.tipo}</span></td>
+      <td style="font-weight:600;">${d.nombre}</td>
+      <td>${d.cadencia} · ${d.plazoDias}d</td>
+      <td style="font-family:monospace;font-size:0.8rem;">${due ? due.toLocaleDateString('es-MX') : '—'}</td>
+      <td><span class="badge-status ${st.cls}">${st.label}</span></td>
+      <td>${d.lastDelivered ? `<span style="font-size:0.78rem;color:var(--green);"><i class="ph ph-check"></i> ${new Date(d.lastDelivered).toLocaleDateString('es-MX')}</span>` : `<button onclick="markDelivered('${fid}',${i})" style="background:var(--secondary);color:white;border:none;padding:4px 10px;border-radius:5px;font-size:0.75rem;font-weight:600;cursor:pointer;"><i class="ph ph-upload"></i> Cargar</button>`}</td>
+    </tr>`;
+  }).join('');
+
+  const counts = m.deliverables.reduce((acc,d) => {
+    const st = docStatus(d.nextDue ? new Date(d.nextDue) : null, d.lastDelivered);
+    if (st.cls.includes('red')) acc.vencidos++;
+    else if (st.cls.includes('yellow')) acc.proximos++;
+    else if (st.cls.includes('green')) acc.entregados++;
+    else acc.otros++;
+    return acc;
+  }, {vencidos:0, proximos:0, entregados:0, otros:0});
+
+  return `
+    <div class="mon-section">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;">
+        <div style="background:var(--red-bg);border-radius:8px;padding:12px;border-left:3px solid var(--red);"><p style="font-size:0.7rem;font-weight:700;color:var(--red);margin:0 0 4px;text-transform:uppercase;">Vencidos</p><p style="font-size:1.5rem;font-weight:700;margin:0;">${counts.vencidos}</p></div>
+        <div style="background:var(--yellow-bg);border-radius:8px;padding:12px;border-left:3px solid var(--yellow);"><p style="font-size:0.7rem;font-weight:700;color:var(--yellow);margin:0 0 4px;text-transform:uppercase;">Próximos a vencer</p><p style="font-size:1.5rem;font-weight:700;margin:0;">${counts.proximos}</p></div>
+        <div style="background:var(--green-bg);border-radius:8px;padding:12px;border-left:3px solid var(--green);"><p style="font-size:0.7rem;font-weight:700;color:var(--green);margin:0 0 4px;text-transform:uppercase;">Entregados</p><p style="font-size:1.5rem;font-weight:700;margin:0;">${counts.entregados}</p></div>
+        <div style="background:#EEF1F5;border-radius:8px;padding:12px;border-left:3px solid #65748B;"><p style="font-size:0.7rem;font-weight:700;color:#65748B;margin:0 0 4px;text-transform:uppercase;">On-event</p><p style="font-size:1.5rem;font-weight:700;margin:0;">${counts.otros}</p></div>
+      </div>
+      <table class="mon-table">
+        <thead><tr><th>Tipo</th><th>Entregable</th><th>Cadencia</th><th>Próximo vencimiento</th><th>Estado</th><th>Acción</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <p style="font-size:0.72rem;color:var(--text-muted);margin-top:12px;font-style:italic;">Cadencia y plazos basados en cláusula 4.01 del Contrato de Crédito Salud Fácil F/1631. Plazos en días naturales desde cierre de periodo.</p>
+    </div>
+  `;
+}
+
+function markDelivered(fid, idx) {
+  const m = ensureMonitoring(fid);
+  const d = m.deliverables[idx];
+  d.lastDelivered = new Date().toISOString();
+  // Avanza la próxima fecha
+  d.nextDue = nextDueDate(d.cadencia, d.plazoDias, new Date(Date.now() + 24*60*60*1000));
+  renderMonBody();
+  showToast(`"${d.nombre}" marcado como entregado ✓`, 'success');
+}
+
+function renderResumen(fid) {
+  const f = savedFacilities.find(x => x.id === fid);
+  const covs = (f && f.demoCovenants) || [];
+  const today = new Date().toISOString().slice(0,10);
+  const breaches = covs.filter(c => {
+    const cfg = c.stepUps ? { stepUps:c.stepUps, riskLevels:c.stepUps[0].levels } : { riskLevels:[{ color:'green', op:c.op, value:parseNum(c.umbral) }]};
+    return evalStatus(cfg, parseNum(c.actual), today).cls.includes('yellow') || evalStatus(cfg, parseNum(c.actual), today).cls.includes('red');
+  });
+  const m = ensureMonitoring(fid);
+  const vencidos = m.deliverables.filter(d => {
+    const st = docStatus(d.nextDue ? new Date(d.nextDue) : null, d.lastDelivered);
+    return st.cls.includes('red');
+  });
+
+  return `
+    <div class="mon-section">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px;">
+          <p style="font-size:0.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin:0 0 8px;">Health Score</p>
+          <p style="font-size:2.5rem;font-weight:700;color:${breaches.length===0?'var(--green)':breaches.length<=1?'var(--yellow)':'var(--red)'};margin:0;">${Math.max(0, 100 - breaches.length*15 - vencidos.length*5)}<span style="font-size:1rem;color:var(--text-muted);">/100</span></p>
+          <p style="font-size:0.8rem;color:var(--text-secondary);margin:6px 0 0;">${breaches.length} covenant(s) en riesgo · ${vencidos.length} entregable(s) vencido(s)</p>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px;">
+          <p style="font-size:0.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin:0 0 8px;">Estructura</p>
+          <ul style="margin:0;padding-left:18px;font-size:0.82rem;color:var(--text);line-height:1.7;">
+            <li>Fideicomiso F/1631</li>
+            <li>OS: SFL Arrendadora + Salud a Bajo Costo</li>
+            <li>Depositario: Fernando de Obeso L.J.</li>
+            <li>Acreedor: Banco Covalto</li>
+          </ul>
+        </div>
+      </div>
+      ${breaches.length ? `
+      <div style="background:var(--red-bg);border-left:3px solid var(--red);border-radius:6px;padding:14px;margin-top:16px;">
+        <p style="font-size:0.85rem;font-weight:700;color:var(--red);margin:0 0 6px;"><i class="ph ph-warning-circle"></i> Atención requerida</p>
+        ${breaches.map(b => `<p style="font-size:0.8rem;margin:4px 0;">• <strong>${b.nombre}</strong>: actual ${b.actual} vs umbral ${b.op} ${b.umbral}</p>`).join('')}
+      </div>` : ''}
+    </div>
+  `;
+}
+
+/* ---------- Documentation tab: dashboard global ---------- */
+function renderDocumentationTab() {
+  const tab = document.getElementById('tab-documentation');
+  if (!tab) return;
+  // Sólo activar si hay facilities cargadas; mantener empty state si no
+  if (!savedFacilities.length) return;
+
+  // Agregar todos los entregables de todas las facilities
+  const allRows = [];
+  savedFacilities.forEach(f => {
+    const m = ensureMonitoring(f.id);
+    m.deliverables.forEach((d,i) => allRows.push({ ...d, facilityId:f.id, facilityName:f.name, idx:i }));
+  });
+  allRows.sort((a,b) => {
+    const da = a.nextDue ? new Date(a.nextDue) : new Date(8640000000000000);
+    const db = b.nextDue ? new Date(b.nextDue) : new Date(8640000000000000);
+    return da - db;
+  });
+
+  const rows = allRows.map(r => {
+    const due = r.nextDue ? new Date(r.nextDue) : null;
+    const st = docStatus(due, r.lastDelivered);
+    return `
+    <tr style="cursor:pointer;" onclick="openMonitoring('${r.facilityId}')">
+      <td style="font-weight:600;color:var(--secondary);">${r.facilityName}</td>
+      <td>${r.nombre}</td>
+      <td>${r.cadencia}</td>
+      <td style="font-family:monospace;font-size:0.8rem;">${due ? due.toLocaleDateString('es-MX') : '—'}</td>
+      <td><span class="badge-status ${st.cls}">${st.label}</span></td>
+    </tr>`;
+  }).join('');
+
+  tab.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div>
+        <h2 class="facility-heading" style="margin:0;">Calendario de Entregables</h2>
+        <p style="font-size:0.85rem;color:var(--text-secondary);margin:4px 0 0;">Vista agregada de todas las facilities · ordenado por próximo vencimiento</p>
+      </div>
+      <button class="btn-primary" onclick="showToast('Export pendiente — próximamente','info')"><i class="ph ph-download-simple"></i>Exportar calendario</button>
+    </div>
+    <table class="mon-table">
+      <thead><tr><th>Facility</th><th>Entregable</th><th>Cadencia</th><th>Próximo vencimiento</th><th>Estado</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+/* ---------- Demo seed button en Overview ---------- */
+function injectDemoButton() {
+  const ov = document.getElementById('tab-overview');
+  if (!ov || document.getElementById('demoSeedBtn')) return;
+  const banner = document.createElement('div');
+  banner.style.cssText = 'background:linear-gradient(90deg,#0B2E4F,#1F77B4);color:white;padding:14px 18px;border-radius:8px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;';
+  banner.innerHTML = `
+    <div>
+      <p style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:0.85;margin:0 0 2px;">Demo · Covalto</p>
+      <p style="font-size:0.9rem;font-weight:600;margin:0;">Cargar facility "Salud Fácil F/1631" con covenants step-up y entregables reales</p>
+    </div>
+    <button id="demoSeedBtn" onclick="seedDemoFacility()" style="background:white;color:var(--primary);border:none;padding:8px 14px;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.85rem;"><i class="ph ph-lightning"></i> Cargar demo</button>
+  `;
+  ov.insertBefore(banner, ov.firstChild);
+}
+
+/* ---------- Wire-up: tab change → re-render Documentation; init demo button ---------- */
+const _origSwitchTab = switchTab;
+window.switchTab = function(tabId, btn) {
+  _origSwitchTab(tabId, btn);
+  if (tabId === 'documentation') renderDocumentationTab();
+};
+
+// Inject demo button after DOM is ready (script is at end of body so it should be)
+injectDemoButton();
 
 /* ─── Auto-abrir modal cuando se llega con #new-facility ──────── */
 if (window.location.hash === '#new-facility') {
